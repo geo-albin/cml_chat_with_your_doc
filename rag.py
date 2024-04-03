@@ -19,6 +19,7 @@ from llama_index.core.postprocessor import SentenceEmbeddingOptimizer
 from duplicate_preprocessing import DuplicateRemoverNodePostprocessor
 from transformers import BitsAndBytesConfig
 from llama_index.vector_stores.milvus import MilvusVectorStore
+import utils.vector_db_utils as vector_db
 import torch
 
 
@@ -66,6 +67,9 @@ Settings.callback_manager = callback_manager
 # pc = Pinecone(api_key=os.environ['PINECONE_API_KEY'])
 # pinecone_index = pc.Index(os.environ['PINECONE_INDEX'])
 # vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+
+melvus_start = vector_db.start_milvus()
+print(f"melvus_start = {melvus_start}")
 
 vector_store = MilvusVectorStore(dim=1536, overwrite=True, collection_name="cml_rag_collection")
 
