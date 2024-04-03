@@ -20,6 +20,7 @@ from duplicate_preprocessing import DuplicateRemoverNodePostprocessor
 from transformers import BitsAndBytesConfig
 from llama_index.vector_stores.milvus import MilvusVectorStore
 import utils.vector_db_utils as vector_db
+from llama_index.core import PromptTemplate
 import torch
 
 
@@ -40,11 +41,24 @@ callback_manager = CallbackManager(handlers=[llama_debug])
 #     # bnb_4bit_use_double_quant=True,
 # )
 
+SYSTEM_PROMPT = """You are an AI assistant that answers questions in a friendly manner, based on the given source documents. Here are some rules you always follow:
+- Generate human readable output, avoid creating output with gibberish text.
+- Generate only the requested output, don't include any other language before or after the requested output.
+- Never say thank you, that you are happy to help, that you are an AI agent, etc. Just answer directly.
+- Generate professional language typically used in business documents in North America.
+- Never generate offensive or foul language.
+"""
+
+query_wrapper_prompt = PromptTemplate(
+    "[INST]<<SYS>>\n" + SYSTEM_PROMPT + "<</SYS>>\n\n{query_str}[/INST] "
+)
+
 Settings.llm = HuggingFaceLLM(
     model_name="mistralai/Mistral-7B-Instruct-v0.1",
     tokenizer_name="mistralai/Mistral-7B-Instruct-v0.1",
     context_window=3900,
     max_new_tokens=256,
+    query_wrapper_prompt=query_wrapper_prompt,
     generate_kwargs={"temperature": 0, "top_k": 50, "top_p": 0.95},
     device_map="auto",
     model_kwargs={
