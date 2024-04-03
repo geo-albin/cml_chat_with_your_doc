@@ -13,8 +13,8 @@ from llama_index.core.callbacks import LlamaDebugHandler, CallbackManager
 from llama_index.core.chat_engine.types import ChatMode
 from llama_index.core.postprocessor import SentenceEmbeddingOptimizer
 
-from llama_index.llms.mistralai import MistralAI
-from llama_index.embeddings.mistralai import MistralAIEmbedding
+# from llama_index.llms.mistralai import MistralAI
+# from llama_index.embeddings.mistralai import MistralAIEmbedding
 
 from duplicate_preprocessing import DuplicateRemoverNodePostprocessor
 from transformers import BitsAndBytesConfig

@@ -3,6 +3,7 @@ from ingestion import Ingest
 from rag import Infer
 from upload import Upload_files
 import vectordb as vectordb
+import os
 
 infer = gr.ChatInterface(
     fn=Infer, 
@@ -35,4 +36,12 @@ with vectorDB:
     stopVectorDB.click(vectordb.stop_vector_db, inputs=None, outputs=[output])
 
 demo = gr.TabbedInterface([infer, ingest, upload, vectorDB], ["Chat bot", "Data Ingestion", "Upload files", "vector DB operations"])
-demo.launch(debug=True)
+
+if os.environ["CML"] == "yes": 
+    demo.launch(enable_queue=True,
+                show_error=True,
+                debug=True,
+                server_name='127.0.0.1',
+                server_port=int(os.getenv('CDSW_APP_PORT')))
+else:
+    demo.launch(debug=True)
