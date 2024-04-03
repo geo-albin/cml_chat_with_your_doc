@@ -21,6 +21,12 @@ from transformers import BitsAndBytesConfig
 from llama_index.vector_stores.milvus import MilvusVectorStore
 import utils.vector_db_utils as vector_db
 from llama_index.core import PromptTemplate
+from huggingface_hub import hf_hub_download
+from llama_index.llms.llama_cpp import LlamaCPP
+from llama_index.llms.llama_cpp.llama_utils import (
+    messages_to_prompt,
+    completion_to_prompt,
+)
 import torch
 
 
@@ -41,37 +47,66 @@ callback_manager = CallbackManager(handlers=[llama_debug])
 #     # bnb_4bit_use_double_quant=True,
 # )
 
-SYSTEM_PROMPT = """You are an AI assistant that answers questions in a friendly manner, based on the given source documents. Here are some rules you always follow:
-- Generate human readable output, avoid creating output with gibberish text.
-- Generate only the requested output, don't include any other language before or after the requested output.
-- Never say thank you, that you are happy to help, that you are an AI agent, etc. Just answer directly.
-- Generate professional language typically used in business documents in North America.
-- Never generate offensive or foul language.
-"""
+MODELS_PATH = "./models"
 
-query_wrapper_prompt = PromptTemplate(
-    "[INST]<<SYS>>\n" + SYSTEM_PROMPT + "<</SYS>>\n\n{query_str}[/INST] "
-)
+model_path = hf_hub_download(
+    repo_id= "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
+    filename="mistral-7b-instruct-v0.2.Q5_K_M.gguf",
+    resume_download=True,
+    cache_dir=MODELS_PATH,)
 
-Settings.llm = HuggingFaceLLM(
-    model_name="mistralai/Mistral-7B-Instruct-v0.1",
-    tokenizer_name="mistralai/Mistral-7B-Instruct-v0.1",
-    context_window=3900,
+# SYSTEM_PROMPT = """You are an AI assistant that answers questions in a friendly manner, based on the given source documents. Here are some rules you always follow:
+# - Generate human readable output, avoid creating output with gibberish text.
+# - Generate only the requested output, don't include any other language before or after the requested output.
+# - Never say thank you, that you are happy to help, that you are an AI agent, etc. Just answer directly.
+# - Generate professional language typically used in business documents in North America.
+# - Never generate offensive or foul language.
+# """
+
+# query_wrapper_prompt = PromptTemplate(
+#     "[INST]<<SYS>>\n" + SYSTEM_PROMPT + "<</SYS>>\n\n{query_str}[/INST] "
+# )
+
+# Settings.llm = HuggingFaceLLM(
+#     model_name="mistralai/Mistral-7B-Instruct-v0.1",
+#     tokenizer_name="mistralai/Mistral-7B-Instruct-v0.1",
+#     context_window=3900,
+#     max_new_tokens=256,
+#     query_wrapper_prompt=query_wrapper_prompt,
+#     generate_kwargs={"temperature": 0, "top_k": 50, "top_p": 0.95},
+#     device_map="auto",
+#     model_kwargs={
+#         "torch_dtype": torch.float16, 
+#         "llm_int8_enable_fp32_cpu_offload": True,
+#         "bnb_4bit_quant_type": 'nf4',
+#         "bnb_4bit_use_double_quant":True,
+#         "bnb_4bit_compute_dtype":torch.bfloat16,
+#         "load_in_4bit": True}
+# )
+
+n_gpu_layers = -1
+if torch.cuda.is_available():
+    n_gpu_layers = 1
+
+Settings.llm =LlamaCPP(
+    model_path=model_path,
+    temperature=0.0,
     max_new_tokens=256,
-    query_wrapper_prompt=query_wrapper_prompt,
-    generate_kwargs={"temperature": 0, "top_k": 50, "top_p": 0.95},
-    device_map="auto",
-    model_kwargs={
-        "torch_dtype": torch.float16, 
-        "llm_int8_enable_fp32_cpu_offload": True,
-        "bnb_4bit_quant_type": 'nf4',
-        "bnb_4bit_use_double_quant":True,
-        "bnb_4bit_compute_dtype":torch.bfloat16,
-        "load_in_4bit": True}
+    # llama2 has a context window of 4096 tokens, but we set it lower to allow for some wiggle room
+    context_window=3900,
+    # kwargs to pass to __call__()
+    generate_kwargs={},
+    # kwargs to pass to __init__()
+    # set to at least 1 to use GPU
+    model_kwargs={"n_gpu_layers": n_gpu_layers},
+    # transform inputs into Llama2 format
+    messages_to_prompt=messages_to_prompt,
+    completion_to_prompt=completion_to_prompt,
+    verbose=True,
 )
 
 Settings.embed_model = HuggingFaceEmbedding(
-    model_name="BAAI/bge-small-en-v1.5"
+    model_name="BAAI/bge-small-en-v1.5",
 )
 
 # Settings.llm = LLM
