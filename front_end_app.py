@@ -7,8 +7,8 @@ import os
 
 infer = gr.ChatInterface(
     fn=Infer, 
-    examples=["What is llama index?", "What is RAG?"], 
-        title="llama index chat Bot", 
+    examples=["What is CML?", "What is Cloudera?"], 
+        title="CML chat Bot", 
         chatbot=gr.Chatbot(height=700),
         multimodal=False
         )
