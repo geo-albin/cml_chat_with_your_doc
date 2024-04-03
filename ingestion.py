@@ -14,6 +14,7 @@ from transformers import BitsAndBytesConfig
 from llama_index.vector_stores.milvus import MilvusVectorStore
 import time
 import torch
+import utils.vector_db_utils as vector_db
 
 load_dotenv()
 # print(f"PINECONE_API_KEY = {os.environ['PINECONE_API_KEY']}\nPINECONE_ENVIRONMENT = {os.environ['PINECONE_ENVIRONMENT']}")
@@ -68,6 +69,9 @@ def Ingest():
     # pinecone_index = pc.Index(index_name)
     # vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
 
+    melvus_start = vector_db.start_milvus()
+    print(f"melvus_start = {melvus_start}")
+
     vector_store = MilvusVectorStore(dim=1536, overwrite=True)
 
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
@@ -79,6 +83,8 @@ def Ingest():
     op = "Completed data ingestion. took " + str(time.time() - start_time) + " seconds"
 
     print(f"{op}")
+    melvus_stop = vector_db.stop_milvus()
+    print(f"melvus_stop = {melvus_stop}")
 
     return op
 
