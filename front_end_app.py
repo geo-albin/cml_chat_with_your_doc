@@ -5,9 +5,20 @@ from upload import Upload_files
 import vectordb as vectordb
 import os
 
+def read_list_from_file(filename):
+    lst = []
+    with open(filename, 'r') as f:
+        for line in f:
+            lst.append(line.strip())  # Remove newline characters
+    return lst
+
+lst = read_list_from_file("questions.txt")
+if len(lst) == 0:
+    lst = ["What is CML?", "What is Cloudera?"]
+
 infer = gr.ChatInterface(
     fn=Infer, 
-    examples=["What is CML?", "What is Cloudera?"], 
+    examples=lst, 
         title="CML chat Bot", 
         chatbot=gr.Chatbot(height=700),
         multimodal=False

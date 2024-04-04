@@ -138,18 +138,25 @@ def Ingest(stop_vector_db=False):
 
     op += "\nCompleted data set generation. took " + str(time.time() - start_time) + " seconds."
 
-    eval_questions = data_generator.generate_questions_from_nodes(num=5)
+    eval_questions = data_generator.generate_questions_from_nodes(num=10)
 
     i = 1
     for q in eval_questions:
         op += "\nQuestion " + str(i) + " - " + str(q) + "."
         i+=1
 
+    write_list_to_file(eval_questions, "questions.txt")
+
     if stop_vector_db:
         melvus_stop = vector_db.stop_milvus()
         print(f"melvus_stop = {melvus_stop}")
 
     return op
+
+def write_list_to_file(lst, filename):
+    with open(filename, 'w') as f:
+        for item in lst:
+            f.write(str(item) + '\n')
 
 if __name__ == '__main__':
     Ingest()
