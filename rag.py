@@ -59,7 +59,8 @@ model_path = hf_hub_download(
     repo_id= "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
     filename="mistral-7b-instruct-v0.2.Q5_K_M.gguf",
     resume_download=True,
-    cache_dir=MODELS_PATH,)
+    cache_dir=MODELS_PATH,
+    local_files_only= True)
 
 # SYSTEM_PROMPT = """You are an AI assistant that answers questions in a friendly manner, based on the given source documents. Here are some rules you always follow:
 # - Generate human readable output, avoid creating output with gibberish text.

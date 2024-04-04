@@ -71,7 +71,8 @@ def Ingest(stop_vector_db=False):
         repo_id= "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
         filename="mistral-7b-instruct-v0.2.Q5_K_M.gguf",
         resume_download=True,
-        cache_dir=MODELS_PATH,)
+        cache_dir=MODELS_PATH,
+        local_files_only= True)
 
     n_gpu_layers = -1
     if torch.cuda.is_available():
@@ -99,7 +100,7 @@ def Ingest(stop_vector_db=False):
     embed_model = "thenlper/gte-large"
 
     Settings.embed_model = HuggingFaceEmbedding(
-        model_name=embed_model
+        model_name=embed_model,
     )
 
     Settings.node_parser = node_parser
@@ -133,7 +134,7 @@ def Ingest(stop_vector_db=False):
     eval_questions = data_generator.generate_questions_from_nodes(num=5)
 
     i = 1
-    for q in range(eval_questions):
+    for q in eval_questions:
         op += "\nQuestion {i} - {q}."
         i+=1
 
