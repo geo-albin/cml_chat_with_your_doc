@@ -29,6 +29,12 @@ from llama_index.llms.llama_cpp.llama_utils import (
 )
 import torch
 
+import logging
+import sys
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+
 
 load_dotenv()
 llama_debug = LlamaDebugHandler(print_trace_on_end=True)
