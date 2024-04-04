@@ -35,7 +35,7 @@ with vectorDB:
     resetCollection.click(vectordb.reset_vector_db, inputs=None, outputs=[output])
 
 demo = gr.TabbedInterface(interface_list=[infer, upload, ingest, vectorDB], 
-                tab_names=["Chat bot", "Upload files", "Data Ingestion", "vector DB operations"]
+                tab_names=["Chat bot", "Upload files", "Data Ingestion", "vector DB operations"],
                 title="CML Chat application - v2")
 
 if "CML" in os.environ and os.environ["CML"] == "yes": 
