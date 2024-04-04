@@ -35,7 +35,7 @@ def get_milvus_status():
 def reset_data():
     stop_milvus()
     print(subprocess.run(["rm -rf milvus-data"], shell=True))
-    start_milvus()
+    return start_milvus()
 
 def check_socket(host, port) -> bool:
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:

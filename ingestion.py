@@ -25,7 +25,7 @@ from llama_index.llms.llama_cpp.llama_utils import (
 load_dotenv()
 # print(f"PINECONE_API_KEY = {os.environ['PINECONE_API_KEY']}\nPINECONE_ENVIRONMENT = {os.environ['PINECONE_ENVIRONMENT']}")
 
-def Ingest():
+def Ingest(stop_vector_db=False):
     # Step 1: read and clean the data from HTML.
     # We are using UnStructured reader for the same.
     reader = SimpleDirectoryReader(input_dir="./doc_list", recursive=True, file_extractor={'.html': UnstructuredReader(), '.pdf': UnstructuredReader(), '.txt': UnstructuredReader()})
@@ -118,8 +118,10 @@ def Ingest():
     op = "Completed data ingestion. took " + str(time.time() - start_time) + " seconds"
 
     print(f"{op}")
-    melvus_stop = vector_db.stop_milvus()
-    print(f"melvus_stop = {melvus_stop}")
+    
+    if stop_vector_db:
+        melvus_stop = vector_db.stop_milvus()
+        print(f"melvus_stop = {melvus_stop}")
 
     return op
 

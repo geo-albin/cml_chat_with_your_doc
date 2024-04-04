@@ -32,7 +32,7 @@ with vectorDB:
     resetCollection = gr.Button(value="Please press to reset the vector DB")
     output = gr.Textbox(label="", max_lines=10, interactive=False)
     status.click(vectordb.vector_db_status, inputs=None, outputs=[output])
-    addCollection.click(vectordb.create_vectro_db, inputs=None, outputs=[output])
+    addCollection.click(vectordb.create_vector_db, inputs=None, outputs=[output])
     resetCollection.click(vectordb.reset_vector_db, inputs=None, outputs=[output])
 
 demo = gr.TabbedInterface(interface_list=[infer, upload, ingest, vectorDB], 
