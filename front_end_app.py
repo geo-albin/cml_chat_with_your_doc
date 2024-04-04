@@ -27,14 +27,16 @@ with upload:
 
 vectorDB = gr.Blocks()
 with vectorDB:
-    status = gr.Button(value="Check vectroDB status")
+    status = gr.Button(value="Check vectorDB status")
     addCollection = gr.Button(value="Please press to add collection to the vector DB")
     resetCollection = gr.Textbox(label="", max_lines=10, interactive=False)
     status.click(vectordb.vector_db_status, inputs=None, outputs=[output])
     addCollection.click(vectordb.create_vectro_db, inputs=None, outputs=[output])
     resetCollection.click(vectordb.reset_vector_db, inputs=None, outputs=[output])
 
-demo = gr.TabbedInterface([infer, upload, ingest, vectorDB], ["Chat bot", "Upload files", "Data Ingestion", "vector DB operations"])
+demo = gr.TabbedInterface(interface_list=[infer, upload, ingest, vectorDB], 
+                tab_names=["Chat bot", "Upload files", "Data Ingestion", "vector DB operations"]
+                title="CML Chat application - v2")
 
 if "CML" in os.environ and os.environ["CML"] == "yes": 
     demo.launch(show_error=True,
