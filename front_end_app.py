@@ -16,7 +16,7 @@ infer = gr.ChatInterface(
 ingest = gr.Blocks()
 with ingest:
     btn = gr.Button(value="Please press to start ingestion")
-    output = gr.Textbox(label="ingestion progress", max_lines=10, interactive=False)
+    output = gr.Textbox(label="ingestion progress", interactive=True)
     btn.click(Ingest, inputs=None, outputs=[output])
 
 upload = gr.Blocks()

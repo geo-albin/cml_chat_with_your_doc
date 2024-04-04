@@ -21,6 +21,7 @@ from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
     completion_to_prompt,
 )
+from llama_index.core.evaluation import DatasetGenerator, RelevancyEvaluator
 
 load_dotenv()
 # print(f"PINECONE_API_KEY = {os.environ['PINECONE_API_KEY']}\nPINECONE_ENVIRONMENT = {os.environ['PINECONE_ENVIRONMENT']}")
@@ -119,9 +120,22 @@ def Ingest(stop_vector_db=False):
 
     index = VectorStoreIndex.from_documents(documents=documents, storage_context=storage_context, show_progress=True)
 
-    op = "Completed data ingestion. took " + str(time.time() - start_time) + " seconds"
+    op = "Completed data ingestion. took " + str(time.time() - start_time) + " seconds."
 
     print(f"{op}")
+
+    start_time = time.time()
+
+    data_generator = DatasetGenerator.from_documents(documents)
+
+    op += "\nCompleted data set generation. took " + str(time.time() - start_time) + " seconds."
+
+    eval_questions = data_generator.generate_questions_from_nodes(num=5)
+
+    i = 1
+    for q in range(eval_questions):
+        op += "\nQuestion {i} - {q}."
+        i+=1
 
     if stop_vector_db:
         melvus_stop = vector_db.stop_milvus()
