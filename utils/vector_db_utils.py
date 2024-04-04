@@ -2,6 +2,7 @@ from milvus import default_server
 from pymilvus import connections, FieldSchema, CollectionSchema, DataType, Collection, utility
 import socket
 from contextlib import closing
+import subprocess
 
 def start_milvus():
     if check_socket('localhost', default_server.listen_port):
@@ -23,6 +24,18 @@ def stop_milvus():
     # Stop Milvus Vector DB
     default_server.stop()
     return "Milvus stopped"
+
+def get_milvus_status():
+    if check_socket('localhost', default_server.listen_port):
+        return f'milvus is running. version = {utility.get_server_version()}'
+    
+    return f'milvus is stopped'
+    
+
+def reset_data():
+    stop_milvus()
+    print(subprocess.run(["rm -rf milvus-data"], shell=True))
+    start_milvus()
 
 def check_socket(host, port) -> bool:
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:

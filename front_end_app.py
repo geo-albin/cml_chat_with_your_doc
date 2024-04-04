@@ -27,15 +27,14 @@ with upload:
 
 vectorDB = gr.Blocks()
 with vectorDB:
-    startVectorDB = gr.Button(value="Please press to start vector DB")
-    stopVectorDB = gr.Button(value="Please press to stop vector DB")
+    status = gr.Button(value="Check vectroDB status")
     addCollection = gr.Button(value="Please press to add collection to the vector DB")
-    output = gr.Textbox(label="", max_lines=10, interactive=False)
-    startVectorDB.click(vectordb.start_vector_db, inputs=None, outputs=[output])
+    resetCollection = gr.Textbox(label="", max_lines=10, interactive=False)
+    status.click(vectordb.vector_db_status, inputs=None, outputs=[output])
     addCollection.click(vectordb.create_vectro_db, inputs=None, outputs=[output])
-    stopVectorDB.click(vectordb.stop_vector_db, inputs=None, outputs=[output])
+    resetCollection.click(vectordb.reset_vector_db, inputs=None, outputs=[output])
 
-demo = gr.TabbedInterface([infer, ingest, upload, vectorDB], ["Chat bot", "Data Ingestion", "Upload files", "vector DB operations"])
+demo = gr.TabbedInterface([infer, upload, ingest, vectorDB], ["Chat bot", "Upload files", "Data Ingestion", "vector DB operations"])
 
 if "CML" in os.environ and os.environ["CML"] == "yes": 
     demo.launch(show_error=True,
