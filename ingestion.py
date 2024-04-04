@@ -111,7 +111,7 @@ def Ingest(stop_vector_db=False):
     melvus_start = vector_db.start_milvus()
     print(f"melvus_start = {melvus_start}")
 
-    vector_store = MilvusVectorStore(dim=384, overwrite=True)
+    vector_store = MilvusVectorStore(dim=1024, overwrite=True)
 
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
 

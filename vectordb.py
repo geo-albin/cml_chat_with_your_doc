@@ -15,6 +15,6 @@ def stop_vector_db():
 
 def create_vector_db():
     collection_name="cml_rag_collection"
-    dim=384
+    dim=1024
     vector_db.create_milvus_collection(collection_name=collection_name, dim=dim)
     return f'collection {collection_name} created with dim {dim}'
