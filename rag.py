@@ -120,7 +120,7 @@ Settings.callback_manager = callback_manager
 melvus_start = vector_db.start_milvus()
 print(f"melvus_start = {melvus_start}")
 
-vector_store = MilvusVectorStore(dim=1536, overwrite=True, collection_name="cml_rag_collection")
+vector_store = MilvusVectorStore(dim=384, overwrite=True, collection_name="cml_rag_collection")
 
 index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
