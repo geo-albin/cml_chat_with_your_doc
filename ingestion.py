@@ -12,6 +12,7 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.huggingface import HuggingFaceLLM
 from transformers import BitsAndBytesConfig
 from llama_index.vector_stores.milvus import MilvusVectorStore
+from huggingface_hub import hf_hub_download
 import time
 import torch
 import utils.vector_db_utils as vector_db
@@ -62,6 +63,14 @@ def Ingest():
     #         "bnb_4bit_compute_dtype":torch.bfloat16,
     #         "load_in_4bit": True}
     # )
+
+    MODELS_PATH = "./models"
+
+    model_path = hf_hub_download(
+        repo_id= "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
+        filename="mistral-7b-instruct-v0.2.Q5_K_M.gguf",
+        resume_download=True,
+        cache_dir=MODELS_PATH,)
 
     n_gpu_layers = -1
     if torch.cuda.is_available():

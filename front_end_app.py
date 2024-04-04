@@ -37,7 +37,7 @@ with vectorDB:
 
 demo = gr.TabbedInterface([infer, ingest, upload, vectorDB], ["Chat bot", "Data Ingestion", "Upload files", "vector DB operations"])
 
-if os.environ["CML"] == "yes": 
+if "CML" in os.environ and os.environ["CML"] == "yes": 
     demo.launch(show_error=True,
                 debug=True,
                 server_name='127.0.0.1',
