@@ -30,7 +30,7 @@ load_dotenv()
 def Ingest(stop_vector_db=False):
     # Step 1: read and clean the data from HTML.
     # We are using UnStructured reader for the same.
-    reader = SimpleDirectoryReader(input_dir="./doc_list", recursive=True, file_extractor={'.html': UnstructuredReader(), '.pdf': PDFNougatOCR(), '.txt': UnstructuredReader()})
+    reader = SimpleDirectoryReader(input_dir="./doc_list", recursive=True, file_extractor={'.html': UnstructuredReader(), '.pdf': UnstructuredReader(), '.txt': UnstructuredReader()})
     documents = reader.load_data(num_workers=16, show_progress=True)
 
     # Step 2: Create a node parser abstraction
