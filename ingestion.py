@@ -135,7 +135,7 @@ def Ingest(stop_vector_db=False):
 
     i = 1
     for q in eval_questions:
-        op += "\nQuestion {i} - {q}."
+        op += "\nQuestion " + str(i) + " - " + str(q) + "."
         i+=1
 
     if stop_vector_db:
