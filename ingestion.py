@@ -28,6 +28,12 @@ load_dotenv()
 # print(f"PINECONE_API_KEY = {os.environ['PINECONE_API_KEY']}\nPINECONE_ENVIRONMENT = {os.environ['PINECONE_ENVIRONMENT']}")
 
 def Ingest(stop_vector_db=False):
+
+    file_extractor={'.html': UnstructuredReader(), '.pdf': UnstructuredReader(), '.txt': UnstructuredReader()}
+
+    if torch.cuda.is_available():
+        file_extractor['.pdf'] = PDFNougatOCR()
+
     # Step 1: read and clean the data from HTML.
     # We are using UnStructured reader for the same.
     reader = SimpleDirectoryReader(input_dir="./doc_list", recursive=True, file_extractor={'.html': UnstructuredReader(), '.pdf': UnstructuredReader(), '.txt': UnstructuredReader()})
