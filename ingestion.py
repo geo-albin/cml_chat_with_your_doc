@@ -93,8 +93,12 @@ def Ingest(stop_vector_db=False):
         verbose=True,
     )
 
+    # embed_model = "BAAI/bge-small-en-v1.5"
+
+    embed_model = "thenlper/gte-large"
+
     Settings.embed_model = HuggingFaceEmbedding(
-        model_name="BAAI/bge-small-en-v1.5"
+        model_name=embed_model
     )
 
     Settings.node_parser = node_parser
@@ -118,7 +122,7 @@ def Ingest(stop_vector_db=False):
     op = "Completed data ingestion. took " + str(time.time() - start_time) + " seconds"
 
     print(f"{op}")
-    
+
     if stop_vector_db:
         melvus_stop = vector_db.stop_milvus()
         print(f"melvus_stop = {melvus_stop}")

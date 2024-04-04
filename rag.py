@@ -111,8 +111,12 @@ Settings.llm =LlamaCPP(
     verbose=True,
 )
 
+# embed_model = "BAAI/bge-small-en-v1.5"
+
+embed_model = "thenlper/gte-large"
+
 Settings.embed_model = HuggingFaceEmbedding(
-    model_name="BAAI/bge-small-en-v1.5",
+    model_name=embed_model,
 )
 
 # Settings.llm = LLM
