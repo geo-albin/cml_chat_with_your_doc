@@ -15,7 +15,7 @@ from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
     completion_to_prompt,
 )
-from llama_index.core.evaluation import DatasetGenerator, RelevancyEvaluator
+from llama_index.core.evaluation import DatasetGenerator
 
 from llama_index.core.callbacks import LlamaDebugHandler, CallbackManager
 from llama_index.core.chat_engine.types import ChatMode
