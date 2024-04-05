@@ -40,10 +40,10 @@ def reset_data():
 def check_socket(host, port) -> bool:
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
         if sock.connect_ex((host, port)) == 0:
-            print("Port is open")
+            print(f"Port {port} is open")
             return True
         else:
-            print("Port is not open")
+            print(f"Port {port} is not open")
     return False
 
 def create_milvus_collection(collection_name, dim):

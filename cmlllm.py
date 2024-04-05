@@ -91,7 +91,6 @@ Settings.callback_manager = callback_manager
 node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
 Settings.node_parser = node_parser
     
-
 melvus_start = vector_db.start_milvus()
 print(f"melvus_start = {melvus_start}")
 
@@ -123,7 +122,7 @@ def Infer(query):
         generated_text=generated_text+token
         yield generated_text
 
-def Ingest(stop_vector_db=False, progress=gr.Progress()):
+def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
     file_extractor={'.html': UnstructuredReader(), '.pdf': UnstructuredReader(), '.txt': UnstructuredReader()}
 
     if torch.cuda.is_available():
@@ -134,12 +133,16 @@ def Ingest(stop_vector_db=False, progress=gr.Progress()):
     reader = SimpleDirectoryReader(input_dir="./doc_list", recursive=True, file_extractor={'.html': UnstructuredReader(), '.pdf': UnstructuredReader(), '.txt': UnstructuredReader()})
     documents = reader.load_data(num_workers=16, show_progress=True)
 
-    progress(0.35, desc="done loading the document reader...")
-    progress(0.4, desc="starting the vector db...")
-    melvus_start = vector_db.start_milvus()
+    progress(0.4, desc="done loading the document reader...")
+    
+    # if ingest_via_cml_job:
+    #     progress(0.4, desc="starting the vector db...")
+    #     melvus_start = vector_db.start_milvus()
+    
     print(f"melvus_start = {melvus_start}")
 
-    vector_store = MilvusVectorStore(dim=1024, overwrite=True, collection_name="cml_rag_collection")
+    if ingest_via_cml_job:
+        vector_store = MilvusVectorStore(dim=1024, overwrite=True, collection_name="cml_rag_collection")
 
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     progress(0.45, desc="done starting the vector db and set the storage context...")
@@ -172,7 +175,7 @@ def Ingest(stop_vector_db=False, progress=gr.Progress()):
     write_list_to_file(eval_questions, "questions.txt")
     progress(0.9, desc="done generating questions from the document...")
 
-    if stop_vector_db:
+    if ingest_via_cml_job:
         melvus_stop = vector_db.stop_milvus()
         print(f"melvus_stop = {melvus_stop}")
 
