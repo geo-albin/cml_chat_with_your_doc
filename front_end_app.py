@@ -18,7 +18,7 @@ questions = read_list_from_file("questions.txt")
 if len(questions) == 0:
     questions = ["What is CML?", "What is Cloudera?"]
 
-
+file_types=["pdf", "html", "txt"]
 
 
 # infer = gr.ChatInterface(
@@ -72,14 +72,15 @@ def demo():
         """<center><h2>CML - Chatbot v2</center></h2>""")
         with gr.Tab("Step 1 - Document pre-processing"):
             with gr.Row():
-                documents = gr.Files(height=100, file_count="multiple", file_types=["pdf", "html", "txt"], interactive=True, label="Upload your pdf, html or text documents (single or multiple)")
+                documents = gr.Files(height=100, file_count="multiple", file_types=file_types, interactive=True, label="Upload your pdf, html or text documents (single or multiple)")
             with gr.Row():
                 db_progress = gr.Textbox(label="Document processing status", value="None")
             with gr.Row():
-                doc_btn = gr.Button("Process the documents")
-                doc_btn.click(upload_document_and_ingest, \
-                    inputs=[documents], \
-                    outputs=[questions_state, db_progress])
+                # doc_btn = gr.Button("Process the documents")
+                # doc_btn.click(upload_document_and_ingest, \
+                #     inputs=[documents], \
+                #     outputs=[questions_state, db_progress])
+                upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")
             
         # with gr.Tab("Step 2 - QA chain initialization"):
         #     with gr.Row():
@@ -105,6 +106,10 @@ def demo():
                 fn=Infer, 
                 examples=questions_state, 
                 title="CML chat Bot")
+        
+        upload_button.upload(upload_document_and_ingest, 
+                            inputs=[documents], 
+                            outputs=[questions_state, db_progress])
         # Chatbot events
         # clear_btn.click(clear_chat_engine, \
         #     inputs=None, \
