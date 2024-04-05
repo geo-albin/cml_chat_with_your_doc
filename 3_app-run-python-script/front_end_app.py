@@ -136,7 +136,7 @@ with chat2:
         queue=False,
     )
 
-    reload_example.click(read_list_from_file, inputs=None, outputs=example.examples)
+    reload_example.click(read_list_from_file, inputs=None, outputs=example)
 
 # with infer:
 #     with gr.Row():
