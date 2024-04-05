@@ -5,8 +5,8 @@ from contextlib import closing
 import subprocess
 
 def start_milvus():
-    # if check_socket('localhost', default_server.listen_port):
-    #     return (utility.get_server_version())
+    if check_socket('localhost', default_server.listen_port):
+        return (utility.get_server_version())
     
     # Start Milvus Vector DB
     default_server.set_base_dir('milvus-data')

@@ -39,6 +39,14 @@ import logging
 import sys
 import gradio as gr
 
+import atexit
+
+def exit_handler():
+    print('cmlllmapp is exiting!')
+    vector_db.stop_milvus()
+
+atexit.register(exit_handler)
+
 load_dotenv()
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -135,14 +143,7 @@ def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
 
     progress(0.4, desc="done loading the document reader...")
     
-    # if ingest_via_cml_job:
-    #     progress(0.4, desc="starting the vector db...")
-    #     melvus_start = vector_db.start_milvus()
-    
-    print(f"melvus_start = {melvus_start}")
-
-    if ingest_via_cml_job:
-        vector_store = MilvusVectorStore(dim=1024, overwrite=True, collection_name="cml_rag_collection")
+    vector_store = MilvusVectorStore(dim=1024, overwrite=True, collection_name="cml_rag_collection")
 
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     progress(0.45, desc="done starting the vector db and set the storage context...")
