@@ -77,6 +77,9 @@ def demo():
                 db_progress = gr.Textbox(label="Document processing status", value="None")
             with gr.Row():
                 doc_btn = gr.Button("Process the documents")
+                doc_btn.click(upload_document_and_ingest, \
+                    inputs=[documents], \
+                    outputs=[questions_state, db_progress])
             
         # with gr.Tab("Step 2 - QA chain initialization"):
         #     with gr.Row():
@@ -102,10 +105,6 @@ def demo():
                 fn=Infer, 
                 examples=questions_state, 
                 title="CML chat Bot")
-            
-        doc_btn.click(upload_document_and_ingest, \
-            inputs=[documents], \
-            outputs=[questions_state, db_progress])
         # Chatbot events
         # clear_btn.click(clear_chat_engine, \
         #     inputs=None, \
