@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 from llama_index.core import SimpleDirectoryReader, Settings
 from llama_index.core.node_parser import SimpleNodeParser
 from llama_index.core import VectorStoreIndex, StorageContext
@@ -46,8 +45,6 @@ def exit_handler():
     vector_db.stop_milvus()
 
 atexit.register(exit_handler)
-
-load_dotenv()
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))

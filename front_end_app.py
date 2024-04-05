@@ -96,15 +96,13 @@ def demo():
 
         with gr.Tab("Step 2 - Conversation with chatbot"):
             clear_btn=gr.ClearButton("🗑️  Clear")
-            bot = gr.Chatbot(render=False, height=300)
-            clear_btn.add(bot)
+            # bot = gr.Chatbot(render=False, height=300)
+            # clear_btn.add(bot)
             infer = gr.ChatInterface(
                 fn=Infer, 
-                chatbot=bot,
                 examples=questions_state, 
                 title="CML chat Bot", 
                 clear_btn=clear_btn,
-                multimodal=False,
                 queue=False)
             
         doc_btn.click(upload_document_and_ingest, \
