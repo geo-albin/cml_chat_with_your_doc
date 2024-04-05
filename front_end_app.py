@@ -24,7 +24,7 @@ file_types=["pdf", "html", "txt"]
 questions_state = gr.State(questions)
 submit_btn = gr.Button("Submit")
 
-question_reload_btn = gr.components.Button("Refresh example")
+question_reload_btn = gr.Button("Refresh examples")
 
 infer = gr.ChatInterface(
         fn=Infer, 
