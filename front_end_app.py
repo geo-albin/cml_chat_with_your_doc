@@ -95,24 +95,23 @@ def demo():
         #         qachain_btn = gr.Button("Initialize question-answering chain...")
 
         with gr.Tab("Step 2 - Conversation with chatbot"):
-            clear_btn=gr.ClearButton("🗑️  Clear")
+            # clear_btn=gr.ClearButton("🗑️  Clear")
             # bot = gr.Chatbot(render=False, height=300)
             # clear_btn.add(bot)
             infer = gr.ChatInterface(
                 fn=Infer, 
                 examples=questions_state, 
                 title="CML chat Bot", 
-                clear_btn=clear_btn,
                 queue=False)
             
         doc_btn.click(upload_document_and_ingest, \
             inputs=[documents], \
             outputs=[questions_state, db_progress])
         # Chatbot events
-        clear_btn.click(clear_chat_engine, \
-            inputs=None, \
-            outputs=None, \
-            queue=False)
+        # clear_btn.click(clear_chat_engine, \
+        #     inputs=None, \
+        #     outputs=None, \
+        #     queue=False)
     demo.queue()
 
     if "CML" in os.environ and os.environ["CML"] == "yes": 
