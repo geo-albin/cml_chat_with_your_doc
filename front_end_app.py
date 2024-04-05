@@ -22,29 +22,31 @@ file_types=["pdf", "html", "txt"]
 
 
 questions_state = gr.State(questions)
+submit_btn = gr.Button("Submit")
+upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")
 
-def set_upload_in_progess(upload_button:gr.UploadButton):
+def set_upload_in_progess():
     submit_btn.interactive = False
     upload_button.label = "Upload in progress"
     upload_button.interactive = False
     print("Albin : set set_upload_in_progess")
 
-def clear_upload_in_progess(upload_button:gr.UploadButton):
+def clear_upload_in_progess():
     upload_button.label = "Click to Upload a File"
     upload_button.interactive = True
     submit_btn.interactive=True
     print("Albin : clear_upload_in_progess")
 
 def upload_document_and_ingest_local(upload_button):
-    set_upload_in_progess(upload_button)
+    set_upload_in_progess()
     upload_document_and_ingest(upload_button)
 
-submit_btn = gr.Button("Submit")
+
 
 infer = gr.ChatInterface(
         fn=Infer, 
         examples=questions_state.value, 
-        title="CML chat Bot", 
+        title="CML chat Bot - v2", 
         chatbot=gr.Chatbot(height=700),
         multimodal=False,
         submit_btn=submit_btn,
@@ -56,9 +58,8 @@ with upload:
         documents = gr.Files(height=100, file_count="multiple", file_types=file_types, interactive=True, label="Upload your pdf, html or text documents (single or multiple)")
     with gr.Row():
         db_progress = gr.Textbox(label="Document processing status", value="None")
-    with gr.Row():
-        upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")
-        upload_button.upload(upload_document_and_ingest_local, inputs=[upload_button], outputs=[db_progress, questions_state]).then(clear_upload_in_progess, upload_button, None)
+    with gr.Row():     
+        upload_button.upload(upload_document_and_ingest_local, inputs=[upload_button], outputs=[db_progress, questions_state]).then(clear_upload_in_progess, None, None)
 
 
 
