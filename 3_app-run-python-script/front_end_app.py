@@ -115,7 +115,7 @@ with chat2:
         queue=False,
     ).then(Infer2, inputs=chatbot2, outputs=chatbot2)
 
-    submit_btn.submit(
+    submit_btn.click(
         user,
         inputs=[msg, chatbot2],
         outputs=[msg, chatbot2],
