@@ -21,19 +21,19 @@ if len(questions) == 0:
 file_types=["pdf", "html", "txt"]
 
 
-questions_state = gr.State(questions)
 submit_btn = gr.Button("Submit")
 
 question_reload_btn = gr.Button("Refresh examples")
 
 infer = gr.ChatInterface(
         fn=Infer, 
-        examples=questions_state.value, 
+        examples=questions, 
         title="CML chat Bot - v2", 
         chatbot=gr.Chatbot(height=700),
         multimodal=False,
         submit_btn=submit_btn,
-        additional_inputs=[question_reload_btn]
+        additional_inputs=[question_reload_btn],
+        additional_inputs_accordion="additional options",
         )
 question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[infer.examples])
 
