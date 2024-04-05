@@ -110,7 +110,7 @@ postprocessor = SentenceEmbeddingOptimizer(
 
 chat_engine=index.as_chat_engine(chat_mode=ChatMode.CONTEXT, verbose=True, postprocessor=[postprocessor, DuplicateRemoverNodePostprocessor()])
 
-def Infer(query):
+def Infer(query, history):
     print(f"Albin : query = {query}")
     
     query_text = ""
