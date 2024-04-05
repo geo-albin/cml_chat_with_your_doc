@@ -112,7 +112,7 @@ chat_engine = index.as_chat_engine(
 )
 
 
-def Infer(query, history):
+def Infer(query, history=None):
     print(f"Albin : query = {query}")
 
     query_text = ""

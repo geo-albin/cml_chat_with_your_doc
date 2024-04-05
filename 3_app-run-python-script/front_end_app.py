@@ -85,19 +85,42 @@ bot = gr.Chatbot(height=700)
 #         out = gr.Textbox()
 #         bt.change(read_list_from_file, inputs=["questions.txt"], outputs=[out])
 
-dataFrame = gr.DataFrame(questions)
 
-question_reload_btn = gr.Button("Update suggestions")
-question_reload_btn.click(read_list_from_file, inputs=None, outputs=dataFrame)
 infer = gr.ChatInterface(
     fn=Infer,
     title="CML chat Bot - v2",
     chatbot=bot,
     multimodal=False,
     submit_btn=submit_btn,
-    additional_inputs=[dataFrame, question_reload_btn],
-    additional_inputs_accordion=gr.Accordion(label="extra", visible=True),
 )
+
+chat2 = gr.Blocks()
+with chat2:
+    chatbot2 = gr.Chatbot(height=300)
+    with gr.Row():
+        msg = gr.Textbox(placeholder="Type message", container=True)
+    with gr.Row():
+        submit_btn = gr.Button("Submit")
+        clear_btn = gr.ClearButton([msg, chatbot2])
+
+    msg.submit(
+        Infer,
+        inputs=[msg],
+        outputs=[chatbot2],
+        queue=False,
+    )
+    submit_btn.click(
+        Infer,
+        inputs=[msg],
+        outputs=[chatbot2],
+        queue=False,
+    )
+    clear_btn.click(
+        lambda: [None],
+        inputs=None,
+        outputs=[chatbot2],
+        queue=False,
+    )
 
 # with infer:
 #     with gr.Row():
@@ -150,10 +173,11 @@ with admin:
         clean_up_docs.click(delete_docs, inputs=None, outputs=admin_progress)
 
 demo = gr.TabbedInterface(
-    interface_list=[upload, infer, admin],
+    interface_list=[upload, infer, chat2, admin],
     tab_names=[
         "Step 1 - Document pre-processing",
         "Step 2 - Conversation with chatbot",
+        "Chat2",
         "Admin tab",
     ],
     title="CML Chat application - v2",
