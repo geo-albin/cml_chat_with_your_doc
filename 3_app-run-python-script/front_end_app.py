@@ -1,5 +1,6 @@
 import os
 import gradio as gr
+import subprocess
 from utils.cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
 
 
@@ -10,6 +11,12 @@ def read_list_from_file(filename) -> list:
             for line in f:
                 lst.append(line.strip())  # Remove newline characters
     return lst
+
+
+def delete_docs(progress=gr.Progress()):
+    progress(0.1, desc="deleting server side documents...")
+    print(subprocess.run(["rm -rf ./assets/doc_list"], shell=True))
+    progress(0.9, desc="done deleting server side documents...")
 
 
 questions = read_list_from_file("questions.txt")
@@ -29,8 +36,8 @@ infer = gr.ChatInterface(
     chatbot=gr.Chatbot(height=700),
     multimodal=False,
     submit_btn=submit_btn,
-    # additional_inputs=[question_reload_btn],
-    # additional_inputs_accordion="additional options",
+    additional_inputs=[question_reload_btn],
+    additional_inputs_accordion="additional options",
 )
 # question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[questions])
 
@@ -54,12 +61,20 @@ with upload:
             upload_document_and_ingest, inputs=[upload_button], outputs=[db_progress]
         )
 
+admin = gr.Blocks()
+with admin:
+    with gr.Row():
+        db_progress = gr.Textbox(label="Admin event status", value="None")
+    with gr.Row():
+        clean_up_docs = gr.Button("Click to do file cleanup")
+        clean_up_docs.click()
 
 demo = gr.TabbedInterface(
-    interface_list=[upload, infer],
+    interface_list=[upload, infer, admin],
     tab_names=[
         "Step 1 - Document pre-processing",
         "Step 2 - Conversation with chatbot",
+        "Admin tab",
     ],
     title="CML Chat application - v2",
 )
