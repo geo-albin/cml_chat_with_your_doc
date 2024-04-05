@@ -35,7 +35,7 @@ def clear_upload_in_progess():
     print("Albin : clear_upload_in_progess")
 
 def upload_document_and_ingest_local(upload_button):
-    set_upload_in_progess(upload_button)
+    set_upload_in_progess()
     upload_document_and_ingest(upload_button)
 
 
