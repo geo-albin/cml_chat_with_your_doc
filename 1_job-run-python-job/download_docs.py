@@ -14,33 +14,36 @@ os.makedirs(output_dir, exist_ok=True)
 
 # Fetch the page
 response = requests.get(url)
-soup = BeautifulSoup(response.text, 'html.parser')
+soup = BeautifulSoup(response.text, "html.parser")
 
 # Find all links to .html files
-links = soup.find_all('a', href=True)
+links = soup.find_all("a", href=True)
 
 print(f"albin : got links length = {len(links)}")
 count = 1
 for link in links:
-    href = link['href']
-    
+    href = link["href"]
+
     # If it's a .html file
-    
+
     # Make a full URL if necessary
-    if not href.startswith('http'):
+    if not href.startswith("http"):
         href = urllib.parse.urljoin(url, href)
-        
+
     # Fetch the .html file
     print(f"downloading {href}")
     try:
         file_response = requests.get(href)
 
-        if file_response.status_code == 200 and 'text/html' in file_response.headers['Content-Type']:
+        if (
+            file_response.status_code == 200
+            and "text/html" in file_response.headers["Content-Type"]
+        ):
             # Write it to a file
             print(f"writing the data {href} to file with name {str(count) + '.html'}")
             file_name = os.path.join(output_dir, str(count) + ".html")
-            with open(file_name, 'w', encoding='utf-8') as file:
+            with open(file_name, "w", encoding="utf-8") as file:
                 file.write(file_response.text)
-            count+=1
+            count += 1
     except Exception as e:
         print("An unexpected error occurred:", e)

@@ -1,5 +1,4 @@
 import os
-
 from llama_index.core import SimpleDirectoryReader, Settings
 from llama_index.core.node_parser import SimpleNodeParser
 from llama_index.core import VectorStoreIndex, StorageContext
@@ -17,16 +16,12 @@ from llama_index.llms.llama_cpp.llama_utils import (
     completion_to_prompt,
 )
 from llama_index.core.evaluation import DatasetGenerator
-
 from llama_index.core.callbacks import LlamaDebugHandler, CallbackManager
 from llama_index.core.chat_engine.types import ChatMode
 from llama_index.core.postprocessor import SentenceEmbeddingOptimizer
-
 from utils.duplicate_preprocessing import DuplicateRemoverNodePostprocessor
-
 from llama_index.vector_stores.milvus import MilvusVectorStore
 import utils.vector_db_utils as vector_db
-
 from llama_index.llms.llama_cpp import LlamaCPP
 from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
@@ -34,16 +29,16 @@ from llama_index.llms.llama_cpp.llama_utils import (
 )
 from utils.upload import Upload_files
 import torch
-
 import logging
 import sys
 import gradio as gr
-
 import atexit
 
+
 def exit_handler():
-    print('cmlllmapp is exiting!')
+    print("cmlllmapp is exiting!")
     vector_db.stop_milvus()
+
 
 atexit.register(exit_handler)
 
@@ -58,11 +53,12 @@ MODELS_PATH = "./models"
 EMBEDSS_PATH = "./embed_models"
 
 model_path = hf_hub_download(
-    repo_id= "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
+    repo_id="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
     filename="mistral-7b-instruct-v0.2.Q5_K_M.gguf",
     resume_download=True,
     cache_dir=MODELS_PATH,
-    local_files_only= True)
+    local_files_only=True,
+)
 
 embed_model = "thenlper/gte-large"
 
@@ -70,7 +66,7 @@ n_gpu_layers = -1
 if torch.cuda.is_available():
     n_gpu_layers = 1
 
-Settings.llm =LlamaCPP(
+Settings.llm = LlamaCPP(
     model_path=model_path,
     temperature=0.0,
     max_new_tokens=256,
@@ -96,7 +92,7 @@ Settings.callback_manager = callback_manager
 
 node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
 Settings.node_parser = node_parser
-    
+
 melvus_start = vector_db.start_milvus()
 print(f"melvus_start = {melvus_start}")
 
@@ -105,15 +101,20 @@ vector_store = MilvusVectorStore(dim=1024, collection_name="cml_rag_collection")
 index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
 postprocessor = SentenceEmbeddingOptimizer(
-        percentile_cutoff=0.5,
-        threshold_cutoff=0.7,
-    )
+    percentile_cutoff=0.5,
+    threshold_cutoff=0.7,
+)
 
-chat_engine=index.as_chat_engine(chat_mode=ChatMode.CONTEXT, verbose=True, postprocessor=[postprocessor, DuplicateRemoverNodePostprocessor()])
+chat_engine = index.as_chat_engine(
+    chat_mode=ChatMode.CONTEXT,
+    verbose=True,
+    postprocessor=[postprocessor, DuplicateRemoverNodePostprocessor()],
+)
+
 
 def Infer(query, history):
     print(f"Albin : query = {query}")
-    
+
     query_text = ""
     if isinstance(query, dict) and query["text"]:
         query_text = query["text"]
@@ -121,37 +122,54 @@ def Infer(query, history):
         query_text = query
     else:
         return ""
-    
+
     if len(query_text) == 0:
         return "Please ask some questions"
-    
-    streaming_response=chat_engine.stream_chat(query_text)
-    generated_text=""
+
+    streaming_response = chat_engine.stream_chat(query_text)
+    generated_text = ""
     for token in streaming_response.response_gen:
-        generated_text=generated_text+token
+        generated_text = generated_text + token
         yield generated_text
 
+
 def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
-    file_extractor={'.html': UnstructuredReader(), '.pdf': UnstructuredReader(), '.txt': UnstructuredReader()}
+    file_extractor = {
+        ".html": UnstructuredReader(),
+        ".pdf": UnstructuredReader(),
+        ".txt": UnstructuredReader(),
+    }
 
     if torch.cuda.is_available():
-        file_extractor['.pdf'] = PDFNougatOCR()
+        file_extractor[".pdf"] = PDFNougatOCR()
 
     progress(0.3, desc="loading the document reader...")
 
-    reader = SimpleDirectoryReader(input_dir="./assets/doc_list", recursive=True, file_extractor={'.html': UnstructuredReader(), '.pdf': UnstructuredReader(), '.txt': UnstructuredReader()})
+    reader = SimpleDirectoryReader(
+        input_dir="./assets/doc_list",
+        recursive=True,
+        file_extractor={
+            ".html": UnstructuredReader(),
+            ".pdf": UnstructuredReader(),
+            ".txt": UnstructuredReader(),
+        },
+    )
     documents = reader.load_data(num_workers=16, show_progress=True)
 
     progress(0.4, desc="done loading the document reader...")
-    
-    vector_store = MilvusVectorStore(dim=1024, overwrite=True, collection_name="cml_rag_collection")
+
+    vector_store = MilvusVectorStore(
+        dim=1024, overwrite=True, collection_name="cml_rag_collection"
+    )
 
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     progress(0.45, desc="done starting the vector db and set the storage context...")
 
     start_time = time.time()
     progress(0.5, desc="start indexing the document...")
-    index = VectorStoreIndex.from_documents(documents=documents, storage_context=storage_context, show_progress=True)
+    index = VectorStoreIndex.from_documents(
+        documents=documents, storage_context=storage_context, show_progress=True
+    )
 
     op = "Completed data ingestion. took " + str(time.time() - start_time) + " seconds."
 
@@ -162,9 +180,13 @@ def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
     progress(0.7, desc="start dataset generation from the document...")
     data_generator = DatasetGenerator.from_documents(documents)
 
-    dataset_op = "Completed data set generation. took " + str(time.time() - start_time) + " seconds."
+    dataset_op = (
+        "Completed data set generation. took "
+        + str(time.time() - start_time)
+        + " seconds."
+    )
     op += "\n" + dataset_op
-    
+
     progress(0.75, desc=dataset_op)
     progress(0.8, desc="start generating questions from the document...")
     eval_questions = data_generator.generate_questions_from_nodes(num=5)
@@ -172,7 +194,7 @@ def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
     i = 1
     for q in eval_questions:
         op += "\nQuestion " + str(i) + " - " + str(q) + "."
-        i+=1
+        i += 1
 
     write_list_to_file(eval_questions, "questions.txt")
     progress(0.9, desc="done generating questions from the document...")
@@ -183,17 +205,21 @@ def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
 
     return op
 
+
 def write_list_to_file(lst, filename):
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         for item in lst:
-            f.write(str(item) + '\n')
+            f.write(str(item) + "\n")
+
 
 def upload_document_and_ingest(files, progress=gr.Progress()):
     Upload_files(files, progress)
     return Ingest(False, progress)
 
+
 def clear_chat_engine():
     chat_engine.reset()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     Ingest(True)
