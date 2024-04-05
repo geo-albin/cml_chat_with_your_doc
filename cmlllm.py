@@ -6,8 +6,6 @@ from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.readers.file import UnstructuredReader
 from llama_index.readers.nougat_ocr import PDFNougatOCR
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-from llama_index.llms.huggingface import HuggingFaceLLM
-
 from llama_index.vector_stores.milvus import MilvusVectorStore
 from huggingface_hub import hf_hub_download
 import time
@@ -28,8 +26,7 @@ from duplicate_preprocessing import DuplicateRemoverNodePostprocessor
 
 from llama_index.vector_stores.milvus import MilvusVectorStore
 import utils.vector_db_utils as vector_db
-from llama_index.core import PromptTemplate
-from huggingface_hub import hf_hub_download
+
 from llama_index.llms.llama_cpp import LlamaCPP
 from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
@@ -52,6 +49,7 @@ callback_manager = CallbackManager(handlers=[llama_debug])
 
 
 MODELS_PATH = "./models"
+EMBEDSS_PATH = "./embed_models"
 
 model_path = hf_hub_download(
     repo_id= "TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
@@ -61,12 +59,6 @@ model_path = hf_hub_download(
     local_files_only= True)
 
 embed_model = "thenlper/gte-large"
-
-embed_model_path = hf_hub_download(
-    repo_id= embed_model,
-    resume_download=True,
-    cache_dir=MODELS_PATH,
-    local_files_only= True)
 
 n_gpu_layers = -1
 if torch.cuda.is_available():
@@ -90,7 +82,8 @@ Settings.llm =LlamaCPP(
 )
 
 Settings.embed_model = HuggingFaceEmbedding(
-    model_name=embed_model_path,
+    model=embed_model,
+    cache_folder=EMBEDSS_PATH,
 )
 
 Settings.callback_manager = callback_manager
