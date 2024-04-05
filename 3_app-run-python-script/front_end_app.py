@@ -20,9 +20,13 @@ def read_list_from_file_button(filename="questions.txt"):
     buttons = []
     for i in range(MAX_QUESTIONS):
         if len(lst[i]) != 0:
-            buttons.append(gr.Button(visible=True, value=lst[i]))
+            buttons.append(
+                gr.Label(visible=True, value=lst[i], container=True, color="#faf4e3")
+            )
         else:
-            buttons.append(gr.Button(visible=False, value=""))
+            buttons.append(
+                gr.Label(visible=False, value="", container=True, color="#ffffff")
+            )
 
     return buttons[0], buttons[1], buttons[2], buttons[3], buttons[4]
 
@@ -56,11 +60,12 @@ question_reload_btn = gr.Button("Get some suggestions")
 #     autoscroll=True,
 # )
 
-button0 = gr.Button()
-button1 = gr.Button()
-button2 = gr.Button()
-button3 = gr.Button()
-button4 = gr.Button()
+button0, button1, button2, button3, button4 = read_list_from_file_button()
+
+
+def get_value(button):
+    return button.value
+
 
 # chat = gr.Blocks()
 # with chat:
@@ -93,7 +98,7 @@ infer = gr.ChatInterface(
         question_reload_btn,
     ],
     additional_inputs_accordion=gr.Accordion(
-        label="Some possible questions", open=False
+        label="Some possible questions", open=True
     ),
 )
 
@@ -103,6 +108,11 @@ with infer:
         inputs=None,
         outputs=[button0, button1, button2, button3, button4],
     )
+    button0.select(get_value, None, infer.textbox)
+    button1.select(get_value, None, infer.textbox)
+    button2.select(get_value, None, infer.textbox)
+    button3.select(get_value, None, infer.textbox)
+    button4.select(get_value, None, infer.textbox)
 
 upload = gr.Blocks()
 with upload:
