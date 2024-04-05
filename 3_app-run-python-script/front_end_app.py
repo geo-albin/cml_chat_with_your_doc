@@ -113,14 +113,14 @@ with chat2:
         inputs=[msg, chatbot2],
         outputs=[msg, chatbot2],
         queue=False,
-    ).then(Infer2, inputs=chatbot2, outputs=chatbot2)
+    ).then(Infer2, inputs=chatbot2, outputs=chatbot2, queue=False)
 
     submit_btn.click(
         user,
         inputs=[msg, chatbot2],
         outputs=[msg, chatbot2],
         queue=False,
-    ).then(Infer2, inputs=chatbot2, outputs=chatbot2)
+    ).then(Infer2, inputs=chatbot2, outputs=chatbot2, queue=False)
 
     clear_btn.click(
         lambda: [None],
