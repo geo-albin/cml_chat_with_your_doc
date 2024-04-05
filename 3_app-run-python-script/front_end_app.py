@@ -7,10 +7,10 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 import gradio as gr
 
-from cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
+from utils.cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
 
 
-from . import vectordb
+from utils.vectordb import vectordb
 import os
 
 def read_list_from_file(filename)->list:

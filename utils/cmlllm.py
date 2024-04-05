@@ -1,8 +1,4 @@
-import sys
 import os
-
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 from llama_index.core import SimpleDirectoryReader, Settings
 from llama_index.core.node_parser import SimpleNodeParser
@@ -26,7 +22,7 @@ from llama_index.core.callbacks import LlamaDebugHandler, CallbackManager
 from llama_index.core.chat_engine.types import ChatMode
 from llama_index.core.postprocessor import SentenceEmbeddingOptimizer
 
-from duplicate_preprocessing import DuplicateRemoverNodePostprocessor
+from utils.duplicate_preprocessing import DuplicateRemoverNodePostprocessor
 
 from llama_index.vector_stores.milvus import MilvusVectorStore
 import utils.vector_db_utils as vector_db
@@ -36,7 +32,7 @@ from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
     completion_to_prompt,
 )
-from upload import Upload_files
+from utils.upload import Upload_files
 import torch
 
 import logging
