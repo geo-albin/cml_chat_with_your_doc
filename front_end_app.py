@@ -125,8 +125,7 @@ file_types=["pdf", "html", "txt"]
 #     else:
 #         demo.launch(debug=True)
 
-questions_state = gr.State()
-questions_state = questions
+questions_state = gr.State(questions)
 infer = gr.ChatInterface(
     fn=Infer, 
     examples=questions_state, 
