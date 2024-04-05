@@ -56,7 +56,6 @@ file_types = ["pdf", "html", "txt"]
 
 submit_btn = gr.Button("Submit")
 
-question_reload_btn = gr.ClearButton("Update suggestions")
 
 # questions_text = gr.Textbox(
 #     value=read_list_from_file_string,
@@ -95,26 +94,24 @@ infer = gr.ChatInterface(
     chatbot=bot,
     multimodal=False,
     submit_btn=submit_btn,
-    additional_inputs=[
-        question_reload_btn,
-    ],
-    additional_inputs_accordion=gr.Accordion(
-        label="Some possible questions", open=True
-    ),
 )
 
 with infer:
-    # question_reload_btn.click(
-    #     read_list_from_file_button,
-    #     inputs=None,
-    #     outputs=[button0, button1, button2, button3, button4],
-    # )
-    # button0.click(get_value, None, infer.textbox)
-    # button1.click(get_value, None, infer.textbox)
-    # button2.click(get_value, None, infer.textbox)
-    # button3.click(get_value, None, infer.textbox)
-    # button4.click(get_value, None, infer.textbox)
-    question_reload_btn.click(read_list_from_file, inputs=None, outputs=infer.examples)
+    with gr.Row():
+        # question_reload_btn.click(
+        #     read_list_from_file_button,
+        #     inputs=None,
+        #     outputs=[button0, button1, button2, button3, button4],
+        # )
+        # button0.click(get_value, None, infer.textbox)
+        # button1.click(get_value, None, infer.textbox)
+        # button2.click(get_value, None, infer.textbox)
+        # button3.click(get_value, None, infer.textbox)
+        # button4.click(get_value, None, infer.textbox)
+        question_reload_btn = gr.ClearButton("Update suggestions")
+        question_reload_btn.click(
+            read_list_from_file, inputs=None, outputs=infer.examples
+        )
 
 upload = gr.Blocks()
 with upload:
