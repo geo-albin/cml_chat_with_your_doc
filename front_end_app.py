@@ -8,9 +8,10 @@ import os
 
 def read_list_from_file(filename):
     lst = []
-    with open(filename, 'r') as f:
-        for line in f:
-            lst.append(line.strip())  # Remove newline characters
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            for line in f:
+                lst.append(line.strip())  # Remove newline characters
     return lst
 
 questions = read_list_from_file("questions.txt")
