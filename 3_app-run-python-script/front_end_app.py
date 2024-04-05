@@ -60,7 +60,8 @@ infer = gr.ChatInterface(
     ),
 )
 
-question_reload_btn.click(read_list_from_file, inputs=None, outputs=questions_text)
+with infer:
+    question_reload_btn.click(read_list_from_file, inputs=None, outputs=questions_text)
 
 upload = gr.Blocks()
 with upload:
