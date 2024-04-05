@@ -9,7 +9,6 @@ from llama_index.vector_stores.milvus import MilvusVectorStore
 from huggingface_hub import hf_hub_download
 import time
 import torch
-import utils.vector_db_utils as vector_db
 from llama_index.llms.llama_cpp import LlamaCPP
 from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
@@ -21,7 +20,6 @@ from llama_index.core.chat_engine.types import ChatMode
 from llama_index.core.postprocessor import SentenceEmbeddingOptimizer
 from utils.duplicate_preprocessing import DuplicateRemoverNodePostprocessor
 from llama_index.vector_stores.milvus import MilvusVectorStore
-import utils.vector_db_utils as vector_db
 from llama_index.llms.llama_cpp import LlamaCPP
 from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
@@ -33,17 +31,18 @@ import logging
 import sys
 import gradio as gr
 import atexit
+import utils.vectordb as vectordb
 
 
 def exit_handler():
     print("cmlllmapp is exiting!")
-    vector_db.stop_milvus()
+    vectordb.stop_vector_db()
 
 
 atexit.register(exit_handler)
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+# logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+# logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 llama_debug = LlamaDebugHandler(print_trace_on_end=True)
 callback_manager = CallbackManager(handlers=[llama_debug])
@@ -93,10 +92,14 @@ Settings.callback_manager = callback_manager
 node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
 Settings.node_parser = node_parser
 
-melvus_start = vector_db.start_milvus()
+melvus_start = vectordb.reset_vector_db()
 print(f"melvus_start = {melvus_start}")
+collection = vectordb.create_vector_db_collection()
+print(f"melvus collection created = {collection}")
 
-vector_store = MilvusVectorStore(dim=1024, collection_name="cml_rag_collection")
+vector_store = MilvusVectorStore(
+    dim=1024, overwrite=True, collection_name="cml_rag_collection"
+)
 
 index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
@@ -213,7 +216,7 @@ def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
     progress(0.9, desc="done generating questions from the document...")
 
     if ingest_via_cml_job:
-        melvus_stop = vector_db.stop_milvus()
+        melvus_stop = vectordb.stop_vector_db()
         print(f"melvus_stop = {melvus_stop}")
 
     return op
