@@ -1,4 +1,9 @@
+import sys
 import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
 from llama_index.core import SimpleDirectoryReader, Settings
 from llama_index.core.node_parser import SimpleNodeParser
 from llama_index.core import VectorStoreIndex, StorageContext
@@ -31,7 +36,7 @@ from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
     completion_to_prompt,
 )
-from .upload import Upload_files
+from upload import Upload_files
 import torch
 
 import logging

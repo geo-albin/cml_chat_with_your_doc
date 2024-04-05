@@ -1,6 +1,13 @@
+
+import sys
+import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
 import gradio as gr
 
-from .cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
+from cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
 
 
 from . import vectordb
