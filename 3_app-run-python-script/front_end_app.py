@@ -1,9 +1,9 @@
 import gradio as gr
 
-from cmlllm import upload_document_and_ingest, clear_chat_engine
-from cmlllm import Infer
+from .cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
 
-import vectordb as vectordb
+
+from . import vectordb
 import os
 
 def read_list_from_file(filename)->list:

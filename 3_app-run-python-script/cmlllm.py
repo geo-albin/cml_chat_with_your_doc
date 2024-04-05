@@ -31,7 +31,7 @@ from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
     completion_to_prompt,
 )
-from upload import Upload_files
+from .upload import Upload_files
 import torch
 
 import logging
