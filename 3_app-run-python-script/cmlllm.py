@@ -138,7 +138,7 @@ def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
 
     progress(0.3, desc="loading the document reader...")
 
-    reader = SimpleDirectoryReader(input_dir="./doc_list", recursive=True, file_extractor={'.html': UnstructuredReader(), '.pdf': UnstructuredReader(), '.txt': UnstructuredReader()})
+    reader = SimpleDirectoryReader(input_dir="./assets/doc_list", recursive=True, file_extractor={'.html': UnstructuredReader(), '.pdf': UnstructuredReader(), '.txt': UnstructuredReader()})
     documents = reader.load_data(num_workers=16, show_progress=True)
 
     progress(0.4, desc="done loading the document reader...")

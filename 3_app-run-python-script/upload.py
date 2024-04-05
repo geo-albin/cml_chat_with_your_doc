@@ -8,7 +8,7 @@ def Upload_files(files, progress=gr.Progress()):
     for file in files:
         print(f"uploading the file {file}")
         file_suffix = file.name.split('.')[-1]
-        file_path = "./doc_list"
+        file_path = "./assets/doc_list"
         if str(file_suffix).lower() == "pdf":
             file_path = os.path.join(file_path, "pdf_files")
         elif str(file_suffix).lower() == "html":
