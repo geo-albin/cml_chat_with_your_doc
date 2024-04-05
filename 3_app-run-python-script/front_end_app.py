@@ -89,29 +89,39 @@ bot = gr.Chatbot(height=700)
 #         bt.change(read_list_from_file, inputs=["questions.txt"], outputs=[out])
 infer = gr.ChatInterface(
     fn=Infer,
-    examples=questions,
     title="CML chat Bot - v2",
     chatbot=bot,
     multimodal=False,
     submit_btn=submit_btn,
 )
 
-with infer:
+# with infer:
+#     with gr.Row():
+#         # question_reload_btn.click(
+#         #     read_list_from_file_button,
+#         #     inputs=None,
+#         #     outputs=[button0, button1, button2, button3, button4],
+#         # )
+#         # button0.click(get_value, None, infer.textbox)
+#         # button1.click(get_value, None, infer.textbox)
+#         # button2.click(get_value, None, infer.textbox)
+#         # button3.click(get_value, None, infer.textbox)
+#         # button4.click(get_value, None, infer.textbox)
+#         question_reload_btn = gr.Button("Update suggestions")
+#         question_reload_btn.click(
+#             read_list_from_file, inputs=None, outputs=infer.examples
+#         )
+
+examples = gr.Blocks()
+with examples:
     with gr.Row():
-        # question_reload_btn.click(
-        #     read_list_from_file_button,
-        #     inputs=None,
-        #     outputs=[button0, button1, button2, button3, button4],
-        # )
-        # button0.click(get_value, None, infer.textbox)
-        # button1.click(get_value, None, infer.textbox)
-        # button2.click(get_value, None, infer.textbox)
-        # button3.click(get_value, None, infer.textbox)
-        # button4.click(get_value, None, infer.textbox)
-        question_reload_btn = gr.ClearButton("Update suggestions")
+        examples = gr.Examples(examples=questions, inputs=None)
+    with gr.Row():
+        question_reload_btn = gr.Button("Update suggestions")
         question_reload_btn.click(
-            read_list_from_file, inputs=None, outputs=infer.examples
+            read_list_from_file, inputs=None, outputs=examples.examples
         )
+
 
 upload = gr.Blocks()
 with upload:
@@ -140,10 +150,11 @@ with admin:
         clean_up_docs.click(delete_docs, inputs=None, outputs=admin_progress)
 
 demo = gr.TabbedInterface(
-    interface_list=[upload, infer, admin],
+    interface_list=[upload, infer, examples, admin],
     tab_names=[
         "Step 1 - Document pre-processing",
         "Step 2 - Conversation with chatbot",
+        "Sample questions for this dataset",
         "Admin tab",
     ],
     title="CML Chat application - v2",
