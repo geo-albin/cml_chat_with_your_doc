@@ -82,7 +82,7 @@ Settings.llm =LlamaCPP(
 )
 
 Settings.embed_model = HuggingFaceEmbedding(
-    model=embed_model,
+    model_name=embed_model,
     cache_folder=EMBEDSS_PATH,
 )
 
