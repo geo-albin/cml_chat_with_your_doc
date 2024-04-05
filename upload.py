@@ -1,7 +1,10 @@
 import os
+import shutil
+import gradio as gr
 
-def Upload_files(files):
+def Upload_files(files, progress=gr.Progress()):
     op = ""
+    progress(0.1, desc="Uploading the files...")
     for file in files:
         print(f"uploading the file {file}")
         file_suffix = file.name.split('.')[-1]
@@ -19,10 +22,10 @@ def Upload_files(files):
         os.makedirs(file_path, exist_ok=True)  # Create directory if it doesn't exist
         file_path = os.path.join(file_path, os.path.basename(file.name))
         copy_file(file.name, file_path)
-    print(f"successfully copied {len(files)} files")
+    op = f"successfully copied {len(files)} files"
+    print(op)
+    progress(0.2, desc=op)
 
-
-import shutil
 
 def copy_file(source_file, destination_file):
     print(f"copying {source_file} to {destination_file}")
