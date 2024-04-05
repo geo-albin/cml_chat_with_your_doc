@@ -112,7 +112,7 @@ def demo():
         #     inputs=None, \
         #     outputs=None, \
         #     queue=False)
-    demo.queue()
+    # demo.queue()
 
     if "CML" in os.environ and os.environ["CML"] == "yes": 
         demo.launch(show_error=True,
