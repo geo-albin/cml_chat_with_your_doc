@@ -34,22 +34,6 @@ infer = gr.ChatInterface(
         submit_btn=submit_btn,
         )
 
-def set_upload_in_progess():
-    submit_btn.interactive = False
-    submit_btn.value = "File upload in progress"
-    print("Albin : set_upload_in_progess")
-    infer.render()
-    
-def clear_upload_in_progess():
-    submit_btn.interactive=True
-    submit_btn.value = "Submit" 
-    print("Albin : clear_upload_in_progess")
-    infer.render()
-
-def upload_document_and_ingest_local(upload_button):
-    set_upload_in_progess()
-    upload_document_and_ingest(upload_button)
-
 upload = gr.Blocks()
 with upload:
     with gr.Row():
@@ -58,7 +42,7 @@ with upload:
         db_progress = gr.Textbox(label="Document processing status", value="None")
     with gr.Row():
         upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")     
-        upload_button.upload(upload_document_and_ingest_local, inputs=[upload_button], outputs=[db_progress, questions_state]).then(clear_upload_in_progess, None, None)
+        upload_button.upload(upload_document_and_ingest, inputs=[upload_button], outputs=[db_progress, questions_state])
     
 
 
