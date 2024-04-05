@@ -101,8 +101,7 @@ def demo():
             infer = gr.ChatInterface(
                 fn=Infer, 
                 examples=questions_state, 
-                title="CML chat Bot", 
-                queue=False)
+                title="CML chat Bot")
             
         doc_btn.click(upload_document_and_ingest, \
             inputs=[documents], \
@@ -112,7 +111,7 @@ def demo():
         #     inputs=None, \
         #     outputs=None, \
         #     queue=False)
-    # demo.queue()
+    demo.queue()
 
     if "CML" in os.environ and os.environ["CML"] == "yes": 
         demo.launch(show_error=True,
