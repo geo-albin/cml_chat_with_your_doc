@@ -67,8 +67,6 @@ def get_value(button):
     return button.value
 
 
-bot = gr.Chatbot(height=700)
-
 # chat = gr.Blocks()
 # with chat:
 #     with gr.Row():
@@ -86,13 +84,14 @@ bot = gr.Chatbot(height=700)
 #         bt.change(read_list_from_file, inputs=["questions.txt"], outputs=[out])
 
 
-# infer = gr.ChatInterface(
-#     fn=Infer,
-#     title="CML chat Bot - v2",
-#     chatbot=bot,
-#     multimodal=False,
-#     submit_btn=submit_btn,
-# )
+infer = gr.ChatInterface(
+    fn=Infer,
+    title="CML chat Bot - v2",
+    examples=questions,
+    chatbot=gr.Chatbot(height=700),
+    multimodal=False,
+    submit_btn=submit_btn,
+)
 
 
 def user(user_message, history):
@@ -101,7 +100,7 @@ def user(user_message, history):
 
 chat2 = gr.Blocks()
 with chat2:
-    chatbot2 = gr.Chatbot(height=300)
+    chatbot2 = gr.Chatbot(height=700)
     with gr.Row():
         msg = gr.Textbox(placeholder="Type message", container=True)
     with gr.Row():
@@ -180,10 +179,11 @@ with admin:
         clean_up_docs.click(delete_docs, inputs=None, outputs=admin_progress)
 
 demo = gr.TabbedInterface(
-    interface_list=[upload, chat2, admin],
+    interface_list=[upload, chat2, infer, admin],
     tab_names=[
         "Step 1 - Document pre-processing",
         "Step 2 - Conversation with chatbot",
+        "Built-in chat bot",
         "Admin tab",
     ],
     title="CML Chat application - v2",
