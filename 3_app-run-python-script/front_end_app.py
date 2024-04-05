@@ -29,17 +29,30 @@ submit_btn = gr.Button("Submit")
 
 question_reload_btn = gr.Button("Refresh examples")
 
-infer = gr.ChatInterface(
-    fn=Infer,
-    examples=questions,
-    title="CML chat Bot - v2",
-    chatbot=gr.Chatbot(height=700),
-    multimodal=False,
-    submit_btn=submit_btn,
-    additional_inputs=[question_reload_btn],
-    additional_inputs_accordion="additional options",
-)
-# question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[questions])
+chat = gr.Blocks()
+with chat:
+    with gr.Row():
+        infer = gr.ChatInterface(
+            fn=Infer,
+            examples=questions,
+            title="CML chat Bot - v2",
+            chatbot=gr.Chatbot(height=700),
+            multimodal=False,
+            submit_btn=submit_btn,
+            additional_inputs=[question_reload_btn],
+            additional_inputs_accordion="additional options",
+        )
+        # question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[questions])
+    with gr.Row():
+        gr.Markdown(
+            """
+        # Hey!!
+        Click the button to get some good questions for the uploaded document!!.
+        """
+        )
+        bt = gr.Button("Get questions")
+        out = gr.Textbox()
+        bt.change(read_list_from_file, inputs=["questions.txt"], outputs=[out])
 
 upload = gr.Blocks()
 with upload:
@@ -58,7 +71,7 @@ with upload:
             "Click to Upload a File", file_types=file_types, file_count="multiple"
         )
         upload_button.upload(
-            upload_document_and_ingest, inputs=[upload_button], outputs=[db_progress]
+            upload_document_and_ingest, inputs=[documents], outputs=[db_progress]
         )
 
 admin = gr.Blocks()
@@ -70,7 +83,7 @@ with admin:
         clean_up_docs.click()
 
 demo = gr.TabbedInterface(
-    interface_list=[upload, infer, admin],
+    interface_list=[upload, chat, admin],
     tab_names=[
         "Step 1 - Document pre-processing",
         "Step 2 - Conversation with chatbot",
