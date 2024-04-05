@@ -64,67 +64,98 @@ file_types=["pdf", "html", "txt"]
 #     demo.launch(debug=True)
 
 
-def demo():
-    with gr.Blocks(theme="base") as demo:
-        questions_state = gr.State()
-        questions_state = questions
-        gr.Markdown(
-        """<center><h2>CML - Chatbot v2</center></h2>""")
-        with gr.Tab("Step 1 - Document pre-processing"):
-            with gr.Row():
-                documents = gr.Files(height=100, file_count="multiple", file_types=file_types, interactive=True, label="Upload your pdf, html or text documents (single or multiple)")
-            with gr.Row():
-                db_progress = gr.Textbox(label="Document processing status", value="None")
-            with gr.Row():
-                # doc_btn = gr.Button("Process the documents")
-                # doc_btn.click(upload_document_and_ingest, \
-                #     inputs=[documents], \
-                #     outputs=[questions_state, db_progress])
-                upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")
+# def demo():
+#     with gr.Blocks(theme="base") as demo:
+#         questions_state = gr.State()
+#         questions_state = questions
+#         gr.Markdown(
+#         """<center><h2>CML - Chatbot v2</center></h2>""")
+#         with gr.Tab("Step 1 - Document pre-processing"):
+#             with gr.Row():
+#                 documents = gr.Files(height=100, file_count="multiple", file_types=file_types, interactive=True, label="Upload your pdf, html or text documents (single or multiple)")
+#             with gr.Row():
+#                 db_progress = gr.Textbox(label="Document processing status", value="None")
+#             with gr.Row():
+#                 # doc_btn = gr.Button("Process the documents")
+#                 # doc_btn.click(upload_document_and_ingest, \
+#                 #     inputs=[documents], \
+#                 #     outputs=[questions_state, db_progress])
+#                 upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")
             
-        # with gr.Tab("Step 2 - QA chain initialization"):
-        #     with gr.Row():
-        #         llm_btn = gr.Radio(list_llm_simple, \
-        #             label="LLM models", value = list_llm_simple[0], type="index", info="Choose your LLM model")
-        #     with gr.Accordion("Advanced options - LLM model", open=False):
-        #         with gr.Row():
-        #             slider_temperature = gr.Slider(minimum = 0.0, maximum = 1.0, value=0.7, step=0.1, label="Temperature", info="Model temperature", interactive=True)
-        #         with gr.Row():
-        #             slider_maxtokens = gr.Slider(minimum = 224, maximum = 4096, value=1024, step=32, label="Max Tokens", info="Model max tokens", interactive=True)
-        #         with gr.Row():
-        #             slider_topk = gr.Slider(minimum = 1, maximum = 10, value=3, step=1, label="top-k samples", info="Model top-k samples", interactive=True)
-        #     with gr.Row():
-        #         llm_progress = gr.Textbox(value="None",label="QA chain initialization")
-        #     with gr.Row():
-        #         qachain_btn = gr.Button("Initialize question-answering chain...")
+#         # with gr.Tab("Step 2 - QA chain initialization"):
+#         #     with gr.Row():
+#         #         llm_btn = gr.Radio(list_llm_simple, \
+#         #             label="LLM models", value = list_llm_simple[0], type="index", info="Choose your LLM model")
+#         #     with gr.Accordion("Advanced options - LLM model", open=False):
+#         #         with gr.Row():
+#         #             slider_temperature = gr.Slider(minimum = 0.0, maximum = 1.0, value=0.7, step=0.1, label="Temperature", info="Model temperature", interactive=True)
+#         #         with gr.Row():
+#         #             slider_maxtokens = gr.Slider(minimum = 224, maximum = 4096, value=1024, step=32, label="Max Tokens", info="Model max tokens", interactive=True)
+#         #         with gr.Row():
+#         #             slider_topk = gr.Slider(minimum = 1, maximum = 10, value=3, step=1, label="top-k samples", info="Model top-k samples", interactive=True)
+#         #     with gr.Row():
+#         #         llm_progress = gr.Textbox(value="None",label="QA chain initialization")
+#         #     with gr.Row():
+#         #         qachain_btn = gr.Button("Initialize question-answering chain...")
 
-        with gr.Tab("Step 2 - Conversation with chatbot"):
-            # clear_btn=gr.ClearButton("🗑️  Clear")
-            # bot = gr.Chatbot(render=False, height=300)
-            # clear_btn.add(bot)
-            infer = gr.ChatInterface(
-                fn=Infer, 
-                examples=questions_state, 
-                title="CML chat Bot")
+#         with gr.Tab("Step 2 - Conversation with chatbot"):
+#             # clear_btn=gr.ClearButton("🗑️  Clear")
+#             # bot = gr.Chatbot(render=False, height=300)
+#             # clear_btn.add(bot)
+#             infer = gr.ChatInterface(
+#                 fn=Infer, 
+#                 examples=questions_state, 
+#                 title="CML chat Bot")
         
-        upload_button.upload(upload_document_and_ingest, 
-                            inputs=[documents], 
-                            outputs=[questions_state, db_progress])
-        # Chatbot events
-        # clear_btn.click(clear_chat_engine, \
-        #     inputs=None, \
-        #     outputs=None, \
-        #     queue=False)
-    demo.queue()
+#         upload_button.upload(upload_document_and_ingest, 
+#                             inputs=[documents], 
+#                             outputs=[questions_state, db_progress])
+#         # Chatbot events
+#         # clear_btn.click(clear_chat_engine, \
+#         #     inputs=None, \
+#         #     outputs=None, \
+#         #     queue=False)
+#     demo.queue()
 
-    if "CML" in os.environ and os.environ["CML"] == "yes": 
-        demo.launch(show_error=True,
-                    debug=True,
-                    server_name='127.0.0.1',
-                    server_port=int(os.getenv('CDSW_APP_PORT')))
-    else:
-        demo.launch(debug=True)
+#     if "CML" in os.environ and os.environ["CML"] == "yes": 
+#         demo.launch(show_error=True,
+#                     debug=True,
+#                     server_name='127.0.0.1',
+#                     server_port=int(os.getenv('CDSW_APP_PORT')))
+#     else:
+#         demo.launch(debug=True)
+
+questions_state = gr.State()
+questions_state = questions
+infer = gr.ChatInterface(
+    fn=Infer, 
+    examples=questions_state, 
+        title="CML chat Bot", 
+        chatbot=gr.Chatbot(height=700),
+        multimodal=False
+        )
+
+upload = gr.Blocks()
+with upload:
+    with gr.Row():
+        documents = gr.Files(height=100, file_count="multiple", file_types=file_types, interactive=True, label="Upload your pdf, html or text documents (single or multiple)")
+    with gr.Row():
+        db_progress = gr.Textbox(label="Document processing status", value="None")
+    with gr.Row():
+        upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")
+        upload_button.upload(upload_document_and_ingest, inputs=[upload_button], outputs=[db_progress, questions_state])
 
 
-if __name__ == "__main__":
-    demo()
+demo = gr.TabbedInterface(theme="base",
+                interface_list=[upload, infer], 
+                tab_names=["Step 1 - Document pre-processing", "Step 2 - Conversation with chatbot"],
+                title="CML Chat application - v2")
+
+if "CML" in os.environ and os.environ["CML"] == "yes": 
+    demo.launch(show_error=True,
+                debug=True,
+                server_name='127.0.0.1',
+                server_port=int(os.getenv('CDSW_APP_PORT')))
+else:
+    demo.launch(debug=True)
+
