@@ -46,7 +46,7 @@ question_reload_btn = gr.Button("Refresh examples")
 #         bt.change(read_list_from_file, inputs=["questions.txt"], outputs=[out])
 infer = gr.ChatInterface(
     fn=Infer,
-    examples=questions,
+    # examples=questions,
     title="CML chat Bot - v2",
     chatbot=gr.Chatbot(height=700),
     multimodal=False,
