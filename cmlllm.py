@@ -121,6 +121,9 @@ def Infer(query, history):
     else:
         return ""
     
+    if len(query_text) == 0:
+        return "Please ask some questions"
+    
     streaming_response=chat_engine.stream_chat(query_text)
     generated_text=""
     for token in streaming_response.response_gen:
@@ -163,7 +166,7 @@ def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
     
     progress(0.75, desc=dataset_op)
     progress(0.8, desc="start generating questions from the document...")
-    eval_questions = data_generator.generate_questions_from_nodes(num=10)
+    eval_questions = data_generator.generate_questions_from_nodes(num=5)
 
     i = 1
     for q in eval_questions:
