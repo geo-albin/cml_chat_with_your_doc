@@ -17,6 +17,7 @@ def delete_docs(progress=gr.Progress()):
     progress(0.1, desc="deleting server side documents...")
     print(subprocess.run(["rm -rf ./assets/doc_list"], shell=True))
     progress(0.9, desc="done deleting server side documents...")
+    return "done deleting server side documents..."
 
 
 questions = read_list_from_file("questions.txt")
@@ -76,10 +77,10 @@ with upload:
 admin = gr.Blocks()
 with admin:
     with gr.Row():
-        db_progress = gr.Textbox(label="Admin event status", value="None")
+        admin_progress = gr.Textbox(label="Admin event status", value="None")
     with gr.Row():
         clean_up_docs = gr.Button("Click to do file cleanup")
-        clean_up_docs.click()
+        clean_up_docs.click(delete_docs, inputs=None, outputs=admin_progress)
 
 demo = gr.TabbedInterface(
     interface_list=[upload, infer, admin],
