@@ -184,8 +184,8 @@ def write_list_to_file(lst, filename):
         for item in lst:
             f.write(str(item) + '\n')
 
-def upload_document_and_ingest(files, progress=gr.Progress()):
-    Upload_files(files, progress)
+def upload_document_and_ingest(files, state=gr.State([]), progress=gr.Progress()):
+    Upload_files(files, state, progress)
     return Ingest(False, progress)
 
 def clear_chat_engine():

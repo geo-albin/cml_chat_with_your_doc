@@ -125,8 +125,7 @@ file_types=["pdf", "html", "txt"]
 #     else:
 #         demo.launch(debug=True)
 
-questions_state = gr.State([])
-questions_state.value = questions
+questions_state = gr.State(questions)
 infer = gr.ChatInterface(
         fn=Infer, 
         examples=questions_state.value, 
@@ -140,7 +139,7 @@ with upload:
     documents = gr.Files(height=100, file_count="multiple", file_types=file_types, interactive=True, label="Upload your pdf, html or text documents (single or multiple)")
     db_progress = gr.Textbox(label="Document processing status", value="None")
     upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")
-    upload_button.upload(upload_document_and_ingest, inputs=[upload_button], outputs=[db_progress, questions_state.value])
+    upload_button.upload(upload_document_and_ingest, inputs=[upload_button, questions_state], outputs=[db_progress, questions_state])
 
 
 demo = gr.TabbedInterface(theme="base",
