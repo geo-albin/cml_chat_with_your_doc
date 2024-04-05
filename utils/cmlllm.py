@@ -213,6 +213,8 @@ def write_list_to_file(lst, filename):
 
 
 def upload_document_and_ingest(files, progress=gr.Progress()):
+    if len(files) == 0:
+        return "Please add some files..."
     Upload_files(files, progress)
     return Ingest(False, progress)
 
