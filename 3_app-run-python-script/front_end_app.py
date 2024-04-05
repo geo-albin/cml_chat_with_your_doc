@@ -8,7 +8,7 @@ MAX_QUESTIONS = 5
 list_of_string = ["test"]
 
 
-def read_list_from_file(filename="questions.txt") -> list[str]:
+def read_list_from_file(filename="questions.txt"):
     lst = list_of_string
     lst.clear()
     if os.path.exists(filename):
