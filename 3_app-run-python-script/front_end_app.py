@@ -106,6 +106,14 @@ with chat2:
     with gr.Row():
         submit_btn = gr.Button("Submit")
         clear_btn = gr.ClearButton([msg, chatbot2])
+    with gr.Row():
+        example = gr.Examples(
+            examples=questions,
+            inputs=msg,
+            label="Here are some of the sample questions you can ask",
+        )
+    with gr.Row():
+        reload_example = gr.Button("Reload example")
 
     msg.submit(
         user,
@@ -127,6 +135,8 @@ with chat2:
         outputs=[chatbot2],
         queue=False,
     )
+
+    reload_example.click(read_list_from_file, inputs=None, outputs=example.examples)
 
 # with infer:
 #     with gr.Row():
