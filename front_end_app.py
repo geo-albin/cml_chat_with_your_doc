@@ -22,18 +22,18 @@ file_types=["pdf", "html", "txt"]
 
 
 questions_state = gr.State(questions)
-submit_btn = gr.Button("Submit")
+submit_btn = gr.Button("Submit - v2")
 upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")
 
 def set_upload_in_progess():
     submit_btn.interactive = False
     upload_button.label = "Upload in progress"
-    upload_button.interactive = False
+    # upload_button.interactive = False
     print("Albin : set set_upload_in_progess")
 
 def clear_upload_in_progess():
     upload_button.label = "Click to Upload a File"
-    upload_button.interactive = True
+    # upload_button.interactive = True
     submit_btn.interactive=True
     print("Albin : clear_upload_in_progess")
 
