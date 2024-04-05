@@ -86,13 +86,13 @@ bot = gr.Chatbot(height=700)
 #         bt.change(read_list_from_file, inputs=["questions.txt"], outputs=[out])
 
 
-infer = gr.ChatInterface(
-    fn=Infer,
-    title="CML chat Bot - v2",
-    chatbot=bot,
-    multimodal=False,
-    submit_btn=submit_btn,
-)
+# infer = gr.ChatInterface(
+#     fn=Infer,
+#     title="CML chat Bot - v2",
+#     chatbot=bot,
+#     multimodal=False,
+#     submit_btn=submit_btn,
+# )
 
 
 def user(user_message, history):
@@ -180,16 +180,16 @@ with admin:
         clean_up_docs.click(delete_docs, inputs=None, outputs=admin_progress)
 
 demo = gr.TabbedInterface(
-    interface_list=[upload, infer, chat2, admin],
+    interface_list=[upload, chat2, admin],
     tab_names=[
         "Step 1 - Document pre-processing",
         "Step 2 - Conversation with chatbot",
-        "Chat2",
         "Admin tab",
     ],
     title="CML Chat application - v2",
 )
 
+demo.queue()
 
 if "CML" in os.environ and os.environ["CML"] == "yes":
     demo.launch(
