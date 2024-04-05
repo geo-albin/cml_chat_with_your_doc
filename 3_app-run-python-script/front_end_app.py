@@ -40,7 +40,9 @@ with chat:
             multimodal=False,
             submit_btn=submit_btn,
             additional_inputs=[question_reload_btn],
-            additional_inputs_accordion="additional options",
+            additional_inputs_accordion=gr.Accordion(
+                label="Additional Inputs", open=False
+            ),
         )
         # question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[questions])
     with gr.Row():
