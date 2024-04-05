@@ -52,7 +52,7 @@ file_types = ["pdf", "html", "txt"]
 
 submit_btn = gr.Button("Submit")
 
-question_reload_btn = gr.Button("Get some suggestions")
+question_reload_btn = gr.Button("Update suggestions", icon="🔵")
 
 # questions_text = gr.Textbox(
 #     value=read_list_from_file_string,
