@@ -112,6 +112,19 @@ chat_engine = index.as_chat_engine(
 )
 
 
+def Infer2(history):
+    query_text = history[-1][0]
+
+    if len(query_text) == 0:
+        history[-1][1] = "Please ask some questions"
+    else:
+        history[-1][1] = ""
+        streaming_response = chat_engine.stream_chat(query_text)
+        for token in streaming_response.response_gen:
+            history[-1][1] = history[-1][1] + token
+            yield history
+
+
 def Infer(query, history=None):
     print(f"Albin : query = {query}")
 

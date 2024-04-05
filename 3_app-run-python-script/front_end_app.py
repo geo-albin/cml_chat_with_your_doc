@@ -1,7 +1,7 @@
 import os
 import gradio as gr
 import subprocess
-from utils.cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
+from utils.cmlllm import upload_document_and_ingest, clear_chat_engine, Infer, Infer2
 
 MAX_QUESTIONS = 5
 
@@ -94,6 +94,11 @@ infer = gr.ChatInterface(
     submit_btn=submit_btn,
 )
 
+
+def user(user_message, history):
+    return "", history + [[user_message, None]]
+
+
 chat2 = gr.Blocks()
 with chat2:
     chatbot2 = gr.Chatbot(height=300)
@@ -104,17 +109,19 @@ with chat2:
         clear_btn = gr.ClearButton([msg, chatbot2])
 
     msg.submit(
-        Infer,
-        inputs=[msg],
-        outputs=[chatbot2],
+        user,
+        inputs=[msg, chatbot2],
+        outputs=[msg, chatbot2],
         queue=False,
-    )
-    submit_btn.click(
-        Infer,
-        inputs=[msg],
-        outputs=[chatbot2],
+    ).then(Infer2, inputs=chatbot2, outputs=chatbot2)
+
+    submit_btn.submit(
+        user,
+        inputs=[msg, chatbot2],
+        outputs=[msg, chatbot2],
         queue=False,
-    )
+    ).then(Infer2, inputs=chatbot2, outputs=chatbot2)
+
     clear_btn.click(
         lambda: [None],
         inputs=None,
