@@ -9,8 +9,7 @@ list_of_string = ["test"]
 
 
 def read_list_from_file(filename="questions.txt"):
-    lst = list_of_string
-    lst.clear()
+    lst = ["Questions"]
     if os.path.exists(filename):
         with open(filename, "r") as f:
             for line in f:
@@ -49,8 +48,6 @@ def delete_docs(progress=gr.Progress()):
 
 
 questions = read_list_from_file()
-if len(questions) == 0:
-    questions = ["What is CML?", "What is Cloudera?"]
 
 file_types = ["pdf", "html", "txt"]
 
@@ -87,12 +84,19 @@ bot = gr.Chatbot(height=700)
 #         bt = gr.Button("Get questions")
 #         out = gr.Textbox()
 #         bt.change(read_list_from_file, inputs=["questions.txt"], outputs=[out])
+
+dataFrame = gr.DataFrame(questions)
+
+question_reload_btn = gr.Button("Update suggestions")
+question_reload_btn.click(read_list_from_file, inputs=None, outputs=dataFrame)
 infer = gr.ChatInterface(
     fn=Infer,
     title="CML chat Bot - v2",
     chatbot=bot,
     multimodal=False,
     submit_btn=submit_btn,
+    additional_inputs=[dataFrame, question_reload_btn],
+    additional_inputs_accordion=gr.Accordion(label="extra", visible=True),
 )
 
 # with infer:
@@ -112,15 +116,11 @@ infer = gr.ChatInterface(
 #             read_list_from_file, inputs=None, outputs=infer.examples
 #         )
 
-examples = gr.Blocks()
-with examples:
-    with gr.Row():
-        examples = gr.Examples(examples=questions, inputs=None)
-    with gr.Row():
-        question_reload_btn = gr.Button("Update suggestions")
-        question_reload_btn.click(
-            read_list_from_file, inputs=None, outputs=examples.examples
-        )
+# examples = gr.Blocks()
+# with examples:
+#     with gr.Row():
+#         examples = gr.Examples(examples=questions, inputs=None)
+#     with gr.Row():
 
 
 upload = gr.Blocks()
@@ -150,11 +150,10 @@ with admin:
         clean_up_docs.click(delete_docs, inputs=None, outputs=admin_progress)
 
 demo = gr.TabbedInterface(
-    interface_list=[upload, infer, examples, admin],
+    interface_list=[upload, infer, admin],
     tab_names=[
         "Step 1 - Document pre-processing",
         "Step 2 - Conversation with chatbot",
-        "Sample questions for this dataset",
         "Admin tab",
     ],
     title="CML Chat application - v2",
