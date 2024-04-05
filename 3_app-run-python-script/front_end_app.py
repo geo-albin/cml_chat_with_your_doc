@@ -5,9 +5,12 @@ from utils.cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
 
 MAX_QUESTIONS = 5
 
+list_of_string = ["test"]
 
-def read_list_from_file(filename="questions.txt") -> list:
-    lst = []
+
+def read_list_from_file(filename="questions.txt") -> list[str]:
+    lst = list_of_string
+    lst.clear()
     if os.path.exists(filename):
         with open(filename, "r") as f:
             for line in f:
@@ -54,7 +57,6 @@ file_types = ["pdf", "html", "txt"]
 submit_btn = gr.Button("Submit")
 
 question_reload_btn = gr.ClearButton("Update suggestions")
-examples = gr.Examples(fn=read_list_from_file)
 
 # questions_text = gr.Textbox(
 #     value=read_list_from_file_string,
@@ -68,6 +70,8 @@ examples = gr.Examples(fn=read_list_from_file)
 def get_value(button):
     return button.value
 
+
+bot = gr.Chatbot(height=700)
 
 # chat = gr.Blocks()
 # with chat:
@@ -86,9 +90,9 @@ def get_value(button):
 #         bt.change(read_list_from_file, inputs=["questions.txt"], outputs=[out])
 infer = gr.ChatInterface(
     fn=Infer,
-    examples=examples,
+    examples=questions,
     title="CML chat Bot - v2",
-    chatbot=gr.Chatbot(height=700),
+    chatbot=bot,
     multimodal=False,
     submit_btn=submit_btn,
     additional_inputs=[
