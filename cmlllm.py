@@ -180,7 +180,7 @@ def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
         melvus_stop = vector_db.stop_milvus()
         print(f"melvus_stop = {melvus_stop}")
 
-    return op, gr.State(eval_questions)
+    return op
 
 def write_list_to_file(lst, filename):
     with open(filename, 'w') as f:

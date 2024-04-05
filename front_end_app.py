@@ -24,6 +24,7 @@ file_types=["pdf", "html", "txt"]
 questions_state = gr.State(questions)
 submit_btn = gr.Button("Submit")
 
+question_reload_btn = gr.components.Button("Refresh example")
 
 infer = gr.ChatInterface(
         fn=Infer, 
@@ -32,7 +33,9 @@ infer = gr.ChatInterface(
         chatbot=gr.Chatbot(height=700),
         multimodal=False,
         submit_btn=submit_btn,
+        additional_inputs=[question_reload_btn]
         )
+question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[infer.examples])
 
 upload = gr.Blocks()
 with upload:
@@ -42,7 +45,7 @@ with upload:
         db_progress = gr.Textbox(label="Document processing status", value="None")
     with gr.Row():
         upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")     
-        upload_button.upload(upload_document_and_ingest, inputs=[upload_button], outputs=[db_progress, questions_state])
+        upload_button.upload(upload_document_and_ingest, inputs=[upload_button], outputs=[db_progress])
     
 
 
