@@ -177,15 +177,15 @@ def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
         melvus_stop = vector_db.stop_milvus()
         print(f"melvus_stop = {melvus_stop}")
 
-    return op, eval_questions
+    return op, gr.State(eval_questions)
 
 def write_list_to_file(lst, filename):
     with open(filename, 'w') as f:
         for item in lst:
             f.write(str(item) + '\n')
 
-def upload_document_and_ingest(files, state=gr.State([]), progress=gr.Progress()):
-    Upload_files(files, state, progress)
+def upload_document_and_ingest(files, progress=gr.Progress()):
+    Upload_files(files, progress)
     return Ingest(False, progress)
 
 def clear_chat_engine():
