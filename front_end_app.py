@@ -6,7 +6,7 @@ from cmlllm import Infer
 import vectordb as vectordb
 import os
 
-def read_list_from_file(filename):
+def read_list_from_file(filename)->list:
     lst = []
     if os.path.exists(filename):
         with open(filename, 'r') as f:
@@ -35,7 +35,7 @@ infer = gr.ChatInterface(
         additional_inputs=[question_reload_btn],
         additional_inputs_accordion="additional options",
         )
-question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[infer.examples])
+question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[questions])
 
 upload = gr.Blocks()
 with upload:
