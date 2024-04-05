@@ -32,10 +32,10 @@ infer = gr.ChatInterface(
         chatbot=gr.Chatbot(height=700),
         multimodal=False,
         submit_btn=submit_btn,
-        additional_inputs=[question_reload_btn],
-        additional_inputs_accordion="additional options",
+        # additional_inputs=[question_reload_btn],
+        # additional_inputs_accordion="additional options",
         )
-question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[questions])
+# question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[questions])
 
 upload = gr.Blocks()
 with upload:
