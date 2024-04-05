@@ -22,19 +22,16 @@ file_types=["pdf", "html", "txt"]
 
 
 questions_state = gr.State(questions)
-submit_btn = gr.Button("Submit - v2")
+submit_btn = gr.Button("Submit")
 
 
-def set_upload_in_progess(upload_button):
+def set_upload_in_progess():
     submit_btn.interactive = False
-    upload_button.label = "Upload in progress"
-    upload_button.interactive = False
-    print("Albin : set set_upload_in_progess")
-
+    submit_btn.value = "File upload in progress"
+    
 def clear_upload_in_progess():
-    upload_button.label = "Click to Upload a File"
-    upload_button.interactive = True
     submit_btn.interactive=True
+    submit_btn.value = "Submit"
     print("Albin : clear_upload_in_progess")
 
 def upload_document_and_ingest_local(upload_button):
@@ -61,6 +58,7 @@ with upload:
     with gr.Row():
         upload_button = gr.UploadButton("Click to Upload a File", file_types=file_types, file_count="multiple")     
         upload_button.upload(upload_document_and_ingest_local, inputs=[upload_button], outputs=[db_progress, questions_state]).then(clear_upload_in_progess, None, None)
+    
 
 
 
@@ -68,6 +66,7 @@ demo = gr.TabbedInterface(
                 interface_list=[upload, infer], 
                 tab_names=["Step 1 - Document pre-processing", "Step 2 - Conversation with chatbot"],
                 title="CML Chat application - v2")
+
 
 if "CML" in os.environ and os.environ["CML"] == "yes": 
     demo.launch(show_error=True,
