@@ -3,6 +3,8 @@ import gradio as gr
 import subprocess
 from utils.cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
 
+MAX_QUESTIONS = 5
+
 
 def read_list_from_file(filename="questions.txt") -> list:
     lst = []
@@ -11,6 +13,24 @@ def read_list_from_file(filename="questions.txt") -> list:
             for line in f:
                 lst.append(line.strip())  # Remove newline characters
     return lst
+
+
+def read_list_from_file_button(filename="questions.txt"):
+    lst = read_list_from_file(filename=filename)
+    buttons = []
+    for i in range(MAX_QUESTIONS):
+        if len(lst[i]) != 0:
+            buttons.append(gr.Button(visible=True, value=lst[i]))
+        else:
+            buttons.append(gr.Button(visible=False, value=""))
+
+    return buttons[0], buttons[1], buttons[2], buttons[3], buttons[4]
+
+
+def read_list_from_file_string(filename="questions.txt") -> str:
+    lst = read_list_from_file(filename=filename)
+    numbered_questions = [f"{i+1}. {lst}" for i, lst in enumerate(lst)]
+    return "\n\n".join(numbered_questions)
 
 
 def delete_docs(progress=gr.Progress()):
@@ -30,7 +50,17 @@ submit_btn = gr.Button("Submit")
 
 question_reload_btn = gr.Button("Get some suggestions")
 
-questions_text = gr.Textbox(value=read_list_from_file, every=5.0, interactive=False)
+# questions_text = gr.Textbox(
+#     value=read_list_from_file_string,
+#     interactive=False,
+#     autoscroll=True,
+# )
+
+button0 = gr.Button()
+button1 = gr.Button()
+button2 = gr.Button()
+button3 = gr.Button()
+button4 = gr.Button()
 
 # chat = gr.Blocks()
 # with chat:
@@ -54,14 +84,25 @@ infer = gr.ChatInterface(
     chatbot=gr.Chatbot(height=700),
     multimodal=False,
     submit_btn=submit_btn,
-    additional_inputs=[questions_text, question_reload_btn],
+    additional_inputs=[
+        button0,
+        button1,
+        button2,
+        button3,
+        button4,
+        question_reload_btn,
+    ],
     additional_inputs_accordion=gr.Accordion(
         label="Some possible questions", open=False
     ),
 )
 
 with infer:
-    question_reload_btn.click(read_list_from_file, inputs=None, outputs=questions_text)
+    question_reload_btn.click(
+        read_list_from_file_button,
+        inputs=None,
+        outputs=[button0, button1, button2, button3, button4],
+    )
 
 upload = gr.Blocks()
 with upload:
