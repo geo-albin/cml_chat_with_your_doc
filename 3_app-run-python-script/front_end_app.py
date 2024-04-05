@@ -21,12 +21,13 @@ def read_list_from_file_button(filename="questions.txt"):
     for i in range(MAX_QUESTIONS):
         if len(lst[i]) != 0:
             buttons.append(
-                gr.Label(visible=True, value=lst[i], container=True, color="#faf4e3")
+                gr.Button(
+                    visible=True,
+                    value=lst[i],
+                )
             )
         else:
-            buttons.append(
-                gr.Label(visible=False, value="", container=True, color="#ffffff")
-            )
+            buttons.append(gr.Button(visible=False, value=""))
 
     return buttons[0], buttons[1], buttons[2], buttons[3], buttons[4]
 
@@ -52,7 +53,8 @@ file_types = ["pdf", "html", "txt"]
 
 submit_btn = gr.Button("Submit")
 
-question_reload_btn = gr.Button("Update suggestions", icon="🔵")
+question_reload_btn = gr.ClearButton("Update suggestions")
+examples = gr.Examples(fn=read_list_from_file)
 
 # questions_text = gr.Textbox(
 #     value=read_list_from_file_string,
@@ -60,7 +62,7 @@ question_reload_btn = gr.Button("Update suggestions", icon="🔵")
 #     autoscroll=True,
 # )
 
-button0, button1, button2, button3, button4 = read_list_from_file_button()
+# button0, button1, button2, button3, button4 = read_list_from_file_button()
 
 
 def get_value(button):
@@ -84,17 +86,12 @@ def get_value(button):
 #         bt.change(read_list_from_file, inputs=["questions.txt"], outputs=[out])
 infer = gr.ChatInterface(
     fn=Infer,
-    # examples=questions,
+    examples=examples,
     title="CML chat Bot - v2",
     chatbot=gr.Chatbot(height=700),
     multimodal=False,
     submit_btn=submit_btn,
     additional_inputs=[
-        button0,
-        button1,
-        button2,
-        button3,
-        button4,
         question_reload_btn,
     ],
     additional_inputs_accordion=gr.Accordion(
@@ -103,16 +100,17 @@ infer = gr.ChatInterface(
 )
 
 with infer:
-    question_reload_btn.click(
-        read_list_from_file_button,
-        inputs=None,
-        outputs=[button0, button1, button2, button3, button4],
-    )
-    button0.select(get_value, None, infer.textbox)
-    button1.select(get_value, None, infer.textbox)
-    button2.select(get_value, None, infer.textbox)
-    button3.select(get_value, None, infer.textbox)
-    button4.select(get_value, None, infer.textbox)
+    # question_reload_btn.click(
+    #     read_list_from_file_button,
+    #     inputs=None,
+    #     outputs=[button0, button1, button2, button3, button4],
+    # )
+    # button0.click(get_value, None, infer.textbox)
+    # button1.click(get_value, None, infer.textbox)
+    # button2.click(get_value, None, infer.textbox)
+    # button3.click(get_value, None, infer.textbox)
+    # button4.click(get_value, None, infer.textbox)
+    question_reload_btn.click(read_list_from_file, inputs=None, outputs=infer.examples)
 
 upload = gr.Blocks()
 with upload:
