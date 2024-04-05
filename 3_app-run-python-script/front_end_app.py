@@ -1,7 +1,6 @@
 import os
 import gradio as gr
 from utils.cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
-from utils.vectordb import vectordb
 
 
 def read_list_from_file(filename) -> list:
