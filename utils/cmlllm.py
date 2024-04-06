@@ -89,7 +89,6 @@ Settings.llm = LlamaCPP(
     messages_to_prompt=messages_to_prompt,
     completion_to_prompt=completion_to_prompt,
     verbose=True,
-    device_map="auto",
 )
 
 Settings.embed_model = HuggingFaceEmbedding(
