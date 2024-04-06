@@ -35,8 +35,8 @@ tasks:
     script: 3_app-run-python-script/front_end_app.py
     short_summary: Start CML LLM v2 Chatbot application
     long_summary: This application requires an available GPU to run the LLM model. Startup may be delayed if autoscaling is being performed or fail if GPU cannot be scheduled on this workspace. Please contact your administrator for GPU scheduling.
-    cpu: 4
-    memory: 32
+    cpu: 2
+    memory: 16
     gpu: 1
     environment_variables:
       TASK_TYPE: START_APPLICATION
