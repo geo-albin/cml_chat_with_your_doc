@@ -84,14 +84,11 @@ Settings.llm = LlamaCPP(
     generate_kwargs={"temperature": 0.0, "top_k": 5, "top_p": 0.95},
     # kwargs to pass to __init__()
     # set to at least 1 to use GPU
-    model_kwargs={"n_gpu_layers": n_gpu_layers, "device": "auto"},
+    model_kwargs={"n_gpu_layers": n_gpu_layers},
     # transform inputs into Llama2 format
     messages_to_prompt=messages_to_prompt,
     completion_to_prompt=completion_to_prompt,
     verbose=True,
-    n_gpu_layers=30,
-    n_ctx=2048,
-    n_batch=521,
 )
 
 Settings.embed_model = HuggingFaceEmbedding(
