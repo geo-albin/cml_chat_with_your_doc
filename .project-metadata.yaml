@@ -8,7 +8,7 @@ prototype_version: 1.0
 date: "2024-04-22"
 
 runtimes:
-  - editor: Workbench
+  - editor: PBJ Workbench
     kernel: Python 3.10
     edition: Nvidia GPU
 
