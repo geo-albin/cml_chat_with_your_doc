@@ -115,19 +115,6 @@ chat_engine = index.as_chat_engine(
 )
 
 
-def Infer2(history):
-    query_text = history[-1][0]
-
-    if len(query_text) == 0:
-        history[-1][1] = "Please ask some questions"
-    else:
-        history[-1][1] = ""
-        streaming_response = chat_engine.stream_chat(query_text)
-        for token in streaming_response.response_gen:
-            history[-1][1] = history[-1][1] + token
-            yield history
-
-
 def Infer(query, history=None):
     print(f"Albin : query = {query}")
 
@@ -149,7 +136,7 @@ def Infer(query, history=None):
         yield generated_text
 
 
-def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
+def Ingest(ingest_via_cml_job=False, questions=0, progress=gr.Progress()):
     file_extractor = {
         ".html": UnstructuredReader(),
         ".pdf": UnstructuredReader(),
@@ -205,7 +192,7 @@ def Ingest(ingest_via_cml_job=False, progress=gr.Progress()):
 
     progress(0.75, desc=dataset_op)
     progress(0.8, desc="start generating questions from the document...")
-    eval_questions = data_generator.generate_questions_from_nodes(num=5)
+    eval_questions = data_generator.generate_questions_from_nodes(num=questions)
 
     i = 1
     for q in eval_questions:
@@ -228,11 +215,11 @@ def write_list_to_file(lst, filename):
             f.write(str(item) + "\n")
 
 
-def upload_document_and_ingest(files, progress=gr.Progress()):
+def upload_document_and_ingest(files, questions, progress=gr.Progress()):
     if len(files) == 0:
         return "Please add some files..."
     Upload_files(files, progress)
-    return Ingest(False, progress)
+    return Ingest(False, questions, progress)
 
 
 def clear_chat_engine():

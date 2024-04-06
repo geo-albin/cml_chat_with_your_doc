@@ -1,11 +1,9 @@
 import os
 import gradio as gr
 import subprocess
-from utils.cmlllm import upload_document_and_ingest, clear_chat_engine, Infer, Infer2
+from utils.cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
 
 MAX_QUESTIONS = 5
-
-list_of_string = ["test"]
 
 
 def read_list_from_file(filename="questions.txt"):
@@ -59,19 +57,8 @@ questions = read_list_from_file()
 file_types = ["pdf", "html", "txt"]
 
 
-# questions_text = gr.Textbox(
-#     value=read_list_from_file_string,
-#     interactive=False,
-#     autoscroll=True,
-# )
-
-
-def get_value(button):
-    return button.value
-
-
-# def user(user_message, history):
-#     return "", history + [[user_message, None]]
+def get_value(label):
+    return label.value
 
 
 infer = gr.ChatInterface(
@@ -82,44 +69,6 @@ infer = gr.ChatInterface(
     multimodal=False,
     submit_btn=gr.Button("Submit"),
 )
-
-
-# chat2 = gr.Blocks()
-# with chat2:
-#     chatbot2 = gr.Chatbot(height=700)
-#     with gr.Row():
-#         msg = gr.Textbox(placeholder="Type message", container=True)
-#     with gr.Row():
-#         submit_btn = gr.Button("Submit")
-#         clear_btn = gr.ClearButton([msg, chatbot2])
-#     with gr.Row():
-#         example = gr.Examples(
-#             examples=questions,
-#             inputs=msg,
-#             label="Here are some of the sample questions you can ask",
-#         )
-
-#     msg.submit(
-#         user,
-#         inputs=[msg, chatbot2],
-#         outputs=[msg, chatbot2],
-#         queue=False,
-#     ).then(Infer2, inputs=chatbot2, outputs=chatbot2, queue=False)
-
-#     submit_btn.click(
-#         user,
-#         inputs=[msg, chatbot2],
-#         outputs=[msg, chatbot2],
-#         queue=False,
-#     ).then(Infer2, inputs=chatbot2, outputs=chatbot2, queue=False)
-
-#     clear_btn.click(
-#         lambda: [None],
-#         inputs=None,
-#         outputs=[chatbot2],
-#         queue=False,
-#     )
-
 
 questions = gr.Blocks(css="assets/custom_label.css")
 with questions:
@@ -150,11 +99,29 @@ with upload:
             label="Upload your pdf, html or text documents (single or multiple)",
         )
     with gr.Row():
-        db_progress = gr.Textbox(label="Document processing status", value="None")
+        db_progress = gr.Textbox(
+            label="Document processing status",
+            value="None",
+            interactive=False,
+            max_lines=10,
+        )
+    with gr.Accordion("Advanced options - Document text splitter", open=False):
+        with gr.Row():
+            questions = gr.Slider(
+                minimum=0,
+                maximum=10,
+                value=1,
+                step=1,
+                label="Number of questions to be generated about the topic",
+                info="Number of questions",
+                interactive=True,
+            )
     with gr.Row():
         upload_button = gr.Button("Click to Upload a File")
         upload_button.click(
-            upload_document_and_ingest, inputs=[documents], outputs=[db_progress]
+            upload_document_and_ingest,
+            inputs=[documents, questions],
+            outputs=[db_progress],
         )
 
 admin = gr.Blocks()
