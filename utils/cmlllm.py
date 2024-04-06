@@ -145,7 +145,7 @@ def Infer(query, history=None):
         yield generated_text
 
 
-def Ingest(ingest_via_cml_job=False, questions=0, progress=gr.Progress()):
+def Ingest(questions, progress=gr.Progress()):
     file_extractor = {
         ".html": UnstructuredReader(),
         ".pdf": UnstructuredReader(),
@@ -154,6 +154,8 @@ def Ingest(ingest_via_cml_job=False, questions=0, progress=gr.Progress()):
 
     # if torch.cuda.is_available():
     #     file_extractor[".pdf"] = PDFNougatOCR()
+
+    print(f"questions = {questions}")
 
     progress(0.3, desc="loading the document reader...")
 
@@ -211,10 +213,6 @@ def Ingest(ingest_via_cml_job=False, questions=0, progress=gr.Progress()):
     write_list_to_file(eval_questions, "questions.txt")
     progress(0.9, desc="done generating questions from the document...")
 
-    if ingest_via_cml_job:
-        melvus_stop = vectordb.stop_vector_db()
-        print(f"melvus_stop = {melvus_stop}")
-
     return op
 
 
@@ -228,7 +226,7 @@ def upload_document_and_ingest(files, questions, progress=gr.Progress()):
     if len(files) == 0:
         return "Please add some files..."
     Upload_files(files, progress)
-    return Ingest(False, questions, progress)
+    return Ingest(questions, progress)
 
 
 def clear_chat_engine():
