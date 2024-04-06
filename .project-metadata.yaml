@@ -9,7 +9,7 @@ date: "2024-04-22"
 
 runtimes:
   - editor: Workbench
-    kernel: Python 3.8
+    kernel: Python 3.10
     edition: Nvidia GPU
 
 tasks:
