@@ -9,7 +9,7 @@ list_of_string = ["test"]
 
 
 def read_list_from_file(filename="questions.txt"):
-    lst = ["Questions"]
+    lst = []
     if os.path.exists(filename):
         with open(filename, "r") as f:
             for line in f:
@@ -19,10 +19,10 @@ def read_list_from_file(filename="questions.txt"):
 
 def read_list_from_file_button(filename="questions.txt"):
     lst = read_list_from_file(filename=filename)
-    buttons = []
+    lists = []
     for i in range(MAX_QUESTIONS):
         if len(lst[i]) != 0:
-            buttons.append(
+            lists.append(
                 gr.Label(
                     visible=True,
                     value=lst[i],
@@ -30,7 +30,7 @@ def read_list_from_file_button(filename="questions.txt"):
                 )
             )
         else:
-            buttons.append(
+            lists.append(
                 gr.Label(
                     visible=False,
                     value="",
@@ -38,7 +38,7 @@ def read_list_from_file_button(filename="questions.txt"):
                 )
             )
 
-    return buttons[0], buttons[1], buttons[2], buttons[3], buttons[4]
+    return lists[0], lists[1], lists[2], lists[3], lists[4]
 
 
 def read_list_from_file_string(filename="questions.txt") -> str:
@@ -70,8 +70,8 @@ def get_value(button):
     return button.value
 
 
-def user(user_message, history):
-    return "", history + [[user_message, None]]
+# def user(user_message, history):
+#     return "", history + [[user_message, None]]
 
 
 infer = gr.ChatInterface(
@@ -84,58 +84,58 @@ infer = gr.ChatInterface(
 )
 
 
-chat2 = gr.Blocks()
-with chat2:
-    chatbot2 = gr.Chatbot(height=700)
-    with gr.Row():
-        msg = gr.Textbox(placeholder="Type message", container=True)
-    with gr.Row():
-        submit_btn = gr.Button("Submit")
-        clear_btn = gr.ClearButton([msg, chatbot2])
-    with gr.Row():
-        example = gr.Examples(
-            examples=questions,
-            inputs=msg,
-            label="Here are some of the sample questions you can ask",
-        )
+# chat2 = gr.Blocks()
+# with chat2:
+#     chatbot2 = gr.Chatbot(height=700)
+#     with gr.Row():
+#         msg = gr.Textbox(placeholder="Type message", container=True)
+#     with gr.Row():
+#         submit_btn = gr.Button("Submit")
+#         clear_btn = gr.ClearButton([msg, chatbot2])
+#     with gr.Row():
+#         example = gr.Examples(
+#             examples=questions,
+#             inputs=msg,
+#             label="Here are some of the sample questions you can ask",
+#         )
 
-    msg.submit(
-        user,
-        inputs=[msg, chatbot2],
-        outputs=[msg, chatbot2],
-        queue=False,
-    ).then(Infer2, inputs=chatbot2, outputs=chatbot2, queue=False)
+#     msg.submit(
+#         user,
+#         inputs=[msg, chatbot2],
+#         outputs=[msg, chatbot2],
+#         queue=False,
+#     ).then(Infer2, inputs=chatbot2, outputs=chatbot2, queue=False)
 
-    submit_btn.click(
-        user,
-        inputs=[msg, chatbot2],
-        outputs=[msg, chatbot2],
-        queue=False,
-    ).then(Infer2, inputs=chatbot2, outputs=chatbot2, queue=False)
+#     submit_btn.click(
+#         user,
+#         inputs=[msg, chatbot2],
+#         outputs=[msg, chatbot2],
+#         queue=False,
+#     ).then(Infer2, inputs=chatbot2, outputs=chatbot2, queue=False)
 
-    clear_btn.click(
-        lambda: [None],
-        inputs=None,
-        outputs=[chatbot2],
-        queue=False,
-    )
+#     clear_btn.click(
+#         lambda: [None],
+#         inputs=None,
+#         outputs=[chatbot2],
+#         queue=False,
+#     )
 
 
 questions = gr.Blocks(css="assets/custom_label.css")
 with questions:
-    button0, button1, button2, button3, button4 = read_list_from_file_button()
+    list0, list1, list2, list3, list4 = read_list_from_file_button()
     with gr.Row():
-        button0
-        button1
-        button2
-        button3
-        button4
+        list0
+        list1
+        list2
+        list3
+        list4
         with gr.Row():
             question_reload_btn = gr.Button("Update suggestions")
             question_reload_btn.click(
                 read_list_from_file_button,
                 inputs=None,
-                outputs=[button0, button1, button2, button3, button4],
+                outputs=[list0, list1, list2, list3, list4],
             )
 
 
@@ -166,11 +166,10 @@ with admin:
         clean_up_docs.click(delete_docs, inputs=None, outputs=admin_progress)
 
 demo = gr.TabbedInterface(
-    interface_list=[upload, chat2, infer, questions, admin],
+    interface_list=[upload, infer, questions, admin],
     tab_names=[
         "Step 1 - Document pre-processing",
         "Step 2 - Conversation with chatbot",
-        "Built-in chat bot",
         "Some questions about the topic",
         "Admin tab",
     ],
