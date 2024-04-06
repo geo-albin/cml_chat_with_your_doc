@@ -89,14 +89,14 @@ with upload:
                 questions_slider = gr.Slider(
                     minimum=0,
                     maximum=10,
-                    value=1,
+                    value=0,
                     step=1,
                     label="Number of questions to be generated about the topic",
                     info="Number of questions",
                     interactive=True,
                 )
     with gr.Row():
-        upload_button = gr.Button("Click to Upload a File")
+        upload_button = gr.Button("Click to process the files")
         upload_button.click(
             upload_document_and_ingest,
             inputs=[documents, questions_slider],
@@ -113,7 +113,7 @@ with questions:
         list3
         list4
         with gr.Row():
-            question_reload_btn = gr.Button("Update suggestions")
+            question_reload_btn = gr.Button("Update the topic")
             question_reload_btn.click(
                 read_list_from_file_button,
                 inputs=None,
