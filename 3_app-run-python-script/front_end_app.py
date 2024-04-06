@@ -58,8 +58,6 @@ questions = read_list_from_file()
 
 file_types = ["pdf", "html", "txt"]
 
-submit_btn = gr.Button("Submit")
-
 
 # questions_text = gr.Textbox(
 #     value=read_list_from_file_string,
@@ -74,6 +72,16 @@ def get_value(button):
 
 def user(user_message, history):
     return "", history + [[user_message, None]]
+
+
+infer = gr.ChatInterface(
+    fn=Infer,
+    title="CML chat Bot - v2",
+    examples=questions,
+    chatbot=gr.Chatbot(height=700),
+    multimodal=False,
+    submit_btn=gr.Button("Submit"),
+)
 
 
 chat2 = gr.Blocks()
@@ -112,14 +120,6 @@ with chat2:
         queue=False,
     )
 
-infer = gr.ChatInterface(
-    fn=Infer,
-    title="CML chat Bot - v2",
-    examples=questions,
-    chatbot=gr.Chatbot(height=700),
-    multimodal=False,
-    submit_btn=submit_btn,
-)
 
 questions = gr.Blocks(css="assets/custom_label.css")
 with questions:
