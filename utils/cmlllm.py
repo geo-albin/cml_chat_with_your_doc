@@ -143,8 +143,8 @@ def Ingest(ingest_via_cml_job=False, questions=0, progress=gr.Progress()):
         ".txt": UnstructuredReader(),
     }
 
-    if torch.cuda.is_available():
-        file_extractor[".pdf"] = PDFNougatOCR()
+    # if torch.cuda.is_available():
+    #     file_extractor[".pdf"] = PDFNougatOCR()
 
     progress(0.3, desc="loading the document reader...")
 
