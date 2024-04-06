@@ -49,7 +49,7 @@ callback_manager = CallbackManager(handlers=[llama_debug])
 
 
 MODELS_PATH = "./models"
-EMBEDSS_PATH = "./embed_models"
+EMBED_PATH = "./embed_models"
 
 model_path = hf_hub_download(
     repo_id="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
@@ -84,7 +84,7 @@ Settings.llm = LlamaCPP(
 
 Settings.embed_model = HuggingFaceEmbedding(
     model_name=embed_model,
-    cache_folder=EMBEDSS_PATH,
+    cache_folder=EMBED_PATH,
 )
 
 Settings.callback_manager = callback_manager
