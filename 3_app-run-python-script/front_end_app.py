@@ -39,12 +39,6 @@ def read_list_from_file_button(filename="questions.txt"):
     return lists[0], lists[1], lists[2], lists[3], lists[4]
 
 
-def read_list_from_file_string(filename="questions.txt") -> str:
-    lst = read_list_from_file(filename=filename)
-    numbered_questions = [f"{i+1}. {lst}" for i, lst in enumerate(lst)]
-    return "\n\n".join(numbered_questions)
-
-
 def delete_docs(progress=gr.Progress()):
     progress(0.1, desc="deleting server side documents...")
     print(subprocess.run(["rm -rf ./assets/doc_list"], shell=True))
@@ -70,24 +64,6 @@ infer = gr.ChatInterface(
     submit_btn=gr.Button("Submit"),
 )
 
-questions = gr.Blocks(css="assets/custom_label.css")
-with questions:
-    list0, list1, list2, list3, list4 = read_list_from_file_button()
-    with gr.Row():
-        list0
-        list1
-        list2
-        list3
-        list4
-        with gr.Row():
-            question_reload_btn = gr.Button("Update suggestions")
-            question_reload_btn.click(
-                read_list_from_file_button,
-                inputs=None,
-                outputs=[list0, list1, list2, list3, list4],
-            )
-
-
 upload = gr.Blocks()
 with upload:
     with gr.Row():
@@ -105,24 +81,42 @@ with upload:
             interactive=False,
             max_lines=10,
         )
-    with gr.Accordion("Advanced options - Document text splitter", open=False):
-        with gr.Row():
-            questions = gr.Slider(
-                minimum=0,
-                maximum=10,
-                value=1,
-                step=1,
-                label="Number of questions to be generated about the topic",
-                info="Number of questions",
-                interactive=True,
-            )
+    with gr.Row():
+        with gr.Accordion("Advanced options - Document text splitter", open=False):
+            with gr.Row():
+                questions_slider = gr.Slider(
+                    minimum=0,
+                    maximum=10,
+                    value=1,
+                    step=1,
+                    label="Number of questions to be generated about the topic",
+                    info="Number of questions",
+                    interactive=True,
+                )
     with gr.Row():
         upload_button = gr.Button("Click to Upload a File")
         upload_button.click(
             upload_document_and_ingest,
-            inputs=[documents, questions],
+            inputs=[documents, questions_slider],
             outputs=[db_progress],
         )
+
+questions = gr.Blocks(css="assets/custom_label.css")
+with questions:
+    list0, list1, list2, list3, list4 = read_list_from_file_button()
+    with gr.Row():
+        list0
+        list1
+        list2
+        list3
+        list4
+        with gr.Row():
+            question_reload_btn = gr.Button("Update suggestions")
+            question_reload_btn.click(
+                read_list_from_file_button,
+                inputs=None,
+                outputs=[list0, list1, list2, list3, list4],
+            )
 
 admin = gr.Blocks()
 with admin:
@@ -131,6 +125,7 @@ with admin:
     with gr.Row():
         clean_up_docs = gr.Button("Click to do file cleanup")
         clean_up_docs.click(delete_docs, inputs=None, outputs=admin_progress)
+
 
 demo = gr.TabbedInterface(
     interface_list=[upload, infer, questions, admin],
