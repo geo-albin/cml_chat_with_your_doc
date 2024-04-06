@@ -60,38 +60,11 @@ submit_btn = gr.Button("Submit")
 #     autoscroll=True,
 # )
 
-# button0, button1, button2, button3, button4 = read_list_from_file_button()
+button0, button1, button2, button3, button4 = read_list_from_file_button()
 
 
 def get_value(button):
     return button.value
-
-
-# chat = gr.Blocks()
-# with chat:
-#     with gr.Row():
-
-#         # question_reload_btn.click(read_list_from_file, inputs=["questions.txt"], outputs=[questions])
-#     with gr.Row():
-#         gr.Markdown(
-#             """
-#         # Hey!!
-#         Click the button to get some good questions for the uploaded document!!.
-#         """
-#         )
-#         bt = gr.Button("Get questions")
-#         out = gr.Textbox()
-#         bt.change(read_list_from_file, inputs=["questions.txt"], outputs=[out])
-
-
-infer = gr.ChatInterface(
-    fn=Infer,
-    title="CML chat Bot - v2",
-    examples=questions,
-    chatbot=gr.Chatbot(height=700),
-    multimodal=False,
-    submit_btn=submit_btn,
-)
 
 
 def user(user_message, history):
@@ -112,8 +85,6 @@ with chat2:
             inputs=msg,
             label="Here are some of the sample questions you can ask",
         )
-    with gr.Row():
-        reload_example = gr.Button("Reload example")
 
     msg.submit(
         user,
@@ -136,30 +107,32 @@ with chat2:
         queue=False,
     )
 
-    reload_example.click(read_list_from_file, inputs=None, outputs=example)
+infer = gr.ChatInterface(
+    fn=Infer,
+    title="CML chat Bot - v2",
+    chatbot=gr.Chatbot(height=700),
+    multimodal=False,
+    submit_btn=submit_btn,
+)
 
-# with infer:
-#     with gr.Row():
-#         # question_reload_btn.click(
-#         #     read_list_from_file_button,
-#         #     inputs=None,
-#         #     outputs=[button0, button1, button2, button3, button4],
-#         # )
-#         # button0.click(get_value, None, infer.textbox)
-#         # button1.click(get_value, None, infer.textbox)
-#         # button2.click(get_value, None, infer.textbox)
-#         # button3.click(get_value, None, infer.textbox)
-#         # button4.click(get_value, None, infer.textbox)
-#         question_reload_btn = gr.Button("Update suggestions")
-#         question_reload_btn.click(
-#             read_list_from_file, inputs=None, outputs=infer.examples
-#         )
+with infer:
+    with gr.Row():
+        with gr.Accordion(
+            label="Here are some of the sample questions you can ask", open=True
+        ):
+            button0.click(get_value, None, infer.textbox)
+            button1.click(get_value, None, infer.textbox)
+            button2.click(get_value, None, infer.textbox)
+            button3.click(get_value, None, infer.textbox)
+            button4.click(get_value, None, infer.textbox)
 
-# examples = gr.Blocks()
-# with examples:
-#     with gr.Row():
-#         examples = gr.Examples(examples=questions, inputs=None)
-#     with gr.Row():
+            with gr.Row():
+                question_reload_btn = gr.Button("Update suggestions")
+                question_reload_btn.click(
+                    read_list_from_file_button,
+                    inputs=None,
+                    outputs=[button0, button1, button2, button3, button4],
+                )
 
 
 upload = gr.Blocks()
