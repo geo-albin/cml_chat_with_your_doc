@@ -23,13 +23,20 @@ def read_list_from_file_button(filename="questions.txt"):
     for i in range(MAX_QUESTIONS):
         if len(lst[i]) != 0:
             buttons.append(
-                gr.Button(
+                gr.Label(
                     visible=True,
                     value=lst[i],
+                    container=True,
                 )
             )
         else:
-            buttons.append(gr.Button(visible=False, value=""))
+            buttons.append(
+                gr.Label(
+                    visible=False,
+                    value="",
+                    container=True,
+                )
+            )
 
     return buttons[0], buttons[1], buttons[2], buttons[3], buttons[4]
 
@@ -59,8 +66,6 @@ submit_btn = gr.Button("Submit")
 #     interactive=False,
 #     autoscroll=True,
 # )
-
-button0, button1, button2, button3, button4 = read_list_from_file_button()
 
 
 def get_value(button):
@@ -110,29 +115,28 @@ with chat2:
 infer = gr.ChatInterface(
     fn=Infer,
     title="CML chat Bot - v2",
+    examples=questions,
     chatbot=gr.Chatbot(height=700),
     multimodal=False,
     submit_btn=submit_btn,
 )
 
-with infer:
+questions = gr.Blocks(css="assets/custom_label.css")
+with questions:
+    button0, button1, button2, button3, button4 = read_list_from_file_button()
     with gr.Row():
-        with gr.Accordion(
-            label="Here are some of the sample questions you can ask", open=True
-        ):
-            button0.click(get_value, None, infer.textbox)
-            button1.click(get_value, None, infer.textbox)
-            button2.click(get_value, None, infer.textbox)
-            button3.click(get_value, None, infer.textbox)
-            button4.click(get_value, None, infer.textbox)
-
-            with gr.Row():
-                question_reload_btn = gr.Button("Update suggestions")
-                question_reload_btn.click(
-                    read_list_from_file_button,
-                    inputs=None,
-                    outputs=[button0, button1, button2, button3, button4],
-                )
+        button0
+        button1
+        button2
+        button3
+        button4
+        with gr.Row():
+            question_reload_btn = gr.Button("Update suggestions")
+            question_reload_btn.click(
+                read_list_from_file_button,
+                inputs=None,
+                outputs=[button0, button1, button2, button3, button4],
+            )
 
 
 upload = gr.Blocks()
@@ -162,11 +166,12 @@ with admin:
         clean_up_docs.click(delete_docs, inputs=None, outputs=admin_progress)
 
 demo = gr.TabbedInterface(
-    interface_list=[upload, chat2, infer, admin],
+    interface_list=[upload, chat2, infer, questions, admin],
     tab_names=[
         "Step 1 - Document pre-processing",
         "Step 2 - Conversation with chatbot",
         "Built-in chat bot",
+        "Some questions about the topic",
         "Admin tab",
     ],
     title="CML Chat application - v2",
