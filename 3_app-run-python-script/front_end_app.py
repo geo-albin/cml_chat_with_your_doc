@@ -19,7 +19,7 @@ def read_list_from_file_button(filename="questions.txt"):
     lst = read_list_from_file(filename=filename)
     lists = []
     for i in range(MAX_QUESTIONS):
-        if len(lst[i]) != 0:
+        if (len(lst) > i) and (len(lst[i]) != 0):
             lists.append(
                 gr.Label(
                     visible=True,
@@ -82,7 +82,9 @@ with upload:
             max_lines=10,
         )
     with gr.Row():
-        with gr.Accordion("Advanced options - Document text splitter", open=False):
+        with gr.Accordion(
+            "Advanced options - automatic question generation", open=False
+        ):
             with gr.Row():
                 questions_slider = gr.Slider(
                     minimum=0,
