@@ -60,7 +60,7 @@ infer = gr.ChatInterface(
     title="CML chat Bot - v2",
     examples=questions,
     chatbot=gr.Chatbot(height=700),
-    multimodal=False,
+    # multimodal=False,
     submit_btn=gr.Button("Submit"),
 )
 
