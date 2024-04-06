@@ -25,6 +25,7 @@ from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
     completion_to_prompt,
 )
+from llama_index.readers.nougat_ocr import PDFNougatOCR
 from utils.upload import Upload_files
 import torch
 import logging
@@ -70,7 +71,7 @@ model_path = hf_hub_download(
 
 embed_model = "thenlper/gte-large"
 
-n_gpu_layers = 30
+n_gpu_layers = 33
 # if torch.cuda.is_available():
 #     n_gpu_layers = 1
 
@@ -148,7 +149,7 @@ def Infer(query, history=None):
 def Ingest(questions, progress=gr.Progress()):
     file_extractor = {
         ".html": UnstructuredReader(),
-        ".pdf": UnstructuredReader(),
+        ".pdf": PDFNougatOCR(),
         ".txt": UnstructuredReader(),
     }
 
@@ -162,11 +163,7 @@ def Ingest(questions, progress=gr.Progress()):
     reader = SimpleDirectoryReader(
         input_dir="./assets/doc_list",
         recursive=True,
-        file_extractor={
-            ".html": UnstructuredReader(),
-            ".pdf": UnstructuredReader(),
-            ".txt": UnstructuredReader(),
-        },
+        file_extractor=file_extractor,
     )
     documents = reader.load_data(num_workers=16, show_progress=True)
 
