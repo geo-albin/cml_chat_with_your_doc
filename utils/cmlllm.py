@@ -68,7 +68,7 @@ model_path = hf_hub_download(
 
 embed_model = "thenlper/gte-large"
 
-n_gpu_layers = 33
+n_gpu_layers = 10
 
 Settings.llm = LlamaCPP(
     model_path=model_path,
@@ -134,16 +134,19 @@ def Infer(query, history=None):
     elif isinstance(query, str):
         query_text = query
     else:
-        return ""
+        yield ""
+        return
 
     if len(query_text) == 0:
-        return "Please ask some questions"
+        yield "Please ask some questions"
+        return
 
     global index
     global index_created
 
     if index_created == False:
-        return "Please ingest some document in step 1."
+        yield "Please ingest some document in step 1."
+        return
 
     chat_engine = index.as_chat_engine(
         chat_mode=ChatMode.CONTEXT,
