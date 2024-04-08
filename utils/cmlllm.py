@@ -2,7 +2,7 @@ import os
 from llama_index.core import SimpleDirectoryReader, Settings
 from llama_index.core.node_parser import SimpleNodeParser
 from llama_index.core import VectorStoreIndex, StorageContext
-from llama_index.readers.file import UnstructuredReader
+from llama_index.readers.file import UnstructuredReader, PDFReader
 from llama_index.readers.nougat_ocr import PDFNougatOCR
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.vector_stores.milvus import MilvusVectorStore
@@ -141,7 +141,8 @@ def Infer(query, history=None):
 def Ingest(questions, progress=gr.Progress()):
     file_extractor = {
         ".html": UnstructuredReader(),
-        ".pdf": PDFNougatOCR(),
+        # ".pdf": PDFNougatOCR(),
+        ".pdf": PDFReader(),
         ".txt": UnstructuredReader(),
     }
 
