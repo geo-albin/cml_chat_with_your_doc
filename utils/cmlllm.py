@@ -167,6 +167,15 @@ def Infer(query, history=None):
         yield generated_text
 
 
+def list_files():
+    file_paths = []
+    directory = os.path.abspath("./assets/doc_list")
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            file_paths.append(os.path.join(root, file))
+    return file_paths
+
+
 def Ingest(questions, progress=gr.Progress()):
     file_extractor = {
         ".html": UnstructuredReader(),
@@ -177,43 +186,50 @@ def Ingest(questions, progress=gr.Progress()):
 
     print(f"questions = {questions}")
 
-    progress(0.3, desc="loading the document reader...")
+    progress(0.3, desc="loading the documents")
 
     try:
+        files = list_files()
+        for file in files:
+            # reader = SimpleDirectoryReader(
+            #     input_dir="./assets/doc_list",
+            #     recursive=True,
+            #     file_extractor=file_extractor,
+            # )
+            progress(0.3, desc=f"loading document {file}")
+            reader = SimpleDirectoryReader(
+                input_files=[file],
+                file_extractor=file_extractor,
+            )
+            documents = reader.load_data(num_workers=1, show_progress=True)
 
-        reader = SimpleDirectoryReader(
-            input_dir="./assets/doc_list",
-            recursive=True,
-            file_extractor=file_extractor,
-        )
-        documents = reader.load_data(num_workers=1, show_progress=True)
+            progress(0.4, desc="done loading document {file}")
 
-        progress(0.4, desc="done loading the document reader...")
+            # vector_store = MilvusVectorStore(
+            #     dim=1024,
+            #     # overwrite=True,
+            #     collection_name="cml_rag_collection",
+            # )
 
-        # vector_store = MilvusVectorStore(
-        #     dim=1024,
-        #     # overwrite=True,
-        #     collection_name="cml_rag_collection",
-        # )
+            storage_context = StorageContext.from_defaults(vector_store=vector_store)
+            # progress(
+            #     0.45, desc="done starting the vector db and set the storage context..."
+            # )
 
-        storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        progress(
-            0.45, desc="done starting the vector db and set the storage context..."
-        )
+            start_time = time.time()
+            progress(0.4, desc=f"start indexing the document {file}")
+            # index = VectorStoreIndex.from_documents(
+            #     documents=documents, storage_context=storage_context, show_progress=True
+            # )
+            nodes = node_parser.get_nodes_from_documents(documents)
 
-        start_time = time.time()
-        progress(0.5, desc="start indexing the document...")
-        # index = VectorStoreIndex.from_documents(
-        #     documents=documents, storage_context=storage_context, show_progress=True
-        # )
-        nodes = node_parser.get_nodes_from_documents(documents)
-
-        global index
-        global index_created
-        index = VectorStoreIndex(
-            nodes, storage_context=storage_context, show_progress=True
-        )
-        index_created = True
+            global index
+            global index_created
+            index = VectorStoreIndex(
+                nodes, storage_context=storage_context, show_progress=True
+            )
+            index_created = True
+            progress(0.4, desc=f"done indexing the document {file}")
 
         op = (
             "Completed data ingestion. took "
