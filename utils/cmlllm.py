@@ -38,6 +38,8 @@ from llama_index.core.postprocessor import MetadataReplacementPostProcessor
 
 # from transformers import BitsAndBytesConfig
 
+index_created = False
+
 
 def exit_handler():
     print("cmlllmapp is exiting!")
@@ -122,16 +124,6 @@ postprocessor = SentenceEmbeddingOptimizer(
     threshold_cutoff=0.7,
 )
 
-chat_engine = index.as_chat_engine(
-    chat_mode=ChatMode.CONTEXT,
-    verbose=True,
-    postprocessor=[
-        MetadataReplacementPostProcessor(target_metadata_key="window"),
-        postprocessor,
-        DuplicateRemoverNodePostprocessor(),
-    ],
-)
-
 
 def Infer(query, history=None):
     print(f"query = {query}")
@@ -146,6 +138,22 @@ def Infer(query, history=None):
 
     if len(query_text) == 0:
         return "Please ask some questions"
+
+    global index
+    global index_created
+
+    if index_created == False:
+        return "Please ingest some document in step 1."
+
+    chat_engine = index.as_chat_engine(
+        chat_mode=ChatMode.CONTEXT,
+        verbose=True,
+        postprocessor=[
+            MetadataReplacementPostProcessor(target_metadata_key="window"),
+            postprocessor,
+            DuplicateRemoverNodePostprocessor(),
+        ],
+    )
 
     streaming_response = chat_engine.stream_chat(query_text)
     generated_text = ""
@@ -192,9 +200,13 @@ def Ingest(questions, progress=gr.Progress()):
         #     documents=documents, storage_context=storage_context, show_progress=True
         # )
         nodes = node_parser.get_nodes_from_documents(documents)
+
+        global index
+        global index_created
         index = VectorStoreIndex(
             nodes, storage_context=storage_context, show_progress=True
         )
+        index_created = True
 
         op = (
             "Completed data ingestion. took "
