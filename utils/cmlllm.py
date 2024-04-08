@@ -95,14 +95,14 @@ Settings.embed_model = HuggingFaceEmbedding(
 
 Settings.callback_manager = callback_manager
 
-# node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
+node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
 # Settings.node_parser = node_parser
 
-node_parser = SentenceWindowNodeParser.from_defaults(
-    window_size=3,
-    window_metadata_key="window",
-    original_text_metadata_key="original_text",
-)
+# node_parser = SentenceWindowNodeParser.from_defaults(
+#     window_size=3,
+#     window_metadata_key="window",
+#     original_text_metadata_key="original_text",
+# )
 
 Settings.node_parser = node_parser
 Settings.text_splitter = SentenceSplitter()
@@ -154,7 +154,7 @@ def Infer(query, history=None):
         chat_mode=ChatMode.CONTEXT,
         verbose=True,
         postprocessor=[
-            MetadataReplacementPostProcessor(target_metadata_key="window"),
+            # MetadataReplacementPostProcessor(target_metadata_key="window"),
             postprocessor,
             DuplicateRemoverNodePostprocessor(),
         ],
