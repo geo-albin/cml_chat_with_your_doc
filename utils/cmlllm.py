@@ -157,7 +157,7 @@ def Ingest(questions, progress=gr.Progress()):
         recursive=True,
         file_extractor=file_extractor,
     )
-    documents = reader.load_data(num_workers=16, show_progress=True)
+    documents = reader.load_data(num_workers=1, show_progress=True)
 
     progress(0.4, desc="done loading the document reader...")
 
