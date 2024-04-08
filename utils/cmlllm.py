@@ -40,6 +40,7 @@ from llama_index.core.postprocessor import MetadataReplacementPostProcessor
 # from transformers import BitsAndBytesConfig
 
 index_created = False
+ingest_in_progress = False
 
 
 def exit_handler():
@@ -68,6 +69,7 @@ model_path = hf_hub_download(
 )
 
 embed_model = "thenlper/gte-large"
+
 
 n_gpu_layers = 20
 
@@ -145,6 +147,11 @@ def Infer(query, history=None):
         yield "Please ask some questions"
         return
 
+    global ingest_in_progress
+    if ingest_in_progress == True:
+        yield "Document ingestion in progress."
+        return
+
     global index
     global index_created
 
@@ -189,13 +196,15 @@ def Ingest(questions, progress=gr.Progress()):
 
     print(f"questions = {questions}")
 
-    progress(0.3, desc="loading the documents")
+    global ingest_in_progress
+    ingest_in_progress = True
 
-    # documents = []
+    progress(0.3, desc="loading the documents")
 
     try:
         start_time = time.time()
         files = list_files()
+        op = ""
         for file in files:
             # reader = SimpleDirectoryReader(
             #     input_dir="./assets/doc_list",
@@ -237,7 +246,7 @@ def Ingest(questions, progress=gr.Progress()):
             # while len(documents) > 10:
             #     documents.pop(0)
 
-            op = (
+            op += (
                 "Completed data ingestion. took "
                 + str(time.time() - start_time)
                 + " seconds."
@@ -280,7 +289,7 @@ def Ingest(questions, progress=gr.Progress()):
         print(e)
         op = f"ingestion failed with exception {e}"
         progress(0.9, desc=op)
-
+    ingest_in_progress = False
     return op
 
 
