@@ -229,11 +229,9 @@ def Ingest(questions, progress=gr.Progress()):
             nodes = node_parser.get_nodes_from_documents(document)
 
             global index
-            global index_created
             index = VectorStoreIndex(
                 nodes, storage_context=storage_context, show_progress=True
             )
-            index_created = True
             progress(0.4, desc=f"done indexing the document {file}")
             # documents.append(document)
             # while len(documents) > 10:
@@ -276,6 +274,8 @@ def Ingest(questions, progress=gr.Progress()):
 
         progress(0.9, desc="done processing the documents...")
         print("done processing the documents...")
+        global index_created
+        index_created = True
     except Exception as e:
         print(e)
         op = f"ingestion failed with exception {e}"

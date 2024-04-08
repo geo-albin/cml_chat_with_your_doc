@@ -91,7 +91,7 @@ with upload:
                 questions_slider = gr.Slider(
                     minimum=0,
                     maximum=10,
-                    value=5,
+                    value=1,
                     step=1,
                     label="Number of questions to be generated per document",
                     info="Number of questions",
