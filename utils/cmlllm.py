@@ -62,18 +62,9 @@ model_path = hf_hub_download(
     local_files_only=True,
 )
 
-# quantization_config = BitsAndBytesConfig(
-#     load_in_4bit=True,
-#     bnb_4bit_compute_dtype=torch.float16,
-#     bnb_4bit_quant_type="nf4",
-#     bnb_4bit_use_double_quant=True,
-# )
-
 embed_model = "thenlper/gte-large"
 
 n_gpu_layers = 33
-# if torch.cuda.is_available():
-#     n_gpu_layers = 1
 
 Settings.llm = LlamaCPP(
     model_path=model_path,
@@ -82,7 +73,8 @@ Settings.llm = LlamaCPP(
     # llama2 has a context window of 4096 tokens, but we set it lower to allow for some wiggle room
     context_window=3900,
     # kwargs to pass to __call__()
-    generate_kwargs={"temperature": 0.0, "top_k": 5, "top_p": 0.95},
+    # generate_kwargs={"temperature": 0.0, "top_k": 5, "top_p": 0.95},
+    generate_kwargs={"temperature": 0.0},
     # kwargs to pass to __init__()
     # set to at least 1 to use GPU
     model_kwargs={"n_gpu_layers": n_gpu_layers},
