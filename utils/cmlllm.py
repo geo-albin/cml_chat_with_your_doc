@@ -114,7 +114,9 @@ collection = vectordb.create_vector_db_collection()
 print(f"milvus collection created = {collection}")
 
 vector_store = MilvusVectorStore(
-    dim=1024, overwrite=True, collection_name="cml_rag_collection"
+    dim=1024,
+    # overwrite=True,
+    collection_name="cml_rag_collection",
 )
 
 index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
@@ -188,9 +190,11 @@ def Ingest(questions, progress=gr.Progress()):
 
         progress(0.4, desc="done loading the document reader...")
 
-        vector_store = MilvusVectorStore(
-            dim=1024, overwrite=True, collection_name="cml_rag_collection"
-        )
+        # vector_store = MilvusVectorStore(
+        #     dim=1024,
+        #     # overwrite=True,
+        #     collection_name="cml_rag_collection",
+        # )
 
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
         progress(
