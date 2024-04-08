@@ -19,7 +19,7 @@ soup = BeautifulSoup(response.text, "html.parser")
 # Find all links to .html files
 links = soup.find_all("a", href=True)
 
-print(f"albin : got links length = {len(links)}")
+print(f"got links length = {len(links)}")
 count = 1
 for link in links:
     href = link["href"]

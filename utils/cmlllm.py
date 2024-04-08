@@ -118,7 +118,7 @@ chat_engine = index.as_chat_engine(
 
 
 def Infer(query, history=None):
-    print(f"Albin : query = {query}")
+    print(f"query = {query}")
 
     query_text = ""
     if isinstance(query, dict) and query["text"]:
