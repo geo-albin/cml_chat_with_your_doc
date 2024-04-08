@@ -149,55 +149,67 @@ def Ingest(questions, progress=gr.Progress()):
 
     progress(0.3, desc="loading the document reader...")
 
-    reader = SimpleDirectoryReader(
-        input_dir="./assets/doc_list",
-        recursive=True,
-        file_extractor=file_extractor,
-    )
-    documents = reader.load_data(num_workers=1, show_progress=True)
+    try:
 
-    progress(0.4, desc="done loading the document reader...")
+        reader = SimpleDirectoryReader(
+            input_dir="./assets/doc_list",
+            recursive=True,
+            file_extractor=file_extractor,
+        )
+        documents = reader.load_data(num_workers=1, show_progress=True)
 
-    vector_store = MilvusVectorStore(
-        dim=1024, overwrite=True, collection_name="cml_rag_collection"
-    )
+        progress(0.4, desc="done loading the document reader...")
 
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-    progress(0.45, desc="done starting the vector db and set the storage context...")
+        vector_store = MilvusVectorStore(
+            dim=1024, overwrite=True, collection_name="cml_rag_collection"
+        )
 
-    start_time = time.time()
-    progress(0.5, desc="start indexing the document...")
-    index = VectorStoreIndex.from_documents(
-        documents=documents, storage_context=storage_context, show_progress=True
-    )
+        storage_context = StorageContext.from_defaults(vector_store=vector_store)
+        progress(
+            0.45, desc="done starting the vector db and set the storage context..."
+        )
 
-    op = "Completed data ingestion. took " + str(time.time() - start_time) + " seconds."
+        start_time = time.time()
+        progress(0.5, desc="start indexing the document...")
+        index = VectorStoreIndex.from_documents(
+            documents=documents, storage_context=storage_context, show_progress=True
+        )
 
-    print(f"{op}")
-    progress(0.6, desc=op)
+        op = (
+            "Completed data ingestion. took "
+            + str(time.time() - start_time)
+            + " seconds."
+        )
 
-    start_time = time.time()
-    progress(0.7, desc="start dataset generation from the document...")
-    data_generator = DatasetGenerator.from_documents(documents)
+        print(f"{op}")
+        progress(0.6, desc=op)
 
-    dataset_op = (
-        "Completed data set generation. took "
-        + str(time.time() - start_time)
-        + " seconds."
-    )
-    op += "\n" + dataset_op
+        start_time = time.time()
+        progress(0.7, desc="start dataset generation from the document...")
+        data_generator = DatasetGenerator.from_documents(documents)
 
-    progress(0.75, desc=dataset_op)
-    progress(0.8, desc="start generating questions from the document...")
-    eval_questions = data_generator.generate_questions_from_nodes(num=questions)
+        dataset_op = (
+            "Completed data set generation. took "
+            + str(time.time() - start_time)
+            + " seconds."
+        )
+        op += "\n" + dataset_op
 
-    i = 1
-    for q in eval_questions:
-        op += "\nQuestion " + str(i) + " - " + str(q) + "."
-        i += 1
+        progress(0.75, desc=dataset_op)
+        progress(0.8, desc="start generating questions from the document...")
+        eval_questions = data_generator.generate_questions_from_nodes(num=questions)
 
-    write_list_to_file(eval_questions, "questions.txt")
-    progress(0.9, desc="done generating questions from the document...")
+        i = 1
+        for q in eval_questions:
+            op += "\nQuestion " + str(i) + " - " + str(q)
+            i += 1
+
+        write_list_to_file(eval_questions, "questions.txt")
+        progress(0.9, desc="done generating questions from the document...")
+    except Exception as e:
+        print(e)
+        op = f"ingestion failed with exception {e}"
+        progress(0.9, desc=op)
 
     return op
 
