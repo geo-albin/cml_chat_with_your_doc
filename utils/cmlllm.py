@@ -115,7 +115,7 @@ print(f"milvus collection created = {collection}")
 
 vector_store = MilvusVectorStore(
     dim=1024,
-    # overwrite=True,
+    overwrite=True,
     collection_name="cml_rag_collection",
 )
 
