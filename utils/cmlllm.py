@@ -188,6 +188,8 @@ def Ingest(questions, progress=gr.Progress()):
 
     progress(0.3, desc="loading the documents")
 
+    documents = []
+
     try:
         files = list_files()
         for file in files:
@@ -201,7 +203,7 @@ def Ingest(questions, progress=gr.Progress()):
                 input_files=[file],
                 file_extractor=file_extractor,
             )
-            documents = reader.load_data(num_workers=1, show_progress=True)
+            document = reader.load_data(num_workers=1, show_progress=True)
 
             progress(0.4, desc="done loading document {file}")
 
@@ -221,7 +223,7 @@ def Ingest(questions, progress=gr.Progress()):
             # index = VectorStoreIndex.from_documents(
             #     documents=documents, storage_context=storage_context, show_progress=True
             # )
-            nodes = node_parser.get_nodes_from_documents(documents)
+            nodes = node_parser.get_nodes_from_documents(document)
 
             global index
             global index_created
@@ -230,6 +232,9 @@ def Ingest(questions, progress=gr.Progress()):
             )
             index_created = True
             progress(0.4, desc=f"done indexing the document {file}")
+            documents.append(document)
+            while len(documents) > 10:
+                documents.pop(0)
 
         op = (
             "Completed data ingestion. took "
