@@ -108,7 +108,7 @@ node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
 Settings.node_parser = node_parser
 Settings.text_splitter = SentenceSplitter()
 
-print(subprocess.run(["rm -f .questions.txt"], shell=True))
+print(subprocess.run(["rm -f questions.txt"], shell=True))
 
 milvus_start = vectordb.reset_vector_db()
 print(f"milvus_start = {milvus_start}")
@@ -248,6 +248,7 @@ def Ingest(questions, progress=gr.Progress()):
         progress(0.6, desc=op)
 
         start_time = time.time()
+        print("start dataset generation from the document...")
         progress(0.7, desc="start dataset generation from the document...")
         data_generator = DatasetGenerator.from_documents(documents)
 
@@ -257,8 +258,9 @@ def Ingest(questions, progress=gr.Progress()):
             + " seconds."
         )
         op += "\n" + dataset_op
-
+        print(f"{dataset_op}")
         progress(0.75, desc=dataset_op)
+        print("start generating questions from the document...")
         progress(0.8, desc="start generating questions from the document...")
         eval_questions = data_generator.generate_questions_from_nodes(num=questions)
 
@@ -269,6 +271,7 @@ def Ingest(questions, progress=gr.Progress()):
 
         write_list_to_file(eval_questions, "questions.txt")
         progress(0.9, desc="done generating questions from the document...")
+        print("done generating questions from the document...")
     except Exception as e:
         print(e)
         op = f"ingestion failed with exception {e}"
