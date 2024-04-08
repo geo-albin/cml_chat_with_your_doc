@@ -80,8 +80,8 @@ Settings.llm = LlamaCPP(
     # llama2 has a context window of 4096 tokens, but we set it lower to allow for some wiggle room
     context_window=3900,
     # kwargs to pass to __call__()
-    generate_kwargs={"temperature": 0.0, "top_k": 5, "top_p": 0.95},
-    # generate_kwargs={"temperature": 0.0},
+    # generate_kwargs={"temperature": 0.0, "top_k": 5, "top_p": 0.95},
+    generate_kwargs={"temperature": 0.0},
     # kwargs to pass to __init__()
     # set to at least 1 to use GPU
     model_kwargs={"n_gpu_layers": n_gpu_layers},
@@ -205,6 +205,7 @@ def Ingest(questions, progress=gr.Progress()):
         start_time = time.time()
         files = list_files()
         op = ""
+        i = 1
         for file in files:
             # reader = SimpleDirectoryReader(
             #     input_dir="./assets/doc_list",
@@ -272,7 +273,6 @@ def Ingest(questions, progress=gr.Progress()):
             progress(0.4, desc=f"start generating questions from the document {file}")
             eval_questions = data_generator.generate_questions_from_nodes(num=questions)
 
-            i = 1
             for q in eval_questions:
                 op += "\nQuestion " + str(i) + " - " + str(q)
                 i += 1
