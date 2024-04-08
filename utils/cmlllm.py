@@ -94,10 +94,10 @@ Settings.callback_manager = callback_manager
 node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
 Settings.node_parser = node_parser
 
-melvus_start = vectordb.reset_vector_db()
-print(f"melvus_start = {melvus_start}")
+milvus_start = vectordb.reset_vector_db()
+print(f"milvus_start = {milvus_start}")
 collection = vectordb.create_vector_db_collection()
-print(f"melvus collection created = {collection}")
+print(f"milvus collection created = {collection}")
 
 vector_store = MilvusVectorStore(
     dim=1024, overwrite=True, collection_name="cml_rag_collection"
@@ -144,9 +144,6 @@ def Ingest(questions, progress=gr.Progress()):
         ".pdf": PDFNougatOCR(),
         ".txt": UnstructuredReader(),
     }
-
-    # if torch.cuda.is_available():
-    #     file_extractor[".pdf"] = PDFNougatOCR()
 
     print(f"questions = {questions}")
 
