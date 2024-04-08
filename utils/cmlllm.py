@@ -77,8 +77,8 @@ Settings.llm = LlamaCPP(
     # llama2 has a context window of 4096 tokens, but we set it lower to allow for some wiggle room
     context_window=3900,
     # kwargs to pass to __call__()
-    # generate_kwargs={"temperature": 0.0, "top_k": 5, "top_p": 0.95},
-    generate_kwargs={"temperature": 0.0},
+    generate_kwargs={"temperature": 0.0, "top_k": 5, "top_p": 0.95},
+    # generate_kwargs={"temperature": 0.0},
     # kwargs to pass to __init__()
     # set to at least 1 to use GPU
     model_kwargs={"n_gpu_layers": n_gpu_layers},
@@ -165,8 +165,8 @@ def Infer(query, history=None):
 def Ingest(questions, progress=gr.Progress()):
     file_extractor = {
         ".html": UnstructuredReader(),
-        # ".pdf": PDFNougatOCR(),
-        ".pdf": PDFReader(),
+        ".pdf": PDFNougatOCR(),
+        # ".pdf": PDFReader(),
         ".txt": UnstructuredReader(),
     }
 
