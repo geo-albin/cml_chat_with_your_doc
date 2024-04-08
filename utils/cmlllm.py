@@ -68,7 +68,7 @@ model_path = hf_hub_download(
 
 embed_model = "thenlper/gte-large"
 
-n_gpu_layers = 10
+n_gpu_layers = 20
 
 Settings.llm = LlamaCPP(
     model_path=model_path,
