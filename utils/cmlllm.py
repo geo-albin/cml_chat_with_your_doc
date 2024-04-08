@@ -31,6 +31,7 @@ from utils.upload import Upload_files
 import torch
 import logging
 import sys
+import subprocess
 import gradio as gr
 import atexit
 import utils.vectordb as vectordb
@@ -107,6 +108,7 @@ node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
 Settings.node_parser = node_parser
 Settings.text_splitter = SentenceSplitter()
 
+print(subprocess.run(["rm -f .questions.txt"], shell=True))
 
 milvus_start = vectordb.reset_vector_db()
 print(f"milvus_start = {milvus_start}")
@@ -191,6 +193,7 @@ def Ingest(questions, progress=gr.Progress()):
     documents = []
 
     try:
+        start_time = time.time()
         files = list_files()
         for file in files:
             # reader = SimpleDirectoryReader(
@@ -198,7 +201,7 @@ def Ingest(questions, progress=gr.Progress()):
             #     recursive=True,
             #     file_extractor=file_extractor,
             # )
-            progress(0.3, desc=f"loading document {file}")
+            progress(0.4, desc=f"loading document {file}")
             reader = SimpleDirectoryReader(
                 input_files=[file],
                 file_extractor=file_extractor,
@@ -218,7 +221,6 @@ def Ingest(questions, progress=gr.Progress()):
             #     0.45, desc="done starting the vector db and set the storage context..."
             # )
 
-            start_time = time.time()
             progress(0.4, desc=f"start indexing the document {file}")
             # index = VectorStoreIndex.from_documents(
             #     documents=documents, storage_context=storage_context, show_progress=True

@@ -42,6 +42,8 @@ def read_list_from_file_button(filename="questions.txt"):
 def delete_docs(progress=gr.Progress()):
     progress(0.1, desc="deleting server side documents...")
     print(subprocess.run(["rm -rf ./assets/doc_list"], shell=True))
+    progress(0.5, desc="deleting answer files...")
+    print(subprocess.run(["rm -f .questions.txt"], shell=True))
     progress(0.9, desc="done deleting server side documents...")
     return "done deleting server side documents..."
 
