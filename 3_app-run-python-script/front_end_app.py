@@ -93,7 +93,7 @@ with upload:
                     maximum=10,
                     value=5,
                     step=1,
-                    label="Number of questions to be generated about the topic",
+                    label="Number of questions to be generated per document",
                     info="Number of questions",
                     interactive=True,
                 )

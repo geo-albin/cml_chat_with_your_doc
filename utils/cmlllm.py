@@ -191,7 +191,7 @@ def Ingest(questions, progress=gr.Progress()):
 
     progress(0.3, desc="loading the documents")
 
-    documents = []
+    # documents = []
 
     try:
         start_time = time.time()
@@ -235,44 +235,47 @@ def Ingest(questions, progress=gr.Progress()):
             )
             index_created = True
             progress(0.4, desc=f"done indexing the document {file}")
-            documents.append(document)
-            while len(documents) > 10:
-                documents.pop(0)
+            # documents.append(document)
+            # while len(documents) > 10:
+            #     documents.pop(0)
 
-        op = (
-            "Completed data ingestion. took "
-            + str(time.time() - start_time)
-            + " seconds."
-        )
+            op = (
+                "Completed data ingestion. took "
+                + str(time.time() - start_time)
+                + " seconds."
+            )
 
-        print(f"{op}")
-        progress(0.6, desc=op)
+            print(f"{op}")
+            progress(0.4, desc=op)
 
-        start_time = time.time()
-        print("start dataset generation from the document...")
-        progress(0.7, desc="start dataset generation from the document...")
-        data_generator = DatasetGenerator.from_documents(documents=documents)
+            start_time = time.time()
+            print(f"start dataset generation from the document {file}.")
+            progress(0.4, desc=f"start dataset generation from the document {file}.")
+            data_generator = DatasetGenerator.from_documents(documents=document)
 
-        dataset_op = (
-            "Completed data set generation. took "
-            + str(time.time() - start_time)
-            + " seconds."
-        )
-        op += "\n" + dataset_op
-        print(f"{dataset_op}")
-        progress(0.75, desc=dataset_op)
-        print("start generating questions from the document...")
-        progress(0.8, desc="start generating questions from the document...")
-        eval_questions = data_generator.generate_questions_from_nodes(num=questions)
+            dataset_op = (
+                f"Completed data set generation for file {file}. took "
+                + str(time.time() - start_time)
+                + " seconds."
+            )
+            op += "\n" + dataset_op
+            print(f"{dataset_op}")
+            progress(0.4, desc=dataset_op)
+            print(f"start generating questions from the document {file}")
+            progress(0.4, desc=f"start generating questions from the document {file}")
+            eval_questions = data_generator.generate_questions_from_nodes(num=questions)
 
-        i = 1
-        for q in eval_questions:
-            op += "\nQuestion " + str(i) + " - " + str(q)
-            i += 1
+            i = 1
+            for q in eval_questions:
+                op += "\nQuestion " + str(i) + " - " + str(q)
+                i += 1
 
-        write_list_to_file(eval_questions, "questions.txt")
-        progress(0.9, desc="done generating questions from the document...")
-        print("done generating questions from the document...")
+            write_list_to_file(eval_questions, "questions.txt")
+            print(f"done generating questions from the document {file}")
+            progress(0.4, desc=f"done generating questions from the document {file}")
+
+        progress(0.9, desc="done processing the documents...")
+        print("done processing the documents...")
     except Exception as e:
         print(e)
         op = f"ingestion failed with exception {e}"
@@ -282,7 +285,7 @@ def Ingest(questions, progress=gr.Progress()):
 
 
 def write_list_to_file(lst, filename):
-    with open(filename, "w") as f:
+    with open(filename, "a") as f:
         for item in lst:
             f.write(str(item) + "\n")
 
