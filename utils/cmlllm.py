@@ -119,7 +119,7 @@ vector_store = MilvusVectorStore(
     collection_name="cml_rag_collection",
 )
 
-index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+# index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
 postprocessor = SentenceEmbeddingOptimizer(
     percentile_cutoff=0.5,
@@ -147,7 +147,7 @@ def Infer(query, history=None):
     global index_created
 
     if index_created == False:
-        yield "Please ingest some document in step 1."
+        yield "Please process some document in step 1."
         return
 
     chat_engine = index.as_chat_engine(
