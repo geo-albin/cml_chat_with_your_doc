@@ -1,6 +1,8 @@
 import os
 from llama_index.core import SimpleDirectoryReader, Settings
 from llama_index.core.node_parser import SimpleNodeParser
+from llama_index.core.node_parser import SentenceWindowNodeParser
+from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.readers.file import UnstructuredReader, PDFReader
 from llama_index.readers.nougat_ocr import PDFNougatOCR
@@ -25,7 +27,6 @@ from llama_index.llms.llama_cpp.llama_utils import (
     messages_to_prompt,
     completion_to_prompt,
 )
-from llama_index.readers.nougat_ocr import PDFNougatOCR
 from utils.upload import Upload_files
 import torch
 import logging
@@ -33,6 +34,7 @@ import sys
 import gradio as gr
 import atexit
 import utils.vectordb as vectordb
+from llama_index.core.postprocessor import MetadataReplacementPostProcessor
 
 # from transformers import BitsAndBytesConfig
 
@@ -91,8 +93,18 @@ Settings.embed_model = HuggingFaceEmbedding(
 
 Settings.callback_manager = callback_manager
 
-node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
+# node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
+# Settings.node_parser = node_parser
+
+node_parser = SentenceWindowNodeParser.from_defaults(
+    window_size=3,
+    window_metadata_key="window",
+    original_text_metadata_key="original_text",
+)
+
 Settings.node_parser = node_parser
+Settings.text_splitter = SentenceSplitter()
+
 
 milvus_start = vectordb.reset_vector_db()
 print(f"milvus_start = {milvus_start}")
@@ -113,7 +125,11 @@ postprocessor = SentenceEmbeddingOptimizer(
 chat_engine = index.as_chat_engine(
     chat_mode=ChatMode.CONTEXT,
     verbose=True,
-    postprocessor=[postprocessor, DuplicateRemoverNodePostprocessor()],
+    postprocessor=[
+        MetadataReplacementPostProcessor(target_metadata_key="window"),
+        postprocessor,
+        DuplicateRemoverNodePostprocessor(),
+    ],
 )
 
 
@@ -172,8 +188,12 @@ def Ingest(questions, progress=gr.Progress()):
 
         start_time = time.time()
         progress(0.5, desc="start indexing the document...")
-        index = VectorStoreIndex.from_documents(
-            documents=documents, storage_context=storage_context, show_progress=True
+        # index = VectorStoreIndex.from_documents(
+        #     documents=documents, storage_context=storage_context, show_progress=True
+        # )
+        nodes = node_parser.get_nodes_from_documents(documents)
+        index = VectorStoreIndex(
+            nodes, storage_context=storage_context, show_progress=True
         )
 
         op = (
