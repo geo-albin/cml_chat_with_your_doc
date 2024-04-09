@@ -1,7 +1,13 @@
 import os
 import gradio as gr
 import subprocess
-from utils.cmlllm import upload_document_and_ingest, clear_chat_engine, Infer
+from utils.cmlllm import (
+    upload_document_and_ingest,
+    clear_chat_engine,
+    Infer,
+    get_supported_models,
+    get_active_collections,
+)
 
 MAX_QUESTIONS = 5
 
@@ -57,14 +63,41 @@ def get_value(label):
     return label.value
 
 
+clear_btn = gr.ClearButton("Clear")
+clear_btn.click(clear_chat_engine)
+
 infer = gr.ChatInterface(
     fn=Infer,
     title="CML chat Bot - v2",
     examples=questions,
-    chatbot=gr.Chatbot(height=700),
-    # multimodal=False,
+    chatbot=gr.Chatbot(
+        height=700,
+        show_label=False,
+        show_copy_button=True,
+        layout="bubble",
+        bubble_full_width=True,
+    ),
+    clear_btn=clear_btn,
     submit_btn=gr.Button("Submit"),
 )
+with infer:
+    with gr.Row():
+        with gr.Accordion("Advanced - Document references", open=False):
+            with gr.Row():
+                doc_source1 = gr.Textbox(
+                    label="Reference 1", lines=2, container=True, scale=20
+                )
+                source1_page = gr.Number(label="Page", scale=1)
+            with gr.Row():
+                doc_source2 = gr.Textbox(
+                    label="Reference 2", lines=2, container=True, scale=20
+                )
+                source2_page = gr.Number(label="Page", scale=1)
+            with gr.Row():
+                doc_source3 = gr.Textbox(
+                    label="Reference 3", lines=2, container=True, scale=20
+                )
+                source3_page = gr.Number(label="Page", scale=1)
 
 upload = gr.Blocks()
 with upload:
@@ -122,22 +155,37 @@ with questions:
                 outputs=[list0, list1, list2, list3, list4],
             )
 
+admin_submit = gr.Button("Submit")
 admin = gr.Blocks()
 with admin:
     with gr.Row():
-        admin_progress = gr.Textbox(label="Admin event status", value="None")
+        with gr.Accordion("Select LLM", open=True):
+            with gr.Row(equal_height=True):
+                llm_model = gr.Dropdown(
+                    choices=get_supported_models(),
+                    value="mistralai/Mistral-7B-Instruct-v0.2",
+                    label="LLM Model",
+                )
+
     with gr.Row():
-        clean_up_docs = gr.Button("Click to do file cleanup")
-        clean_up_docs.click(delete_docs, inputs=None, outputs=admin_progress)
+        gr.Dropdown(
+            choices=get_active_collections(),
+            label="Collection to use",
+            allow_custom_value=True,
+            info="Please select a collection to use for saving the data and querying!",
+        ),
+
+    with gr.Row():
+        admin_submit
 
 
 demo = gr.TabbedInterface(
-    interface_list=[upload, infer, questions, admin],
+    interface_list=[admin, upload, infer, questions],
     tab_names=[
-        "Step 1 - Document pre-processing",
-        "Step 2 - Conversation with chatbot",
+        "Step 1 - Setup the LLM and Vector DB",
+        "Step 2 - Document pre-processing",
+        "Step 3 - Conversation with chatbot",
         "Some questions about the topic",
-        "Admin tab",
     ],
     title="CML Chat application - v2",
 )

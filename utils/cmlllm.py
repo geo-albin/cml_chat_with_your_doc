@@ -56,6 +56,22 @@ atexit.register(exit_handler)
 llama_debug = LlamaDebugHandler(print_trace_on_end=True)
 callback_manager = CallbackManager(handlers=[llama_debug])
 
+supported_llm_models = {
+    "TheBloke/Mistral-7B-Instruct-v0.2-GGUF": "mistral-7b-instruct-v0.2.Q5_K_M.gguf",
+    "google/gemma-7b-it": "gemma-7b-it.gguf",
+}
+
+active_collections = []
+
+
+def get_supported_models():
+    llmList = list(supported_llm_models.keys())
+    return llmList
+
+
+def get_active_collections():
+    return active_collections
+
 
 MODELS_PATH = "./models"
 EMBED_PATH = "./embed_models"
@@ -179,7 +195,8 @@ def Infer(query, history=None):
             "1. Never directly reference the given context in your answer.\n"
             "2. Avoid statements like 'Based on the context, ...' or "
             "'The context information ...' or anything along "
-            "those lines."
+            "those lines.\n"
+            "Cite the titles of your sources when answering."
         ),
     )
 
