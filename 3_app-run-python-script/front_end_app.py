@@ -64,7 +64,6 @@ def get_value(label):
 
 
 clear_btn = gr.ClearButton("Clear")
-clear_btn.click(clear_chat_engine)
 
 infer = gr.ChatInterface(
     fn=Infer,
@@ -81,6 +80,7 @@ infer = gr.ChatInterface(
     submit_btn=gr.Button("Submit"),
 )
 with infer:
+    clear_btn.click(clear_chat_engine)
     with gr.Row():
         with gr.Accordion("Advanced - Document references", open=False):
             with gr.Row():
