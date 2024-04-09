@@ -170,7 +170,7 @@ def Infer(query, history=None):
         ],
     )
 
-    streaming_response = chat_engine.stream_chat(query_text)
+    streaming_response = chat_engine.stream_chat(query_text, history)
     generated_text = ""
     for token in streaming_response.response_gen:
         generated_text = generated_text + token
