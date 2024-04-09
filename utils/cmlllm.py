@@ -35,7 +35,7 @@ import subprocess
 import gradio as gr
 import atexit
 import utils.vectordb as vectordb
-from llama_index.core.postprocessor import MetadataReplacementPostProcessor
+from llama_index.core.memory import ChatMemoryBuffer
 
 # from transformers import BitsAndBytesConfig
 
@@ -130,6 +130,8 @@ postprocessor = SentenceEmbeddingOptimizer(
     threshold_cutoff=0.7,
 )
 
+memory = ChatMemoryBuffer.from_defaults(token_limit=1500)
+
 
 def Infer(query, history=None):
     print(f"query = {query}")
@@ -168,6 +170,17 @@ def Infer(query, history=None):
             postprocessor,
             DuplicateRemoverNodePostprocessor(),
         ],
+        memory=memory,
+        system_prompt=(
+            "You are an expert Q&A system that is trusted around the world.\n"
+            "Always answer the query using the provided context information, "
+            "and not prior knowledge.\n"
+            "Some rules to follow:\n"
+            "1. Never directly reference the given context in your answer.\n"
+            "2. Avoid statements like 'Based on the context, ...' or "
+            "'The context information ...' or anything along "
+            "those lines."
+        ),
     )
 
     streaming_response = chat_engine.stream_chat(query_text, history)
