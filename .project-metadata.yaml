@@ -38,6 +38,7 @@ tasks:
     cpu: 2
     memory: 16
     gpu: 1
+    bypass_authentication: True
     environment_variables:
       TASK_TYPE: START_APPLICATION
       CML: yes
