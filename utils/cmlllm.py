@@ -221,21 +221,9 @@ def Ingest(questions, progress=gr.Progress()):
 
             progress(0.4, desc="done loading document {file}")
 
-            # vector_store = MilvusVectorStore(
-            #     dim=1024,
-            #     # overwrite=True,
-            #     collection_name="cml_rag_collection",
-            # )
-
             storage_context = StorageContext.from_defaults(vector_store=vector_store)
-            # progress(
-            #     0.45, desc="done starting the vector db and set the storage context..."
-            # )
 
             progress(0.4, desc=f"start indexing the document {file}")
-            # index = VectorStoreIndex.from_documents(
-            #     documents=documents, storage_context=storage_context, show_progress=True
-            # )
             nodes = node_parser.get_nodes_from_documents(document)
 
             global index
