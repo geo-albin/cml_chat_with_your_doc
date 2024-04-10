@@ -56,7 +56,7 @@ def get_value(label):
 
 clear_btn = gr.ClearButton("Clear")
 llm_choice = get_supported_models()
-collection_list = (get_active_collections(),)
+collection_list = get_active_collections()
 
 infer = gr.ChatInterface(
     fn=Infer,
