@@ -144,8 +144,8 @@ vector_store = MilvusVectorStore(
 # index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
 postprocessor = SentenceEmbeddingOptimizer(
-    percentile_cutoff=0.5,
-    threshold_cutoff=0.7,
+    percentile_cutoff=0.8,
+    threshold_cutoff=0.9,
 )
 
 # memory = ChatMemoryBuffer.from_defaults(token_limit=1500)
@@ -179,13 +179,6 @@ def Infer(query, history=None):
         yield "Please process some document in step 1."
         return
 
-    # "Some rules to follow:\n"
-    # "1. Never directly reference the given context in your answer.\n"
-    # "2. Avoid statements like 'Based on the context, ...' or "
-    # "'The context information ...' or anything along "
-    # "those lines.\n"
-    # "Cite the titles of your sources when answering."
-
     global chat_engine
     chat_engine = index.as_chat_engine(
         chat_mode=ChatMode.CONTEXT,
@@ -199,6 +192,11 @@ def Infer(query, history=None):
         system_prompt=(
             "You are an expert Q&A system that is trusted around the world.\n"
             "Always answer the query using the provided context information and not prior knowledge."
+            "Some rules to follow:\n"
+            "1. Never directly reference the given context in your answer.\n"
+            "2. Avoid statements like 'Based on the context, ...' or "
+            "'The context information ...' or anything along those lines.\n"
+            "Cite the titles of your sources when answering."
         ),
     )
 
