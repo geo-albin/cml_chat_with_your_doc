@@ -196,10 +196,10 @@ def Infer(query, history=None):
             DuplicateRemoverNodePostprocessor(),
         ],
         # memory=memory,
-        system_prompt=(
-            "You are an expert Q&A system that is trusted around the world.\n"
-            "Always answer the query using the provided context information and not prior knowledge."
-        ),
+        # system_prompt=(
+        #     "You are an expert Q&A system that is trusted around the world.\n"
+        #     "Always answer the query using the provided context information and not prior knowledge."
+        # ),
     )
 
     streaming_response = chat_engine.stream_chat(query_text, history)
@@ -218,7 +218,7 @@ def list_files():
     return file_paths
 
 
-def Ingest(questions, progress=gr.Progress()):
+def Ingest(files, questions, progress=gr.Progress()):
     file_extractor = {
         ".html": UnstructuredReader(),
         ".pdf": PDFNougatOCR(),
@@ -235,7 +235,7 @@ def Ingest(questions, progress=gr.Progress()):
 
     try:
         start_time = time.time()
-        files = list_files()
+        # files = list_files()
         op = ""
         i = 1
         for file in files:
@@ -322,14 +322,14 @@ def write_list_to_file(lst, filename):
 def upload_document_and_ingest(files, questions, progress=gr.Progress()):
     if len(files) == 0:
         return "Please add some files..."
-    Upload_files(files, progress)
-    Ingest(questions, progress)
-    delete_docs()
-    return progress
+    # Upload_files(files, progress)
+    Ingest(files, questions, progress)
+    delete_docs(files)
 
 
-def delete_docs():
-    print(subprocess.run(["rm -rf ./assets/doc_list"], shell=True))
+def delete_docs(files):
+    for file in files:
+        print(subprocess.run([f"rm -f {file}"], shell=True))
 
 
 def clear_chat_engine():
