@@ -88,8 +88,10 @@ model_path = hf_hub_download(
 
 embed_model = "thenlper/gte-large"
 
-
-n_gpu_layers = 20
+n_gpu_layers = 0
+if torch.cuda.is_available():
+    print("It is a GPU node, setup GPU.")
+    n_gpu_layers = 20
 
 Settings.llm = LlamaCPP(
     model_path=model_path,
@@ -143,12 +145,9 @@ vector_store = MilvusVectorStore(
 
 # index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
-postprocessor = SentenceEmbeddingOptimizer(
-    percentile_cutoff=0.8,
-    threshold_cutoff=0.9,
-)
+postprocessor = SentenceEmbeddingOptimizer(percentile_cutoff=0.85)
 
-# memory = ChatMemoryBuffer.from_defaults(token_limit=1500)
+memory = ChatMemoryBuffer.from_defaults(token_limit=3900)
 
 
 def Infer(query, history=None):
@@ -188,7 +187,7 @@ def Infer(query, history=None):
             postprocessor,
             DuplicateRemoverNodePostprocessor(),
         ],
-        # memory=memory,
+        memory=memory,
         system_prompt=(
             "You are an expert Q&A system that is trusted around the world.\n"
             "Always answer the query using the provided context information and not prior knowledge."
@@ -196,7 +195,7 @@ def Infer(query, history=None):
             "1. Never directly reference the given context in your answer.\n"
             "2. Avoid statements like 'Based on the context, ...' or "
             "'The context information ...' or anything along those lines.\n"
-            "Cite the titles of your sources when answering."
+            "If the provided context dont have the information, answer 'I dont know'."
         ),
     )
 
@@ -219,10 +218,13 @@ def list_files():
 def Ingest(files, questions, progress=gr.Progress()):
     file_extractor = {
         ".html": UnstructuredReader(),
-        ".pdf": PDFNougatOCR(),
-        # ".pdf": PDFReader(),
+        # ".pdf": PDFNougatOCR(),
+        ".pdf": PDFReader(),
         ".txt": UnstructuredReader(),
     }
+
+    if torch.cuda.is_available():
+        file_extractor[".pdf"] = PDFNougatOCR()
 
     print(f"questions = {questions}")
 
