@@ -148,7 +148,7 @@ postprocessor = SentenceEmbeddingOptimizer(
     threshold_cutoff=0.7,
 )
 
-memory = ChatMemoryBuffer.from_defaults(token_limit=1500)
+# memory = ChatMemoryBuffer.from_defaults(token_limit=1500)
 
 
 def Infer(query, history=None):
@@ -179,6 +179,13 @@ def Infer(query, history=None):
         yield "Please process some document in step 1."
         return
 
+    # "Some rules to follow:\n"
+    # "1. Never directly reference the given context in your answer.\n"
+    # "2. Avoid statements like 'Based on the context, ...' or "
+    # "'The context information ...' or anything along "
+    # "those lines.\n"
+    # "Cite the titles of your sources when answering."
+
     global chat_engine
     chat_engine = index.as_chat_engine(
         chat_mode=ChatMode.CONTEXT,
@@ -188,17 +195,10 @@ def Infer(query, history=None):
             postprocessor,
             DuplicateRemoverNodePostprocessor(),
         ],
-        memory=memory,
+        # memory=memory,
         system_prompt=(
             "You are an expert Q&A system that is trusted around the world.\n"
-            "Always answer the query using the provided context information, "
-            "and not prior knowledge.\n"
-            "Some rules to follow:\n"
-            "1. Never directly reference the given context in your answer.\n"
-            "2. Avoid statements like 'Based on the context, ...' or "
-            "'The context information ...' or anything along "
-            "those lines.\n"
-            "Cite the titles of your sources when answering."
+            "Always answer the query using the provided context information and not prior knowledge."
         ),
     )
 
@@ -323,7 +323,13 @@ def upload_document_and_ingest(files, questions, progress=gr.Progress()):
     if len(files) == 0:
         return "Please add some files..."
     Upload_files(files, progress)
-    return Ingest(questions, progress)
+    Ingest(questions, progress)
+    delete_docs()
+    return progress
+
+
+def delete_docs():
+    print(subprocess.run(["rm -rf ./assets/doc_list"], shell=True))
 
 
 def clear_chat_engine():
