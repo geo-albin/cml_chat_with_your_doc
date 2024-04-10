@@ -300,6 +300,7 @@ def Ingest(files, questions, progress=gr.Progress()):
             write_list_to_file(eval_questions, "questions.txt")
             print(f"done generating questions from the document {file}")
             progress(0.4, desc=f"done generating questions from the document {file}")
+            print(subprocess.run([f"rm -f {file}"], shell=True))
 
         progress(0.9, desc="done processing the documents...")
         print("done processing the documents...")
@@ -323,13 +324,7 @@ def upload_document_and_ingest(files, questions, progress=gr.Progress()):
     if len(files) == 0:
         return "Please add some files..."
     # Upload_files(files, progress)
-    Ingest(files, questions, progress)
-    delete_docs(files)
-
-
-def delete_docs(files):
-    for file in files:
-        print(subprocess.run([f"rm -f {file}"], shell=True))
+    return Ingest(files, questions, progress)
 
 
 def clear_chat_engine():
