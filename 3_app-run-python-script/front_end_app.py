@@ -170,7 +170,7 @@ with admin:
             choices=get_active_collections(),
             label="Collection to use",
             allow_custom_value=True,
-            info="Please select a collection to use for saving the data and querying!",
+            info="Please select or create a collection to use for saving the data and querying!",
         ),
 
     with gr.Row():

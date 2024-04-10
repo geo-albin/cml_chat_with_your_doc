@@ -65,7 +65,9 @@ active_collections = []
 
 
 def get_supported_models():
-    llmList = list(supported_llm_models.keys())
+    llmList = list(supported_llm_models)
+    print("Albin")
+    print(llmList)
     return llmList
 
 
