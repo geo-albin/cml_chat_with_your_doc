@@ -155,17 +155,15 @@ with questions:
                 outputs=[list0, list1, list2, list3, list4],
             )
 
-admin_submit = gr.Button("Submit")
 admin = gr.Blocks()
 with admin:
-    with gr.Row():
-        with gr.Accordion("Select LLM", open=True):
-            with gr.Row(equal_height=True):
-                llm_model = gr.Dropdown(
-                    choices=get_supported_models(),
-                    value="mistralai/Mistral-7B-Instruct-v0.2",
-                    label="LLM Model",
-                )
+    with gr.Accordion("Select LLM", open=True):
+        llm_model = gr.Dropdown(
+            choices=get_supported_models(),
+            value="mistralai/Mistral-7B-Instruct-v0.2",
+            label="LLM Model",
+            info="Please select the model",
+        )
 
     with gr.Row():
         gr.Dropdown(
@@ -176,7 +174,7 @@ with admin:
         ),
 
     with gr.Row():
-        admin_submit
+        admin_submit = gr.Button("Submit")
 
 
 demo = gr.TabbedInterface(
