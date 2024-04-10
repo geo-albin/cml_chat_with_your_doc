@@ -55,6 +55,8 @@ def get_value(label):
 
 
 clear_btn = gr.ClearButton("Clear")
+llm_choice = get_supported_models()
+collection_list = (get_active_collections(),)
 
 infer = gr.ChatInterface(
     fn=Infer,
@@ -150,7 +152,7 @@ admin = gr.Blocks()
 with admin:
     with gr.Accordion("Select LLM", open=True):
         llm_model = gr.Dropdown(
-            choices=get_supported_models(),
+            choices=llm_choice,
             value="mistralai/Mistral-7B-Instruct-v0.2",
             label="LLM Model",
             info="Please select the model",
@@ -158,7 +160,7 @@ with admin:
 
     with gr.Row():
         gr.Dropdown(
-            choices=get_active_collections(),
+            choices=collection_list,
             label="Collection to use",
             allow_custom_value=True,
             info="Please select or create a collection to use for saving the data and querying!",

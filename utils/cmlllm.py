@@ -50,8 +50,8 @@ def exit_handler():
 
 atexit.register(exit_handler)
 
-# logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-# logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 llama_debug = LlamaDebugHandler(print_trace_on_end=True)
 callback_manager = CallbackManager(handlers=[llama_debug])
@@ -196,10 +196,10 @@ def Infer(query, history=None):
             DuplicateRemoverNodePostprocessor(),
         ],
         # memory=memory,
-        # system_prompt=(
-        #     "You are an expert Q&A system that is trusted around the world.\n"
-        #     "Always answer the query using the provided context information and not prior knowledge."
-        # ),
+        system_prompt=(
+            "You are an expert Q&A system that is trusted around the world.\n"
+            "Always answer the query using the provided context information and not prior knowledge."
+        ),
     )
 
     streaming_response = chat_engine.stream_chat(query_text)
@@ -244,25 +244,25 @@ def Ingest(files, questions, progress=gr.Progress()):
             #     recursive=True,
             #     file_extractor=file_extractor,
             # )
-            progress(0.4, desc=f"loading document {file}")
+            progress(0.4, desc=f"loading document {os.path.basename(file)}")
             reader = SimpleDirectoryReader(
                 input_files=[file],
                 file_extractor=file_extractor,
             )
             document = reader.load_data(num_workers=1, show_progress=True)
 
-            progress(0.4, desc="done loading document {file}")
+            progress(0.4, desc=f"done loading document {os.path.basename(file)}")
 
             storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
-            progress(0.4, desc=f"start indexing the document {file}")
+            progress(0.4, desc=f"start indexing the document {os.path.basename(file)}")
             nodes = node_parser.get_nodes_from_documents(document)
 
             global index
             index = VectorStoreIndex(
                 nodes, storage_context=storage_context, show_progress=True
             )
-            progress(0.4, desc=f"done indexing the document {file}")
+            progress(0.4, desc=f"done indexing the document {os.path.basename(file)}")
             # documents.append(document)
             # while len(documents) > 10:
             #     documents.pop(0)
@@ -277,20 +277,30 @@ def Ingest(files, questions, progress=gr.Progress()):
             progress(0.4, desc=op)
 
             start_time = time.time()
-            print(f"start dataset generation from the document {file}.")
-            progress(0.4, desc=f"start dataset generation from the document {file}.")
+            print(
+                f"start dataset generation from the document {os.path.basename(file)}."
+            )
+            progress(
+                0.4,
+                desc=f"start dataset generation from the document {os.path.basename(file)}.",
+            )
             data_generator = DatasetGenerator.from_documents(documents=document)
 
             dataset_op = (
-                f"Completed data set generation for file {file}. took "
+                f"Completed data set generation for file {os.path.basename(file)}. took "
                 + str(time.time() - start_time)
                 + " seconds."
             )
             op += "\n" + dataset_op
             print(f"{dataset_op}")
             progress(0.4, desc=dataset_op)
-            print(f"start generating questions from the document {file}")
-            progress(0.4, desc=f"start generating questions from the document {file}")
+            print(
+                f"start generating questions from the document {os.path.basename(file)}"
+            )
+            progress(
+                0.4,
+                desc=f"start generating questions from the document {os.path.basename(file)}",
+            )
             eval_questions = data_generator.generate_questions_from_nodes(num=questions)
 
             for q in eval_questions:
@@ -298,8 +308,13 @@ def Ingest(files, questions, progress=gr.Progress()):
                 i += 1
 
             write_list_to_file(eval_questions, "questions.txt")
-            print(f"done generating questions from the document {file}")
-            progress(0.4, desc=f"done generating questions from the document {file}")
+            print(
+                f"done generating questions from the document {os.path.basename(file)}"
+            )
+            progress(
+                0.4,
+                desc=f"done generating questions from the document {os.path.basename(file)}",
+            )
             print(subprocess.run([f"rm -f {file}"], shell=True))
 
         progress(0.9, desc="done processing the documents...")
