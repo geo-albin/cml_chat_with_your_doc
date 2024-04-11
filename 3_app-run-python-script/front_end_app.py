@@ -152,8 +152,8 @@ admin = gr.Blocks()
 with admin:
     with gr.Accordion("Select LLM", open=True):
         llm_model = gr.Dropdown(
-            choices=llm_choice,
-            value="mistralai/Mistral-7B-Instruct-v0.2",
+            choices=["asd", "qwe"],
+            # value="mistralai/Mistral-7B-Instruct-v0.2",
             label="LLM Model",
             info="Please select the model",
         )

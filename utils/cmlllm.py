@@ -145,7 +145,7 @@ vector_store = MilvusVectorStore(
 
 # index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
-postprocessor = SentenceEmbeddingOptimizer(percentile_cutoff=0.85)
+postprocessor = SentenceEmbeddingOptimizer(percentile_cutoff=0.8)
 
 memory = ChatMemoryBuffer.from_defaults(token_limit=3900)
 
@@ -193,8 +193,8 @@ def Infer(query, history=None):
             "Always answer the query using the provided context information and not prior knowledge."
             "Some rules to follow:\n"
             "1. Never directly reference the given context in your answer.\n"
-            "2. Avoid statements like 'Based on the context, ...' or "
-            "'The context information ...' or anything along those lines.\n"
+            "2. Avoid statements like 'Based on the context' or 'The context information'"
+            " or 'This information is not directly stated in the context provided' or anything along those lines.\n"
             "If the provided context dont have the information, answer 'I dont know'."
         ),
     )
