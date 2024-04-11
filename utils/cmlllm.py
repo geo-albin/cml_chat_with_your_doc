@@ -9,6 +9,7 @@ from llama_index.readers.nougat_ocr import PDFNougatOCR
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.vector_stores.milvus import MilvusVectorStore
 from huggingface_hub import hf_hub_download
+from llama_index.core.retrievers import VectorIndexRetriever
 import time
 import torch
 from llama_index.llms.llama_cpp import LlamaCPP
@@ -118,7 +119,7 @@ Settings.embed_model = HuggingFaceEmbedding(
 
 Settings.callback_manager = callback_manager
 
-node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=20)
+node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=128)
 # Settings.node_parser = node_parser
 
 # node_parser = SentenceWindowNodeParser.from_defaults(
@@ -195,8 +196,10 @@ def Infer(query, history=None):
             "1. Never directly reference the given context in your answer.\n"
             "2. Avoid statements like 'Based on the context' or 'The context information'"
             " or 'This information is not directly stated in the context provided' or anything along those lines.\n"
-            "If the provided context dont have the information, answer 'I dont know'."
+            "If the provided context dont have the information, answer 'I dont know'.\n"
+            "Please cite sources along with yoour answers."
         ),
+        similarity_top_k=5,
     )
 
     streaming_response = chat_engine.stream_chat(query_text)
@@ -233,6 +236,8 @@ def Ingest(files, questions, progress=gr.Progress()):
 
     progress(0.3, desc="loading the documents")
 
+    filename_fn = lambda filename: {"file_name": os.path.basename(filename)}
+
     try:
         start_time = time.time()
         # files = list_files()
@@ -248,6 +253,7 @@ def Ingest(files, questions, progress=gr.Progress()):
             reader = SimpleDirectoryReader(
                 input_files=[file],
                 file_extractor=file_extractor,
+                file_metadata=filename_fn,
             )
             document = reader.load_data(num_workers=1, show_progress=True)
 
@@ -262,6 +268,11 @@ def Ingest(files, questions, progress=gr.Progress()):
             index = VectorStoreIndex(
                 nodes, storage_context=storage_context, show_progress=True
             )
+            # global retriever
+            # retriever = VectorIndexRetriever(
+            #     index=index,
+            #     similarity_top_k=5,
+            # )
             progress(0.4, desc=f"done indexing the document {os.path.basename(file)}")
             # documents.append(document)
             # while len(documents) > 10:
