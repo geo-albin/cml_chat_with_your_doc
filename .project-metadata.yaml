@@ -7,6 +7,12 @@ specification_version: 1.0
 prototype_version: 1.0
 date: "2024-04-22"
 
+environment_variables:
+  USE_ONLY_CPU:
+    default: True
+    description: >-
+      Whether to use GPU or only CPU for the llm serving.
+
 runtimes:
   - editor: PBJ Workbench
     kernel: Python 3.10
@@ -29,17 +35,25 @@ tasks:
     cpu: 2
     memory: 8
 
-  - type: start_application
-    name: CML LLM Chatbot - v2
-    subdomain: cmlllmv2
-    script: 3_app-run-python-script/front_end_app.py
-    short_summary: Start CML LLM v2 Chatbot application
-    long_summary: This application requires an available GPU to run the LLM model. Startup may be delayed if autoscaling is being performed or fail if GPU cannot be scheduled on this workspace. Please contact your administrator for GPU scheduling.
-    cpu: 6
-    memory: 24
-    gpu: 0
-    bypass_authentication: True
-    environment_variables:
-      TASK_TYPE: START_APPLICATION
-      CML: yes
-      TOKENIZERS_PARALLELISM: false
+  # - type: start_application
+  #   name: CML LLM Chatbot - v2
+  #   subdomain: cmlllmv2
+  #   script: 3_app-run-python-script/front_end_app.py
+  #   short_summary: Start CML LLM v2 Chatbot application
+  #   long_summary: This application requires an available GPU to run the LLM model. Startup may be delayed if autoscaling is being performed or fail if GPU cannot be scheduled on this workspace. Please contact your administrator for GPU scheduling.
+  #   cpu: 6
+  #   memory: 24
+  #   gpu: 0
+  #   bypass_authentication: True
+  #   environment_variables:
+  #     TASK_TYPE: START_APPLICATION
+  #     CML: yes
+  #     TOKENIZERS_PARALLELISM: false
+
+  - type: run_session
+    name: start the application
+    script: 0_session-install-dependencies/start_application.py
+    short_summary: Start the chat application
+    kernel: python3
+    cpu: 1
+    memory: 4

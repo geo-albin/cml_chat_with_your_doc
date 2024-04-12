@@ -130,7 +130,7 @@ node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=128)
 # )
 
 Settings.node_parser = node_parser
-Settings.text_splitter = SentenceSplitter()
+# Settings.text_splitter = SentenceSplitter()
 
 print(subprocess.run(["rm -f questions.txt"], shell=True))
 
