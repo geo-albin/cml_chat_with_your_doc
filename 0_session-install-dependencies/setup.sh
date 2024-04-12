@@ -1,6 +1,6 @@
 #!/bin/bash
-echo "AAA : ${USE_ONLY_CPU}"
-if [[ "$USE_ONLY_CPU" == "true" ]]; then
+
+if [[ "$USE_ONLY_CPU" == true || "$USE_ONLY_CPU" == "true" ]]; then
     echo "installing CPU only version of llama-cpp"
     pip install llama-cpp-python
 else
