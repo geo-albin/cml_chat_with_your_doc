@@ -1,7 +1,5 @@
 import os
 import cmlapi
-import random
-import string
 import json
 
 client = cmlapi.default_client(
@@ -32,8 +30,8 @@ if (
     or os.getenv("USE_ONLY_CPU") == "true"
 ):
     application_request = cmlapi.CreateApplicationRequest(
-        name="CML LLM Gradio Interface",
-        description="Hosted interface for the CML LLM Gradio UI",
+        name="CML LLM Chatbot - v2",
+        description="CML LLM Chatbot - v2",
         project_id=project.id,
         subdomain="cmlllmv2",
         script="3_app-run-python-script/front_end_app.py",
@@ -46,8 +44,8 @@ if (
 
 else:
     application_request = cmlapi.CreateApplicationRequest(
-        name="CML LLM Gradio Interface",
-        description="Hosted interface for the CML LLM Gradio UI",
+        name="CML LLM Chatbot - v2",
+        description="CML LLM Chatbot - v2",
         project_id=project.id,
         subdomain="cmlllmv2",
         script="3_app-run-python-script/front_end_app.py",

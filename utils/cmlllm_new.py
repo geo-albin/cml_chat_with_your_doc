@@ -84,7 +84,7 @@ class CMLLLM:
 
     def __init__(
         self,
-        model_name,
+        model_name="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
         embed_model_name="thenlper/gte-large",
         temperature=0.0,
         max_new_tokens=256,

@@ -7,6 +7,7 @@ from utils.cmlllm import (
     Infer,
     get_supported_models,
     get_active_collections,
+    get_supported_embed_models,
 )
 
 MAX_QUESTIONS = 5
@@ -56,7 +57,8 @@ def get_value(label):
 
 clear_btn = gr.ClearButton("Clear")
 llm_choice = get_supported_models()
-collection_list = get_active_collections()
+collection_list_items = get_active_collections()
+embed_models = get_supported_embed_models()
 
 infer = gr.ChatInterface(
     fn=Infer,
@@ -150,22 +152,138 @@ with questions:
 
 admin = gr.Blocks()
 with admin:
-    with gr.Accordion("Select LLM", open=True):
+    # model_name="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
+    #     embed_model_name="thenlper/gte-large",
+    #     temperature=0.0,
+    #     max_new_tokens=256,
+    #     context_window=3900,
+    #     gpu_layers=20,
+    #     dim=1024,
+    #     collection_name="cml_rag_collection",
+    #     memory_token_limit=3900,
+    #     sentense_embedding_percentile_cutoff=0.8,
+    #     similarity_top_k=5,
+    with gr.Accordion("Configure LLM", open=True):
         llm_model = gr.Dropdown(
             choices=llm_choice,
-            value=llm_choice[0],
+            # value=llm_choice[0],
             label="LLM Model",
             type="value",
             info="Please select the model",
         )
+        embed_model = gr.Dropdown(
+            choices=embed_models,
+            # value=llm_choice[0],
+            label="Embed Model",
+            type="value",
+            info="Please select the embed model",
+        )
+        temperature = gr.Slider(
+            minimum=0,
+            maximum=100,
+            value=0.0,
+            step=0.1,
+            label="Temperature configuration",
+            info="Temperature configuration",
+            interactive=True,
+        )
+        max_new_tokens = gr.Slider(
+            minimum=100,
+            maximum=512,
+            value=256,
+            step=1,
+            label="max_new_tokens",
+            info="max_new_tokens",
+            interactive=True,
+        )
+        context_window = gr.Slider(
+            minimum=1000,
+            maximum=5000,
+            value=3900,
+            step=1,
+            label="context_window",
+            info="context_window",
+            interactive=True,
+        )
+        gpu_layers = gr.Slider(
+            minimum=0,
+            maximum=50,
+            value=20,
+            step=1,
+            label="gpu_layers",
+            info="gpu_layers",
+            interactive=True,
+        )
+        memory_token_limit = gr.Slider(
+            minimum=1000,
+            maximum=5000,
+            value=3900,
+            step=1,
+            label="memory_token_limit",
+            info="memory_token_limit",
+            interactive=True,
+        )
+        sentense_embedding_percentile_cutoff = gr.Slider(
+            minimum=0,
+            maximum=1,
+            value=0.8,
+            step=0.1,
+            label="sentense_embedding_percentile_cutoff",
+            info="sentense_embedding_percentile_cutoff",
+            interactive=True,
+        )
+        similarity_top_k = gr.Slider(
+            minimum=2,
+            maximum=20,
+            value=5,
+            step=1,
+            label="similarity_top_k",
+            info="similarity_top_k",
+            interactive=True,
+        )
 
     with gr.Row():
-        gr.Dropdown(
-            choices=collection_list,
+        collection_list = gr.Dropdown(
+            choices=collection_list_items,
             label="Collection to use",
             allow_custom_value=True,
             info="Please select or create a collection to use for saving the data and querying!",
-        ),
+        )
+        dim = gr.Slider(
+            minimum=100,
+            maximum=2000,
+            value=1024,
+            step=1,
+            label="dim",
+            info="dim",
+            interactive=True,
+        )
+    with gr.Row():
+        llm_progress = gr.Textbox(
+            label="LLM processing status",
+            value="None",
+            interactive=False,
+            max_lines=10,
+        )
+    with gr.Row():
+        configure_button = gr.Button("Click to configure LLM")
+        configure_button.click(
+            None,
+            inputs=[
+                llm_model,
+                embed_model,
+                temperature,
+                max_new_tokens,
+                context_window,
+                gpu_layers,
+                dim,
+                collection_list,
+                memory_token_limit,
+                sentense_embedding_percentile_cutoff,
+                similarity_top_k,
+            ],
+            outputs=[llm_progress],
+        )
 
     with gr.Row():
         admin_submit = gr.Button("Submit")

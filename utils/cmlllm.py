@@ -62,13 +62,18 @@ supported_llm_models = {
     "google/gemma-7b-it": "gemma-7b-it.gguf",
 }
 
+supported_embed_models = ["thenlper/gte-large"]
+
 active_collections = []
+
+
+def get_supported_embed_models():
+    embedList = list(supported_embed_models)
+    return embedList
 
 
 def get_supported_models():
     llmList = list(supported_llm_models)
-    print("Albin")
-    print(llmList)
     return llmList
 
 
