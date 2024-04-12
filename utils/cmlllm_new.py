@@ -95,7 +95,12 @@ class CMLLLM:
         memory_token_limit=3900,
         sentense_embedding_percentile_cutoff=0.8,
         similarity_top_k=5,
+        progress=gr.Progress(),
     ):
+        if len(model_name) == 0:
+            model_name = "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
+        if len(embed_model_name) == 0:
+            embed_model_name = "thenlper/gte-large"
         n_gpu_layers = 0
         if torch.cuda.is_available():
             print("It is a GPU node, setup GPU.")
@@ -104,6 +109,9 @@ class CMLLLM:
         model_path = self.get_model_path(model_name)
         # embed_model_path = self.get_embed_model_path(embed_model_name)
         self.node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=128)
+
+        progress((1, 25), desc="setting the global parameters")
+
         self.set_global_settings(
             model_path=model_path,
             embed_model_path=embed_model_name,
@@ -119,6 +127,8 @@ class CMLLLM:
         if not self.collection_name in active_collection_available:
             active_collection_available[self.collection_name] = False
 
+        progress((2, 25), desc="setting the vector db")
+
         self.vector_store = MilvusVectorStore(
             dim=dim,
             overwrite=True,
@@ -126,6 +136,8 @@ class CMLLLM:
         )
 
         self.index = VectorStoreIndex.from_vector_store(vector_store=self.vector_store)
+
+        progress((3, 25), desc="setting the chat engine")
 
         self.chat_engine = self.index.as_chat_engine(
             chat_mode=ChatMode.CONTEXT,
