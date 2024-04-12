@@ -1,9 +1,6 @@
 #!/bin/bash
 
-pip3 install https://${CDSW_DOMAIN}/api/v2/python.tar.gz
-
-if [[ -n "$USE_ONLY_CPU" && "$USE_ONLY_CPU" == "true" ]]
-then
+if [[ "$USE_ONLY_CPU" == "true" ]]; then
     echo "installing CPU only version of llama-cpp"
     pip install llama-cpp-python
 else
