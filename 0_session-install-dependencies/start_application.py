@@ -51,7 +51,7 @@ else:
         project_id=project.id,
         subdomain="cmlllmv2",
         script="3_app-run-python-script/front_end_app.py",
-        cpu=4,
+        cpu=2,
         memory=16,
         nvidia_gpu=1,
         runtime_identifier=os.getenv("APP_IMAGE_ML_RUNTIME"),
