@@ -63,7 +63,7 @@ infer = gr.ChatInterface(
     title="CML chat Bot - v2",
     examples=questions,
     chatbot=gr.Chatbot(
-        height=300,
+        height=500,
         show_label=False,
         show_copy_button=True,
         layout="bubble",
@@ -153,8 +153,9 @@ with admin:
     with gr.Accordion("Select LLM", open=True):
         llm_model = gr.Dropdown(
             choices=llm_choice,
-            # value="mistralai/Mistral-7B-Instruct-v0.2",
+            value=llm_choice[0],
             label="LLM Model",
+            type="value",
             info="Please select the model",
         )
 

@@ -115,6 +115,7 @@ Settings.llm = LlamaCPP(
 Settings.embed_model = HuggingFaceEmbedding(
     model_name=embed_model,
     cache_folder=EMBED_PATH,
+    encode_kwargs={"normalize_embeddings": True},
 )
 
 Settings.callback_manager = callback_manager
@@ -197,7 +198,7 @@ def Infer(query, history=None):
             "2. Avoid statements like 'Based on the context' or 'The context information'"
             " or 'This information is not directly stated in the context provided' or anything along those lines.\n"
             "If the provided context dont have the information, answer 'I dont know'.\n"
-            "Please cite sources along with yoour answers."
+            "Please cite file name and page number along with your answers."
         ),
         similarity_top_k=5,
     )
