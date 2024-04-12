@@ -26,7 +26,11 @@ os.environ["APP_IMAGE_ML_RUNTIME"] = APP_IMAGE_ML_RUNTIME
 project = client.get_project(project_id=os.getenv("CDSW_PROJECT_ID"))
 
 
-if os.getenv("USE_ONLY_CPU") == "True" or os.getenv("USE_ONLY_CPU") == True:
+if (
+    os.getenv("USE_ONLY_CPU") == "True"
+    or os.getenv("USE_ONLY_CPU") == True
+    or os.getenv("USE_ONLY_CPU") == "true"
+):
     application_request = cmlapi.CreateApplicationRequest(
         name="CML LLM Gradio Interface",
         description="Hosted interface for the CML LLM Gradio UI",
