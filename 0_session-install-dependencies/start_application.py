@@ -37,7 +37,7 @@ if (
         project_id=project.id,
         subdomain="cmlllmv2",
         script="3_app-run-python-script/front_end_app.py",
-        cpu=4,
+        cpu=6,
         memory=24,
         runtime_identifier=os.getenv("APP_IMAGE_ML_RUNTIME"),
         bypass_authentication=True,

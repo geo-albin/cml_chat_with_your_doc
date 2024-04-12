@@ -333,7 +333,7 @@ class CMLLLM:
         Settings.embed_model = HuggingFaceEmbedding(
             model_name=embed_model_path,
             cache_folder=self.EMBED_PATH,
-            encode_kwargs={"normalize_embeddings": True},
+            # encode_kwargs={"normalize_embeddings": True},
         )
 
         Settings.callback_manager = callback_manager

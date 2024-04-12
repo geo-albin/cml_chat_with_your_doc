@@ -115,7 +115,7 @@ Settings.llm = LlamaCPP(
 Settings.embed_model = HuggingFaceEmbedding(
     model_name=embed_model,
     cache_folder=EMBED_PATH,
-    encode_kwargs={"normalize_embeddings": True},
+    # encode_kwargs={"normalize_embeddings": True},
 )
 
 Settings.callback_manager = callback_manager
