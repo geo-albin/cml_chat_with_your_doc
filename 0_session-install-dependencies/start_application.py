@@ -25,17 +25,6 @@ APP_IMAGE_ML_RUNTIME = available_runtimes.runtimes[1].image_identifier
 os.environ["APP_IMAGE_ML_RUNTIME"] = APP_IMAGE_ML_RUNTIME
 project = client.get_project(project_id=os.getenv("CDSW_PROJECT_ID"))
 
-application_request = cmlapi.CreateApplicationRequest(
-    name="CML LLM Chatbot - v2",
-    description="Hosted interface for the CML LLM Gradio UI",
-    project_id=project.id,
-    subdomain="cmlllmv2",
-    script="3_app-run-python-script/front_end_app.py",
-    cpu=4,
-    memory=24,
-    runtime_identifier=os.getenv("APP_IMAGE_ML_RUNTIME"),
-)
-
 
 if os.getenv("USE_ONLY_CPU") == "True" or os.getenv("USE_ONLY_CPU") == True:
     application_request = cmlapi.CreateApplicationRequest(
