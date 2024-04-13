@@ -268,8 +268,8 @@ def demo():
                             source3_page = gr.Number(label="Page", scale=1)
 
         with gr.Tab("Step 3 - Conversation with chatbot"):
-            questions = gr.Blocks(css="assets/custom_label.css")
-            with questions:
+            questions_tab = gr.Blocks(css="assets/custom_label.css")
+            with questions_tab:
                 list0, list1, list2, list3, list4 = read_list_from_file_button()
                 with gr.Row():
                     list0
