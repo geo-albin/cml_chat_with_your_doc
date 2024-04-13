@@ -285,26 +285,25 @@ def demo():
                             outputs=[list0, list1, list2, list3, list4],
                         )
 
+    # demo = gr.TabbedInterface(
+    #     interface_list=[admin, upload, infer, questions],
+    #     tab_names=[
+    #         "Step 1 - Setup the LLM and Vector DB",
+    #         "Step 2 - Document pre-processing",
+    #         "Step 3 - Conversation with chatbot",
+    #         "Some questions about the topic",
+    #     ],
+    #     title="CML Chat application - v2",
+    # )
 
-# demo = gr.TabbedInterface(
-#     interface_list=[admin, upload, infer, questions],
-#     tab_names=[
-#         "Step 1 - Setup the LLM and Vector DB",
-#         "Step 2 - Document pre-processing",
-#         "Step 3 - Conversation with chatbot",
-#         "Some questions about the topic",
-#     ],
-#     title="CML Chat application - v2",
-# )
+    demo.queue()
 
-demo.queue()
-
-if "CML" in os.environ and os.environ["CML"] == "yes":
-    demo.launch(
-        show_error=True,
-        debug=True,
-        server_name="127.0.0.1",
-        server_port=int(os.getenv("CDSW_APP_PORT")),
-    )
-else:
-    demo.launch(debug=True)
+    if "CML" in os.environ and os.environ["CML"] == "yes":
+        demo.launch(
+            show_error=True,
+            debug=True,
+            server_name="127.0.0.1",
+            server_port=int(os.getenv("CDSW_APP_PORT")),
+        )
+    else:
+        demo.launch(debug=True)
