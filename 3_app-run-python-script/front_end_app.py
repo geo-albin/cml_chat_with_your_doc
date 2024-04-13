@@ -307,3 +307,7 @@ def demo():
         )
     else:
         demo.launch(debug=True)
+
+
+if __name__ == "__main__":
+    demo()
