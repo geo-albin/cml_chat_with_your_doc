@@ -243,7 +243,7 @@ def demo():
                 submit_btn = gr.Button("Submit message")
                 clear_btn = gr.ClearButton([msg, chatbot], value="Clear conversation")
                 msg.submit(Infer, inputs=[msg], outputs=[chatbot])
-                submit_btn.submit(Infer, inputs=[msg], outputs=[chatbot])
+                submit_btn.click(Infer, inputs=[msg], outputs=[chatbot])
                 clear_btn.click(clear_chat_engine)
 
             # infer = gr.ChatInterface(
