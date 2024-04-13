@@ -157,7 +157,7 @@ postprocessor = SentenceEmbeddingOptimizer(percentile_cutoff=0.8)
 memory = ChatMemoryBuffer.from_defaults(token_limit=3900)
 
 
-def Infer(query, history=None):
+def Infer(query):
     print(f"query = {query}")
 
     query_text = ""

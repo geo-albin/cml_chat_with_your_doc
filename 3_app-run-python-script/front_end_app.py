@@ -233,39 +233,52 @@ def demo():
                     )
 
         with gr.Tab("Step 3 - Conversation with chatbot"):
-            infer = gr.ChatInterface(
-                fn=Infer,
-                title="CML chat Bot - v2",
-                examples=questions,
-                chatbot=gr.Chatbot(
-                    height=500,
-                    show_label=False,
-                    show_copy_button=True,
-                    layout="bubble",
-                    bubble_full_width=True,
-                ),
-                clear_btn=clear_btn,
-                submit_btn=gr.Button("Submit"),
-            )
-            with infer:
+            chatbot = gr.Chatbot(height=500)
+            with gr.Row():
+                msg = gr.Textbox(
+                    placeholder="Type message (e.g. 'What is this document about?')",
+                    container=True,
+                )
+            with gr.Row():
+                submit_btn = gr.Button("Submit message")
+                clear_btn = gr.ClearButton([msg, chatbot], value="Clear conversation")
+                msg.submit(Infer, inputs=[msg], outputs=[chatbot])
+                submit_btn.submit(Infer, inputs=[msg], outputs=[chatbot])
                 clear_btn.click(clear_chat_engine)
-                with gr.Row():
-                    with gr.Accordion("Advanced - Document references", open=False):
-                        with gr.Row():
-                            doc_source1 = gr.Textbox(
-                                label="Reference 1", lines=2, container=True, scale=20
-                            )
-                            source1_page = gr.Number(label="Page", scale=1)
-                        with gr.Row():
-                            doc_source2 = gr.Textbox(
-                                label="Reference 2", lines=2, container=True, scale=20
-                            )
-                            source2_page = gr.Number(label="Page", scale=1)
-                        with gr.Row():
-                            doc_source3 = gr.Textbox(
-                                label="Reference 3", lines=2, container=True, scale=20
-                            )
-                            source3_page = gr.Number(label="Page", scale=1)
+
+            # infer = gr.ChatInterface(
+            #     fn=Infer,
+            #     title="CML chat Bot - v2",
+            #     examples=questions,
+            #     chatbot=gr.Chatbot(
+            #         height=500,
+            #         show_label=False,
+            #         show_copy_button=True,
+            #         layout="bubble",
+            #         bubble_full_width=True,
+            #     ),
+            #     clear_btn=clear_btn,
+            #     submit_btn=gr.Button("Submit"),
+            # )
+            # with infer:
+            #     clear_btn.click(clear_chat_engine)
+            #     with gr.Row():
+            #         with gr.Accordion("Advanced - Document references", open=False):
+            #             with gr.Row():
+            #                 doc_source1 = gr.Textbox(
+            #                     label="Reference 1", lines=2, container=True, scale=20
+            #                 )
+            #                 source1_page = gr.Number(label="Page", scale=1)
+            #             with gr.Row():
+            #                 doc_source2 = gr.Textbox(
+            #                     label="Reference 2", lines=2, container=True, scale=20
+            #                 )
+            #                 source2_page = gr.Number(label="Page", scale=1)
+            #             with gr.Row():
+            #                 doc_source3 = gr.Textbox(
+            #                     label="Reference 3", lines=2, container=True, scale=20
+            #                 )
+            #                 source3_page = gr.Number(label="Page", scale=1)
 
         with gr.Tab("Step 3 - Conversation with chatbot"):
             questions_tab = gr.Blocks(css="assets/custom_label.css")
