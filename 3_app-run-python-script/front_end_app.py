@@ -325,10 +325,16 @@ def demo():
             with gr.Row():
                 submit_btn = gr.Button("Submit message")
                 clear_btn = gr.ClearButton([msg, chatbot], value="Clear conversation")
-                msg.submit(conversation, inputs=[msg], outputs=[chatbot], queue=False)
+                msg.submit(
+                    update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
+                ).then(lambda: [""], inputs=[], outputs=[msg]).then(
+                    conversation, inputs=[chatbot], outputs=[chatbot], queue=False
+                )
                 submit_btn.click(
                     update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
-                ).then(conversation, inputs=[chatbot], outputs=[chatbot], queue=False)
+                ).then(lambda: [""], inputs=[], outputs=[msg]).then(
+                    conversation, inputs=[chatbot], outputs=[chatbot], queue=False
+                )
                 clear_btn.click(clear_chat_engine, queue=False)
 
             # infer = gr.ChatInterface(
