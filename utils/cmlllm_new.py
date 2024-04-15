@@ -115,7 +115,6 @@ class CMLLLM:
             n_gpu_layers = gpu_layers
 
         model_path = self.get_model_path(model_name)
-        # embed_model_path = self.get_embed_model_path(embed_model_name)
         self.node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=128)
 
         progress((1, 25), desc="setting the global parameters")

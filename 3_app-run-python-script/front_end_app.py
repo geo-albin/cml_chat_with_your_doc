@@ -85,7 +85,7 @@ def clear_chat_engine():
 
 
 def update_chatbot(user_message, history):
-    return "", history + [[user_message, None]]
+    return "", history + [[user_message, ""]]
 
 
 def reconfigure_llm(
@@ -117,8 +117,6 @@ def reconfigure_llm(
         similarity_top_k=similarity_top_k,
         progress=progress,
     )
-
-    return progress
 
 
 def validate_llm(model_name, embed_model_name, collection_name, progress=gr.Progress()):
@@ -230,18 +228,19 @@ def demo():
                         choices=collection_list_items,
                         label="Collection to use",
                         allow_custom_value=True,
-                        info="Please select or create a collection to use for saving the data and querying!",
+                        # info="Please select or create a collection to use for saving the data and querying!",
                     )
-                    with gr.Accordion("Configure vector DB parameters", open=False):
-                        dim = gr.Slider(
-                            minimum=100,
-                            maximum=2000,
-                            value=1024,
-                            step=1,
-                            label="dim",
-                            info="dim",
-                            interactive=True,
-                        )
+                    with gr.Row():
+                        with gr.Accordion("Configure vector DB parameters", open=False):
+                            dim = gr.Slider(
+                                minimum=100,
+                                maximum=2000,
+                                value=1024,
+                                step=1,
+                                label="dim",
+                                info="dim",
+                                interactive=True,
+                            )
                 with gr.Row():
                     llm_progress = gr.Textbox(
                         label="LLM processing status",
@@ -329,12 +328,12 @@ def demo():
                 clear_btn = gr.ClearButton([msg, chatbot], value="Clear conversation")
                 msg.submit(
                     update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
-                ).then(lambda: [""], inputs=[], outputs=[msg]).then(
+                ).then(lambda: [None], inputs=[], outputs=[msg]).then(
                     conversation, inputs=[chatbot], outputs=[chatbot], queue=False
                 )
                 submit_btn.click(
                     update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
-                ).then(lambda: [""], inputs=[], outputs=[msg]).then(
+                ).then(lambda: [None], inputs=[], outputs=[msg]).then(
                     conversation, inputs=[chatbot], outputs=[chatbot], queue=False
                 )
                 clear_btn.click(clear_chat_engine, queue=False)
