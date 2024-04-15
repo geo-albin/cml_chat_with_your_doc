@@ -160,69 +160,70 @@ def demo():
                         label="Embed Model",
                         # info="Please select the embed model",
                     )
-                    temperature = gr.Slider(
-                        minimum=0,
-                        maximum=100,
-                        value=0.0,
-                        step=0.1,
-                        label="Temperature configuration",
-                        info="Temperature configuration",
-                        interactive=True,
-                    )
-                    max_new_tokens = gr.Slider(
-                        minimum=100,
-                        maximum=512,
-                        value=256,
-                        step=1,
-                        label="max_new_tokens",
-                        info="max_new_tokens",
-                        interactive=True,
-                    )
-                    context_window = gr.Slider(
-                        minimum=1000,
-                        maximum=5000,
-                        value=3900,
-                        step=1,
-                        label="context_window",
-                        info="context_window",
-                        interactive=True,
-                    )
-                    gpu_layers = gr.Slider(
-                        minimum=0,
-                        maximum=50,
-                        value=20,
-                        step=1,
-                        label="gpu_layers",
-                        info="gpu_layers",
-                        interactive=True,
-                    )
-                    memory_token_limit = gr.Slider(
-                        minimum=1000,
-                        maximum=5000,
-                        value=3900,
-                        step=1,
-                        label="memory_token_limit",
-                        info="memory_token_limit",
-                        interactive=True,
-                    )
-                    sentense_embedding_percentile_cutoff = gr.Slider(
-                        minimum=0,
-                        maximum=1,
-                        value=0.8,
-                        step=0.1,
-                        label="sentense_embedding_percentile_cutoff",
-                        info="sentense_embedding_percentile_cutoff",
-                        interactive=True,
-                    )
-                    similarity_top_k = gr.Slider(
-                        minimum=2,
-                        maximum=20,
-                        value=5,
-                        step=1,
-                        label="similarity_top_k",
-                        info="similarity_top_k",
-                        interactive=True,
-                    )
+                    with gr.Accordion("Configure model parameters", open=False):
+                        temperature = gr.Slider(
+                            minimum=0,
+                            maximum=100,
+                            value=0.0,
+                            step=0.1,
+                            label="Temperature configuration",
+                            info="Temperature configuration",
+                            interactive=True,
+                        )
+                        max_new_tokens = gr.Slider(
+                            minimum=100,
+                            maximum=512,
+                            value=256,
+                            step=1,
+                            label="max_new_tokens",
+                            info="max_new_tokens",
+                            interactive=True,
+                        )
+                        context_window = gr.Slider(
+                            minimum=1000,
+                            maximum=5000,
+                            value=3900,
+                            step=1,
+                            label="context_window",
+                            info="context_window",
+                            interactive=True,
+                        )
+                        gpu_layers = gr.Slider(
+                            minimum=0,
+                            maximum=50,
+                            value=20,
+                            step=1,
+                            label="gpu_layers",
+                            info="gpu_layers",
+                            interactive=True,
+                        )
+                        memory_token_limit = gr.Slider(
+                            minimum=1000,
+                            maximum=5000,
+                            value=3900,
+                            step=1,
+                            label="memory_token_limit",
+                            info="memory_token_limit",
+                            interactive=True,
+                        )
+                        sentense_embedding_percentile_cutoff = gr.Slider(
+                            minimum=0,
+                            maximum=1,
+                            value=0.8,
+                            step=0.1,
+                            label="sentense_embedding_percentile_cutoff",
+                            info="sentense_embedding_percentile_cutoff",
+                            interactive=True,
+                        )
+                        similarity_top_k = gr.Slider(
+                            minimum=2,
+                            maximum=20,
+                            value=5,
+                            step=1,
+                            label="similarity_top_k",
+                            info="similarity_top_k",
+                            interactive=True,
+                        )
 
                 with gr.Row():
                     collection_list = gr.Dropdown(
@@ -231,15 +232,16 @@ def demo():
                         allow_custom_value=True,
                         info="Please select or create a collection to use for saving the data and querying!",
                     )
-                    dim = gr.Slider(
-                        minimum=100,
-                        maximum=2000,
-                        value=1024,
-                        step=1,
-                        label="dim",
-                        info="dim",
-                        interactive=True,
-                    )
+                    with gr.Accordion("Configure vector DB parameters", open=False):
+                        dim = gr.Slider(
+                            minimum=100,
+                            maximum=2000,
+                            value=1024,
+                            step=1,
+                            label="dim",
+                            info="dim",
+                            interactive=True,
+                        )
                 with gr.Row():
                     llm_progress = gr.Textbox(
                         label="LLM processing status",

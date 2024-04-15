@@ -169,6 +169,7 @@ class CMLLLM:
             ),
             similarity_top_k=similarity_top_k,
         )
+        print("Albin, started the chat engine")
 
     def infer(self, history):
         query_text = history[-1][0]
@@ -188,6 +189,7 @@ class CMLLLM:
         streaming_response = self.chat_engine.stream_chat(query_text)
         # generated_text = ""
         for token in streaming_response.response_gen:
+            print(f"Albin, chat response = {token}")
             history[-1][1] += token
             yield history
 
