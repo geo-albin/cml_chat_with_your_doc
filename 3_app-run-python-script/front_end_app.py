@@ -251,7 +251,6 @@ def demo():
                         inputs=[
                             llm_model,
                             embed_model,
-                            reconfigure_llm,
                             collection_list,
                         ],
                         outputs=[llm_progress],
