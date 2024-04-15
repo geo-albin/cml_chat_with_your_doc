@@ -1,13 +1,20 @@
 import os
 import gradio as gr
 import subprocess
-from utils.cmlllm import (
-    upload_document_and_ingest,
-    clear_chat_engine,
-    Infer,
-    get_supported_models,
+
+# from utils.cmlllm import (
+#     upload_document_and_ingest,
+#     clear_chat_engine,
+#     Infer,
+#     get_supported_models,
+#     get_active_collections,
+#     get_supported_embed_models,
+# )
+from utils.cmlllm_new import (
+    CMLLLM,
     get_active_collections,
     get_supported_embed_models,
+    get_supported_models,
 )
 
 MAX_QUESTIONS = 5
@@ -60,6 +67,73 @@ llm_choice = get_supported_models()
 collection_list_items = get_active_collections()
 embed_models = get_supported_embed_models()
 
+llm = CMLLLM()
+
+
+def upload_document_and_ingest_new(files, questions, progress=gr.Progress()):
+    if len(files) == 0:
+        return "Please add some files..."
+    return llm.ingest(files, questions, progress)
+
+
+def conversation(msg):
+    return llm.infer(msg)
+
+
+def clear_chat_engine():
+    return llm.clear_chat_engine()
+
+
+def reconfigure_llm(
+    model_name="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
+    embed_model_name="thenlper/gte-large",
+    temperature=0.0,
+    max_new_tokens=256,
+    context_window=3900,
+    gpu_layers=20,
+    dim=1024,
+    collection_name="cml_rag_collection",
+    memory_token_limit=3900,
+    sentense_embedding_percentile_cutoff=0.8,
+    similarity_top_k=5,
+    progress=gr.Progress(),
+):
+    global llm
+    llm = CMLLLM(
+        model_name=model_name,
+        embed_model_name=embed_model_name,
+        temperature=temperature,
+        max_new_tokens=max_new_tokens,
+        context_window=context_window,
+        gpu_layers=gpu_layers,
+        dim=dim,
+        collection_name=collection_name,
+        memory_token_limit=memory_token_limit,
+        sentense_embedding_percentile_cutoff=sentense_embedding_percentile_cutoff,
+        similarity_top_k=similarity_top_k,
+        progress=progress,
+    )
+    if len(collection_name) == 0:
+        return "Select a collection name"
+    return progress
+
+
+def validate_llm(model_name, embed_model_name, collection_name, progress=gr.Progress()):
+    ret = True
+    if len(model_name) == 0:
+        progress("Select a model name")
+        ret = False
+
+    if len(embed_model_name) == 0:
+        progress("Select a embed model name")
+        ret = False
+
+    if len(collection_name) == 0:
+        progress("Select a collection name")
+        ret = False
+
+    return ret
+
 
 def demo():
     with gr.Blocks(theme="base") as demo:
@@ -73,17 +147,15 @@ def demo():
                 with gr.Accordion("Configure LLM", open=True):
                     llm_model = gr.Dropdown(
                         choices=llm_choice,
-                        # value=llm_choice[0],
+                        value=llm_choice[0],
                         label="LLM Model",
-                        type="value",
-                        info="Please select the model",
+                        # info="Please select the model",
                     )
                     embed_model = gr.Dropdown(
                         choices=embed_models,
-                        # value=llm_choice[0],
+                        value=embed_models[0],
                         label="Embed Model",
-                        type="value",
-                        info="Please select the embed model",
+                        # info="Please select the embed model",
                     )
                     temperature = gr.Slider(
                         minimum=0,
@@ -175,7 +247,15 @@ def demo():
                 with gr.Row():
                     configure_button = gr.Button("Click to configure LLM")
                     configure_button.click(
-                        None,
+                        validate_llm,
+                        input=[
+                            llm_model,
+                            embed_model,
+                            reconfigure_llm,
+                            collection_list,
+                        ],
+                        outputs=[llm_progress],
+                    ).success(
                         inputs=[
                             llm_model,
                             embed_model,
@@ -227,7 +307,7 @@ def demo():
                 with gr.Row():
                     upload_button = gr.Button("Click to process the files")
                     upload_button.click(
-                        upload_document_and_ingest,
+                        upload_document_and_ingest_new,
                         inputs=[documents, questions_slider],
                         outputs=[db_progress],
                     )
@@ -242,9 +322,11 @@ def demo():
             with gr.Row():
                 submit_btn = gr.Button("Submit message")
                 clear_btn = gr.ClearButton([msg, chatbot], value="Clear conversation")
-                msg.submit(Infer, inputs=[msg], outputs=[chatbot])
-                submit_btn.click(Infer, inputs=[msg], outputs=[chatbot])
-                clear_btn.click(clear_chat_engine)
+                msg.submit(conversation, inputs=[msg], outputs=[chatbot], queue=False)
+                submit_btn.click(
+                    conversation, inputs=[msg], outputs=[chatbot], queue=False
+                )
+                clear_btn.click(clear_chat_engine, queue=False)
 
             # infer = gr.ChatInterface(
             #     fn=Infer,
