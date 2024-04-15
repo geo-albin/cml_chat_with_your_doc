@@ -120,15 +120,15 @@ def reconfigure_llm(
 
 def validate_llm(model_name, embed_model_name, collection_name, progress=gr.Progress()):
     ret = True
-    if len(model_name) == 0:
+    if model_name is None or len(model_name) == 0:
         progress("Select a model name")
         ret = False
 
-    if len(embed_model_name) == 0:
+    if embed_model_name is None or len(embed_model_name) == 0:
         progress("Select a embed model name")
         ret = False
 
-    if len(collection_name) == 0:
+    if collection_name is None or len(collection_name) == 0:
         progress("Select a collection name")
         ret = False
 
