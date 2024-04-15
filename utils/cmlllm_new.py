@@ -170,16 +170,9 @@ class CMLLLM:
             similarity_top_k=similarity_top_k,
         )
 
-    def infer(self, query, history=None):
-        print(f"query = {query}")
-        query_text = ""
-        if isinstance(query, dict) and query["text"]:
-            query_text = query["text"]
-        elif isinstance(query, str):
-            query_text = query
-        else:
-            yield ""
-            return
+    def infer(self, history):
+        query_text = history[-1][0]
+        print(f"query = {query_text}")
 
         if len(query_text) == 0:
             yield "Please ask some questions"
@@ -193,10 +186,10 @@ class CMLLLM:
             return
 
         streaming_response = self.chat_engine.stream_chat(query_text)
-        generated_text = ""
+        # generated_text = ""
         for token in streaming_response.response_gen:
-            generated_text = generated_text + token
-            yield generated_text
+            history[-1][1] += token
+            yield history
 
     def ingest(self, files, questions, progress=gr.Progress()):
         if not (self.collection_name in active_collection_available):

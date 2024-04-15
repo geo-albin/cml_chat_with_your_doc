@@ -76,12 +76,16 @@ def upload_document_and_ingest_new(files, questions, progress=gr.Progress()):
     return llm.ingest(files, questions, progress)
 
 
-def conversation(msg):
-    return llm.infer(msg)
+def conversation(history):
+    return llm.infer(history)
 
 
 def clear_chat_engine():
     return llm.clear_chat_engine()
+
+
+def update_chatbot(user_message, history):
+    return "", history + [[user_message, None]]
 
 
 def reconfigure_llm(
@@ -113,8 +117,7 @@ def reconfigure_llm(
         similarity_top_k=similarity_top_k,
         progress=progress,
     )
-    if len(collection_name) == 0:
-        return "Select a collection name"
+
     return progress
 
 
@@ -255,6 +258,7 @@ def demo():
                         ],
                         outputs=[llm_progress],
                     ).success(
+                        reconfigure_llm,
                         inputs=[
                             llm_model,
                             embed_model,
@@ -323,8 +327,8 @@ def demo():
                 clear_btn = gr.ClearButton([msg, chatbot], value="Clear conversation")
                 msg.submit(conversation, inputs=[msg], outputs=[chatbot], queue=False)
                 submit_btn.click(
-                    conversation, inputs=[msg], outputs=[chatbot], queue=False
-                )
+                    update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
+                ).then(conversation, inputs=[chatbot], outputs=[chatbot], queue=False)
                 clear_btn.click(clear_chat_engine, queue=False)
 
             # infer = gr.ChatInterface(
