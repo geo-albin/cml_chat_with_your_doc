@@ -248,7 +248,7 @@ def demo():
                     configure_button = gr.Button("Click to configure LLM")
                     configure_button.click(
                         validate_llm,
-                        input=[
+                        inputs=[
                             llm_model,
                             embed_model,
                             reconfigure_llm,
