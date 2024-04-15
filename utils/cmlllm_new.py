@@ -90,6 +90,8 @@ class CMLLLM:
     MODELS_PATH = "./models"
     EMBED_PATH = "./embed_models"
 
+    questions_folder = "questions"
+
     def __init__(
         self,
         model_name="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
@@ -286,7 +288,10 @@ class CMLLLM:
                     op += "\nQuestion " + str(i) + " - " + str(q)
                     i += 1
 
-                self.write_list_to_file(eval_questions, "questions.txt")
+                self.write_list_to_file(
+                    eval_questions,
+                    self.questions_folder + self.collection_name + "questions.txt",
+                )
                 print(
                     f"done generating questions from the document {os.path.basename(file)}"
                 )
@@ -310,6 +315,16 @@ class CMLLLM:
         with open(filename, "a") as f:
             for item in lst:
                 f.write(str(item) + "\n")
+
+    def read_list_from_file(self, filename="questions.txt"):
+        lst = []
+        if os.path.exists(self.questions_folder + self.collection_name + filename):
+            with open(
+                self.questions_folder + self.collection_name + filename, "r"
+            ) as f:
+                for line in f:
+                    lst.append(line.strip())  # Remove newline characters
+        return lst
 
     def upload_document_and_ingest(self, files, questions, progress=gr.Progress()):
         if len(files) == 0:

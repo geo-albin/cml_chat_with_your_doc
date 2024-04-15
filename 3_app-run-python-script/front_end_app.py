@@ -20,17 +20,23 @@ from utils.cmlllm_new import (
 MAX_QUESTIONS = 5
 
 
-def read_list_from_file(filename="questions.txt"):
-    lst = []
-    if os.path.exists(filename):
-        with open(filename, "r") as f:
-            for line in f:
-                lst.append(line.strip())  # Remove newline characters
-    return lst
+file_types = ["pdf", "html", "txt"]
+
+
+def get_value(label):
+    return label.value
+
+
+clear_btn = gr.ClearButton("Clear")
+llm_choice = get_supported_models()
+collection_list_items = get_active_collections()
+embed_models = get_supported_embed_models()
+
+llm = CMLLLM()
 
 
 def read_list_from_file_button(filename="questions.txt"):
-    lst = read_list_from_file(filename=filename)
+    lst = llm.read_list_from_file(filename=filename)
     lists = []
     for i in range(MAX_QUESTIONS):
         if (len(lst) > i) and (len(lst[i]) != 0):
@@ -53,21 +59,7 @@ def read_list_from_file_button(filename="questions.txt"):
     return lists[0], lists[1], lists[2], lists[3], lists[4]
 
 
-questions = read_list_from_file()
-
-file_types = ["pdf", "html", "txt"]
-
-
-def get_value(label):
-    return label.value
-
-
-clear_btn = gr.ClearButton("Clear")
-llm_choice = get_supported_models()
-collection_list_items = get_active_collections()
-embed_models = get_supported_embed_models()
-
-llm = CMLLLM()
+# questions = llm.read_list_from_file()
 
 
 def upload_document_and_ingest_new(files, questions, progress=gr.Progress()):
@@ -117,6 +109,7 @@ def reconfigure_llm(
         similarity_top_k=similarity_top_k,
         progress=progress,
     )
+    return "Done configuring llm!!!"
 
 
 def validate_llm(model_name, embed_model_name, collection_name, progress=gr.Progress()):
@@ -230,17 +223,17 @@ def demo():
                         allow_custom_value=True,
                         # info="Please select or create a collection to use for saving the data and querying!",
                     )
-                    with gr.Row():
-                        with gr.Accordion("Configure vector DB parameters", open=False):
-                            dim = gr.Slider(
-                                minimum=100,
-                                maximum=2000,
-                                value=1024,
-                                step=1,
-                                label="dim",
-                                info="dim",
-                                interactive=True,
-                            )
+                with gr.Row():
+                    with gr.Accordion("Configure vector DB parameters", open=False):
+                        dim = gr.Slider(
+                            minimum=100,
+                            maximum=2000,
+                            value=1024,
+                            step=1,
+                            label="dim",
+                            info="dim",
+                            interactive=True,
+                        )
                 with gr.Row():
                     llm_progress = gr.Textbox(
                         label="LLM processing status",
@@ -328,12 +321,12 @@ def demo():
                 clear_btn = gr.ClearButton([msg, chatbot], value="Clear conversation")
                 msg.submit(
                     update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
-                ).then(lambda: [None], inputs=[], outputs=[msg]).then(
+                ).then(lambda: gr.update(value=""), inputs=[], outputs=[msg]).then(
                     conversation, inputs=[chatbot], outputs=[chatbot], queue=False
                 )
                 submit_btn.click(
                     update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
-                ).then(lambda: [None], inputs=[], outputs=[msg]).then(
+                ).then(lambda: gr.update(value=""), inputs=[], outputs=[msg]).then(
                     conversation, inputs=[chatbot], outputs=[chatbot], queue=False
                 )
                 clear_btn.click(clear_chat_engine, queue=False)
