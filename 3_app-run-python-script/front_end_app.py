@@ -77,7 +77,7 @@ def clear_chat_engine():
 
 
 def update_chatbot(user_message, history):
-    return "", history + [[user_message, ""]]
+    return "", history + [[user_message, None]]
 
 
 def reconfigure_llm(
@@ -115,16 +115,18 @@ def reconfigure_llm(
 def validate_llm(model_name, embed_model_name, collection_name, progress=gr.Progress()):
     ret = True
     if model_name is None or len(model_name) == 0:
-        progress("Select a model name")
+        progress(0.1, "Select a model name")
         ret = False
 
     if embed_model_name is None or len(embed_model_name) == 0:
-        progress("Select a embed model name")
+        progress(0.2, "Select a embed model name")
         ret = False
 
     if collection_name is None or len(collection_name) == 0:
-        progress("Select a collection name")
+        progress(0.3, "Select a collection name")
         ret = False
+
+    progress(0.9, "Successfully validated the llm")
 
     return ret
 
@@ -329,7 +331,11 @@ def demo():
                 ).then(lambda: gr.update(value=""), inputs=[], outputs=[msg]).then(
                     conversation, inputs=[chatbot], outputs=[chatbot], queue=False
                 )
-                clear_btn.click(clear_chat_engine, queue=False)
+                clear_btn.click(clear_chat_engine, queue=False).then(
+                    lambda: [gr.update(value=""), gr.update(value="")],
+                    inputs=[],
+                    outputs=[chatbot, msg],
+                )
 
             # infer = gr.ChatInterface(
             #     fn=Infer,
