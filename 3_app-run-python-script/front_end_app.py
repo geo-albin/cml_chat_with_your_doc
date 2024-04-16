@@ -1,16 +1,7 @@
 import os
 import gradio as gr
-import subprocess
 
-# from utils.cmlllm import (
-#     upload_document_and_ingest,
-#     clear_chat_engine,
-#     Infer,
-#     get_supported_models,
-#     get_active_collections,
-#     get_supported_embed_models,
-# )
-from utils.cmlllm_new import (
+from utils.cmlllm import (
     CMLLLM,
     get_active_collections,
     get_supported_embed_models,
@@ -108,17 +99,24 @@ def reconfigure_llm(
     return "Done configuring llm!!!"
 
 
-def validate_llm(model_name, embed_model_name, progress=gr.Progress()):
+def validate_llm(model_name, embed_model_name):
     ret = True
     if model_name is None or len(model_name) == 0:
-        progress(0.1, "Select a model name")
+        gr.Error("Select a valid model name")
         ret = False
 
     if embed_model_name is None or len(embed_model_name) == 0:
-        progress(0.2, "Select a embed model name")
+        gr.Error("Select a valid embed model name")
         ret = False
 
-    progress(0.9, "Successfully validated the llm")
+    return ret
+
+
+def validate_collection_name(collectionname):
+    ret = True
+    if collectionname is None or len(collectionname) == 0:
+        gr.Error("invalid collection name, please set a valid collection name string.")
+        ret = False
 
     return ret
 
@@ -137,13 +135,11 @@ def demo():
                         choices=llm_choice,
                         value=llm_choice[0],
                         label="LLM Model",
-                        # info="Please select the model",
                     )
                     embed_model = gr.Dropdown(
                         choices=embed_models,
                         value=embed_models[0],
                         label="Embed Model",
-                        # info="Please select the embed model",
                     )
                     with gr.Accordion("Configure model parameters", open=False):
                         temperature = gr.Slider(
@@ -237,7 +233,7 @@ def demo():
                                 llm_model,
                                 embed_model,
                             ],
-                            outputs=[llm_progress],
+                            outputs=[],
                         ).success(
                             reconfigure_llm,
                             inputs=[
@@ -294,11 +290,15 @@ def demo():
                         allow_custom_value=True,
                     )
                     collection_list.change(
-                        llm.set_collection_name, inputs=collection_list, outputs=None
+                        llm.set_collection_name,
+                        inputs=[collection_list],
+                        outputs=[db_progress],
                     )
                 with gr.Row():
                     upload_button = gr.Button("Click to process the files")
                     upload_button.click(
+                        validate_collection_name, inputs=collection_list, outputs=None
+                    ).success(
                         llm.set_collection_name, inputs=collection_list, outputs=None
                     ).then(
                         upload_document_and_ingest_new,
@@ -307,31 +307,6 @@ def demo():
                     )
 
         with gr.Tab("Step 3 - Conversation with chatbot"):
-            # chatbot = gr.Chatbot(height=500)
-            # with gr.Row():
-            #     msg = gr.Textbox(
-            #         placeholder="Type message (e.g. 'What is this document about?')",
-            #         container=True,
-            #     )
-            # with gr.Row():
-            #     submit_btn = gr.Button("Submit message")
-            #     clear_btn = gr.ClearButton([msg, chatbot], value="Clear conversation")
-            #     msg.submit(
-            #         update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
-            #     ).then(lambda: gr.update(value=""), inputs=[], outputs=[msg]).then(
-            #         conversation, inputs=[chatbot], outputs=[chatbot], queue=False
-            #     )
-            #     submit_btn.click(
-            #         update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
-            #     ).then(lambda: gr.update(value=""), inputs=[], outputs=[msg]).then(
-            #         conversation, inputs=[chatbot], outputs=[chatbot], queue=False
-            #     )
-            #     clear_btn.click(clear_chat_engine, queue=False).then(
-            #         lambda: [gr.update(value=""), gr.update(value="")],
-            #         inputs=[],
-            #         outputs=[chatbot, msg],
-            #     )
-
             gr.ChatInterface(
                 fn=llm.infer,
                 title="CML chat Bot - v2",
@@ -340,40 +315,6 @@ def demo():
                 submit_btn=submit_btn,
             )
             clear_btn.click(llm.clear_chat_engine())
-
-            # infer = gr.ChatInterface(
-            #     fn=Infer,
-            #     title="CML chat Bot - v2",
-            #     examples=questions,
-            #     chatbot=gr.Chatbot(
-            #         height=500,
-            #         show_label=False,
-            #         show_copy_button=True,
-            #         layout="bubble",
-            #         bubble_full_width=True,
-            #     ),
-            #     clear_btn=clear_btn,
-            #     submit_btn=gr.Button("Submit"),
-            # )
-            # with infer:
-            #     clear_btn.click(clear_chat_engine)
-            #     with gr.Row():
-            #         with gr.Accordion("Advanced - Document references", open=False):
-            #             with gr.Row():
-            #                 doc_source1 = gr.Textbox(
-            #                     label="Reference 1", lines=2, container=True, scale=20
-            #                 )
-            #                 source1_page = gr.Number(label="Page", scale=1)
-            #             with gr.Row():
-            #                 doc_source2 = gr.Textbox(
-            #                     label="Reference 2", lines=2, container=True, scale=20
-            #                 )
-            #                 source2_page = gr.Number(label="Page", scale=1)
-            #             with gr.Row():
-            #                 doc_source3 = gr.Textbox(
-            #                     label="Reference 3", lines=2, container=True, scale=20
-            #                 )
-            #                 source3_page = gr.Number(label="Page", scale=1)
 
         with gr.Tab("Some questions about the topic"):
             questions_tab = gr.Blocks(css="assets/custom_label.css")
