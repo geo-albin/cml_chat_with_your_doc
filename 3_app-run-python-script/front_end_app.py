@@ -337,13 +337,13 @@ def demo():
             gr.ChatInterface(
                 fn=conversation,
                 title="CML chat Bot - v2",
-                chatbot=gr.Chatbot(
-                    height=500,
-                    show_label=False,
-                    show_copy_button=True,
-                    layout="bubble",
-                    bubble_full_width=True,
-                ),
+                # chatbot=gr.Chatbot(
+                #     height=500,
+                #     show_label=False,
+                #     show_copy_button=True,
+                #     layout="bubble",
+                #     bubble_full_width=True,
+                # ),
                 clear_btn=clear_btn,
                 submit_btn=gr.Button("Submit"),
             )
