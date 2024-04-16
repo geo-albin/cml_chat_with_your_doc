@@ -1,8 +1,6 @@
 import os
 from llama_index.core import SimpleDirectoryReader, Settings
 from llama_index.core.node_parser import SimpleNodeParser
-from llama_index.core.node_parser import SentenceWindowNodeParser
-from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.readers.file import UnstructuredReader, PDFReader
 from llama_index.readers.nougat_ocr import PDFNougatOCR
@@ -187,10 +185,10 @@ class CMLLLM:
         collection_name,
         progress=gr.Progress(),
     ):
-        if self.collection_name == collection_name:
+        if collection_name is None or len(collection_name) == 0:
             return
 
-        if collection_name is None or len(collection_name) == 0:
+        if self.collection_name == collection_name:
             return
 
         print("adding new collection name")
@@ -252,8 +250,6 @@ class CMLLLM:
         ):
             yield "No documents are processed yet. Please process some documents.."
             return
-
-        # history[-1][1] = ""
 
         streaming_response = self.chat_engine.stream_chat(query_text)
         generated_text = ""

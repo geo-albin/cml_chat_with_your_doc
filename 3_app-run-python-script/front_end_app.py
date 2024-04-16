@@ -60,8 +60,8 @@ def read_list_from_file_button(filename="questions.txt"):
 
 
 def upload_document_and_ingest_new(files, questions, progress=gr.Progress()):
-    if len(files) == 0:
-        return "Please add some files..."
+    if files is None or len(files) == 0:
+        gr.Error("Please add some files...")
     return llm.ingest(files, questions, progress)
 
 
@@ -125,9 +125,9 @@ def demo():
     with gr.Blocks(theme="base") as demo:
         gr.Markdown(
             """<center><h2>CML Chat application - v2</center></h2>
-        <h3>Chat with your documents</h3>"""
+        <h3>Chat with your documents (pdf and html)</h3>"""
         )
-        with gr.Tab("Step 1 - Review the LLM and Vector DB configuration"):
+        with gr.Tab("Step 1 - Review the LLM and Vector DB configuration[Optional]"):
             admin = gr.Blocks()
             with admin:
                 with gr.Accordion("LLM Configuration", open=True):
@@ -288,6 +288,7 @@ def demo():
                         choices=collection_list_items,
                         label="Collection to use",
                         allow_custom_value=True,
+                        value=collection_list_items[0],
                     )
                     collection_list.change(
                         llm.set_collection_name,
