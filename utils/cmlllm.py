@@ -168,7 +168,7 @@ class CMLLLM:
                 "Always answer the query using the Context provided and not prior knowledge or General knowledge."
                 "Avoid statements like 'Based on the context' or 'The context information'.\n"
                 "If the provided context dont have the information, answer 'I dont know'.\n"
-                "Please cite the source filename along with your answers."
+                "Please cite the source along with your answers."
             ),
             similarity_top_k=self.similarity_top_k,
         )
@@ -230,7 +230,7 @@ class CMLLLM:
                 "Always answer the query using the Context provided and not prior knowledge or General knowledge."
                 "Avoid statements like 'Based on the context' or 'The context information'.\n"
                 "If the provided context dont have the information, answer 'I dont know'.\n"
-                "Please cite the source filename along with your answers."
+                "Please cite the source along with your answers."
             ),
             similarity_top_k=self.similarity_top_k,
         )
