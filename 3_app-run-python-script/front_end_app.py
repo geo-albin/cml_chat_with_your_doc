@@ -110,7 +110,7 @@ def reconfigure_llm(
     return "Done configuring llm!!!"
 
 
-def validate_llm(model_name, embed_model_name, collection_name, progress=gr.Progress()):
+def validate_llm(model_name, embed_model_name, progress=gr.Progress()):
     ret = True
     if model_name is None or len(model_name) == 0:
         progress(0.1, "Select a model name")
@@ -118,10 +118,6 @@ def validate_llm(model_name, embed_model_name, collection_name, progress=gr.Prog
 
     if embed_model_name is None or len(embed_model_name) == 0:
         progress(0.2, "Select a embed model name")
-        ret = False
-
-    if collection_name is None or len(collection_name) == 0:
-        progress(0.3, "Select a collection name")
         ret = False
 
     progress(0.9, "Successfully validated the llm")
