@@ -309,30 +309,45 @@ def demo():
                     )
 
         with gr.Tab("Step 3 - Conversation with chatbot"):
-            chatbot = gr.Chatbot(height=500)
-            with gr.Row():
-                msg = gr.Textbox(
-                    placeholder="Type message (e.g. 'What is this document about?')",
-                    container=True,
-                )
-            with gr.Row():
-                submit_btn = gr.Button("Submit message")
-                clear_btn = gr.ClearButton([msg, chatbot], value="Clear conversation")
-                msg.submit(
-                    update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
-                ).then(lambda: gr.update(value=""), inputs=[], outputs=[msg]).then(
-                    conversation, inputs=[chatbot], outputs=[chatbot], queue=False
-                )
-                submit_btn.click(
-                    update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
-                ).then(lambda: gr.update(value=""), inputs=[], outputs=[msg]).then(
-                    conversation, inputs=[chatbot], outputs=[chatbot], queue=False
-                )
-                clear_btn.click(clear_chat_engine, queue=False).then(
-                    lambda: [gr.update(value=""), gr.update(value="")],
-                    inputs=[],
-                    outputs=[chatbot, msg],
-                )
+            # chatbot = gr.Chatbot(height=500)
+            # with gr.Row():
+            #     msg = gr.Textbox(
+            #         placeholder="Type message (e.g. 'What is this document about?')",
+            #         container=True,
+            #     )
+            # with gr.Row():
+            #     submit_btn = gr.Button("Submit message")
+            #     clear_btn = gr.ClearButton([msg, chatbot], value="Clear conversation")
+            #     msg.submit(
+            #         update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
+            #     ).then(lambda: gr.update(value=""), inputs=[], outputs=[msg]).then(
+            #         conversation, inputs=[chatbot], outputs=[chatbot], queue=False
+            #     )
+            #     submit_btn.click(
+            #         update_chatbot, inputs=[msg, chatbot], outputs=[msg, chatbot]
+            #     ).then(lambda: gr.update(value=""), inputs=[], outputs=[msg]).then(
+            #         conversation, inputs=[chatbot], outputs=[chatbot], queue=False
+            #     )
+            #     clear_btn.click(clear_chat_engine, queue=False).then(
+            #         lambda: [gr.update(value=""), gr.update(value="")],
+            #         inputs=[],
+            #         outputs=[chatbot, msg],
+            #     )
+
+            gr.ChatInterface(
+                fn=conversation,
+                title="CML chat Bot - v2",
+                chatbot=gr.Chatbot(
+                    height=500,
+                    show_label=False,
+                    show_copy_button=True,
+                    layout="bubble",
+                    bubble_full_width=True,
+                ),
+                clear_btn=clear_btn,
+                submit_btn=gr.Button("Submit"),
+            )
+            clear_btn.click(clear_chat_engine)
 
             # infer = gr.ChatInterface(
             #     fn=Infer,
