@@ -75,7 +75,7 @@ def upload_document_and_ingest_new(files, questions, progress=gr.Progress()):
 
 
 def conversation(msg, history):
-    return llm.infer(msg, history)
+    llm.infer(msg, history)
 
 
 def clear_chat_engine():
