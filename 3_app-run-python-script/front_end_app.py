@@ -36,8 +36,8 @@ embed_models = get_supported_embed_models()
 def update_active_collections():
     global collection_list_items
     collection_list_items = get_active_collections()
-    print(f"Albin : new collection {collection_list_items}")
-    return gr.Dropdown.update(choices=collection_list_items)
+    print(f"new collection {collection_list_items}")
+    return gr.Dropdown(choices=collection_list_items)
 
 
 llm = CMLLLM()
