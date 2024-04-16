@@ -165,8 +165,8 @@ class CMLLLM:
             memory=ChatMemoryBuffer.from_defaults(token_limit=self.memory_token_limit),
             system_prompt=(
                 "You are an expert Q&A assistant that is trusted around the world.\n"
-                "Always answer the query using the provided context information and not prior knowledge."
-                "Never mention about the provided context.\n"
+                "Always answer the query using the Context provided and not prior knowledge or General knowledge."
+                "Avoid statements like 'Based on the context' or 'The context information'.\n"
                 "If the provided context dont have the information, answer 'I dont know'.\n"
                 "Please cite the source filename along with your answers."
             ),
