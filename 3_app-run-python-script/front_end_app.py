@@ -28,6 +28,15 @@ def get_value(label):
 
 
 clear_btn = gr.ClearButton("Clear")
+chat_bot = gr.Chatbot(
+    height=500,
+    show_label=False,
+    show_copy_button=True,
+    layout="bubble",
+    bubble_full_width=True,
+)
+submit_btn = gr.Button("Submit")
+
 llm_choice = get_supported_models()
 collection_list_items = get_active_collections()
 embed_models = get_supported_embed_models()
@@ -337,15 +346,9 @@ def demo():
             gr.ChatInterface(
                 fn=conversation,
                 title="CML chat Bot - v2",
-                # chatbot=gr.Chatbot(
-                #     height=500,
-                #     show_label=False,
-                #     show_copy_button=True,
-                #     layout="bubble",
-                #     bubble_full_width=True,
-                # ),
+                chatbot=chat_bot,
                 clear_btn=clear_btn,
-                submit_btn=gr.Button("Submit"),
+                submit_btn=submit_btn,
             )
             clear_btn.click(clear_chat_engine)
 
