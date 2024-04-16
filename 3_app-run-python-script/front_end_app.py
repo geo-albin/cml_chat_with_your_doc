@@ -344,7 +344,7 @@ def demo():
             #     )
 
             gr.ChatInterface(
-                fn=conversation,
+                fn=llm.infer,
                 title="CML chat Bot - v2",
                 chatbot=chat_bot,
                 clear_btn=clear_btn,
