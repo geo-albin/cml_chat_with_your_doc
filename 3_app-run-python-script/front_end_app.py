@@ -298,25 +298,31 @@ def demo():
                         allow_custom_value=True,
                         value=collection_list_items[0],
                     )
-                    collection_list.change(
-                        llm.set_collection_name,
-                        inputs=[collection_list],
-                        outputs=[db_progress],
-                    ).then(
-                        update_active_collections,
-                        inputs=[],
-                        outputs=[collection_list],
-                    )
+                    # collection_list.change(
+                    #     llm.set_collection_name,
+                    #     inputs=[collection_list],
+                    #     outputs=[db_progress],
+                    # ).then(
+                    #     update_active_collections,
+                    #     inputs=[],
+                    #     outputs=[collection_list],
+                    # )
                 with gr.Row():
                     upload_button = gr.Button("Click to process the files")
                     upload_button.click(
                         validate_collection_name, inputs=collection_list, outputs=None
                     ).success(
-                        llm.set_collection_name, inputs=collection_list, outputs=None
+                        llm.set_collection_name,
+                        inputs=[collection_list],
+                        outputs=[db_progress],
                     ).then(
                         upload_document_and_ingest_new,
                         inputs=[documents, questions_slider],
                         outputs=[db_progress],
+                    ).then(
+                        update_active_collections,
+                        inputs=[],
+                        outputs=[collection_list],
                     )
 
         with gr.Tab("Step 3 - Conversation with chatbot"):
