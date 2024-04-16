@@ -174,8 +174,8 @@ class CMLLLM:
         )
         print("Albin, started the chat engine")
 
-    def infer(self, history):
-        query_text = history[-1][0]
+    def infer(self, msg, history):
+        query_text = msg
         print(f"query = {query_text}")
 
         if len(query_text) == 0:
@@ -189,14 +189,15 @@ class CMLLLM:
             yield "No documents are processed yet. Please process some documents.."
             return
 
-        history[-1][1] = ""
+        # history[-1][1] = ""
 
         streaming_response = self.chat_engine.chat(query_text)
-        # generated_text = ""
+        generated_text = ""
         for token in streaming_response.response:
             print(f"Albin, chat response = {token}")
-            history[-1][1] += token
-            yield history
+            # history[-1][1] += token
+            generated_text = generated_text + token
+            yield generated_text
         # return history
         # history[-1][1] = generated_text
 
