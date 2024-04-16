@@ -74,14 +74,6 @@ def upload_document_and_ingest_new(files, questions, progress=gr.Progress()):
     return llm.ingest(files, questions, progress)
 
 
-def conversation(msg, history):
-    yield llm.infer(msg, history)
-
-
-def clear_chat_engine():
-    return llm.clear_chat_engine()
-
-
 def update_chatbot(user_message, history):
     return "", history + [[user_message, None]]
 
@@ -350,7 +342,7 @@ def demo():
                 clear_btn=clear_btn,
                 submit_btn=submit_btn,
             )
-            clear_btn.click(clear_chat_engine)
+            clear_btn.click(llm.clear_chat_engine())
 
             # infer = gr.ChatInterface(
             #     fn=Infer,
