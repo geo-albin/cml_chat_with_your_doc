@@ -133,6 +133,61 @@ class CMLLLM:
             node_parser=self.node_parser,
         )
 
+        self.dim = dim
+        self.similarity_top_k = similarity_top_k
+        self.sentense_embedding_percentile_cutoff = sentense_embedding_percentile_cutoff
+        self.memory_token_limit = memory_token_limit
+        self.set_collection_name(collection_name=collection_name, progress=progress)
+        # self.collection_name = collection_name
+
+        # if not self.collection_name in active_collection_available:
+        #     active_collection_available[self.collection_name] = False
+
+        # progress((2, 25), desc="setting the vector db")
+
+        # self.vector_store = MilvusVectorStore(
+        #     dim=self.dim,
+        #     overwrite=True,
+        #     collection_name=self.collection_name,
+        # )
+
+        # self.index = VectorStoreIndex.from_vector_store(vector_store=self.vector_store)
+
+        # progress((3, 25), desc="setting the chat engine")
+
+        # self.chat_engine = self.index.as_chat_engine(
+        #     chat_mode=ChatMode.CONTEXT,
+        #     verbose=True,
+        #     postprocessor=[
+        #         SentenceEmbeddingOptimizer(
+        #             percentile_cutoff=sentense_embedding_percentile_cutoff
+        #         ),
+        #         DuplicateRemoverNodePostprocessor(),
+        #     ],
+        #     memory=ChatMemoryBuffer.from_defaults(token_limit=memory_token_limit),
+        #     system_prompt=(
+        #         "You are an expert Q&A system that is trusted around the world.\n"
+        #         "Always answer the query using the provided context information and not prior knowledge."
+        #         "Some rules to follow:\n"
+        #         "1. Never directly reference the given context in your answer.\n"
+        #         "2. Avoid statements like 'Based on the context' or 'The context information'"
+        #         " or 'This information is not directly stated in the context provided' or anything along those lines.\n"
+        #         "If the provided context dont have the information, answer 'I dont know'.\n"
+        #         "Please cite file name and page number along with your answers."
+        #     ),
+        #     similarity_top_k=similarity_top_k,
+        # )
+        # print("Albin, started the chat engine")
+
+    def set_collection_name(
+        self,
+        collection_name,
+        progress=gr.Progress(),
+    ):
+        if self.collection_name == collection_name:
+            return
+
+        print("adding new collection name")
         self.collection_name = collection_name
 
         if not self.collection_name in active_collection_available:
@@ -141,7 +196,7 @@ class CMLLLM:
         progress((2, 25), desc="setting the vector db")
 
         self.vector_store = MilvusVectorStore(
-            dim=dim,
+            dim=self.dim,
             overwrite=True,
             collection_name=self.collection_name,
         )
@@ -155,11 +210,11 @@ class CMLLLM:
             verbose=True,
             postprocessor=[
                 SentenceEmbeddingOptimizer(
-                    percentile_cutoff=sentense_embedding_percentile_cutoff
+                    percentile_cutoff=self.sentense_embedding_percentile_cutoff
                 ),
                 DuplicateRemoverNodePostprocessor(),
             ],
-            memory=ChatMemoryBuffer.from_defaults(token_limit=memory_token_limit),
+            memory=ChatMemoryBuffer.from_defaults(token_limit=self.memory_token_limit),
             system_prompt=(
                 "You are an expert Q&A system that is trusted around the world.\n"
                 "Always answer the query using the provided context information and not prior knowledge."
@@ -170,7 +225,7 @@ class CMLLLM:
                 "If the provided context dont have the information, answer 'I dont know'.\n"
                 "Please cite file name and page number along with your answers."
             ),
-            similarity_top_k=similarity_top_k,
+            similarity_top_k=self.similarity_top_k,
         )
         print("Albin, started the chat engine")
 

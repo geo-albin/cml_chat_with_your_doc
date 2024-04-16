@@ -135,10 +135,10 @@ def demo():
             """<center><h2>CML Chat application - v2</center></h2>
         <h3>Chat with your documents</h3>"""
         )
-        with gr.Tab("Step 1 - Setup the LLM and Vector DB"):
+        with gr.Tab("Step 1 - Review the LLM and Vector DB configuration"):
             admin = gr.Blocks()
             with admin:
-                with gr.Accordion("Configure LLM", open=True):
+                with gr.Accordion("LLM Configuration", open=True):
                     llm_model = gr.Dropdown(
                         choices=llm_choice,
                         value=llm_choice[0],
@@ -217,13 +217,6 @@ def demo():
                         )
 
                 with gr.Row():
-                    collection_list = gr.Dropdown(
-                        choices=collection_list_items,
-                        label="Collection to use",
-                        allow_custom_value=True,
-                        # info="Please select or create a collection to use for saving the data and querying!",
-                    )
-                with gr.Row():
                     with gr.Accordion("Configure vector DB parameters", open=False):
                         dim = gr.Slider(
                             minimum=100,
@@ -241,33 +234,33 @@ def demo():
                         interactive=False,
                         max_lines=10,
                     )
-                with gr.Row():
-                    configure_button = gr.Button("Click to configure LLM")
-                    configure_button.click(
-                        validate_llm,
-                        inputs=[
-                            llm_model,
-                            embed_model,
-                            collection_list,
-                        ],
-                        outputs=[llm_progress],
-                    ).success(
-                        reconfigure_llm,
-                        inputs=[
-                            llm_model,
-                            embed_model,
-                            temperature,
-                            max_new_tokens,
-                            context_window,
-                            gpu_layers,
-                            dim,
-                            collection_list,
-                            memory_token_limit,
-                            sentense_embedding_percentile_cutoff,
-                            similarity_top_k,
-                        ],
-                        outputs=[llm_progress],
-                    )
+                with gr.Accordion("LLM reconfiguration", open=False):
+                    with gr.Row():
+                        configure_button = gr.Button("Click to configure LLM")
+                        configure_button.click(
+                            validate_llm,
+                            inputs=[
+                                llm_model,
+                                embed_model,
+                            ],
+                            outputs=[llm_progress],
+                        ).success(
+                            reconfigure_llm,
+                            inputs=[
+                                llm_model,
+                                embed_model,
+                                temperature,
+                                max_new_tokens,
+                                context_window,
+                                gpu_layers,
+                                dim,
+                                "cml_rag_collection",
+                                memory_token_limit,
+                                sentense_embedding_percentile_cutoff,
+                                similarity_top_k,
+                            ],
+                            outputs=[llm_progress],
+                        )
 
         with gr.Tab("Step 2 - Document pre-processing"):
             upload = gr.Blocks()
@@ -302,8 +295,19 @@ def demo():
                                 interactive=True,
                             )
                 with gr.Row():
+                    collection_list = gr.Dropdown(
+                        choices=collection_list_items,
+                        label="Collection to use",
+                        allow_custom_value=True,
+                    )
+                    collection_list.change(
+                        llm.set_collection_name, inputs=collection_list, outputs=None
+                    )
+                with gr.Row():
                     upload_button = gr.Button("Click to process the files")
                     upload_button.click(
+                        llm.set_collection_name, inputs=collection_list, outputs=None
+                    ).then(
                         upload_document_and_ingest_new,
                         inputs=[documents, questions_slider],
                         outputs=[db_progress],
