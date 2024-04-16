@@ -32,6 +32,12 @@ llm_choice = get_supported_models()
 collection_list_items = get_active_collections()
 embed_models = get_supported_embed_models()
 
+
+def update_active_collections():
+    global collection_list_items
+    collection_list_items = get_active_collections()
+
+
 llm = CMLLLM()
 
 
@@ -295,9 +301,9 @@ def demo():
                         inputs=[collection_list],
                         outputs=[db_progress],
                     ).then(
-                        get_active_collections,
+                        update_active_collections,
                         inputs=[],
-                        outputs=collection_list.choices,
+                        outputs=[],
                     )
                 with gr.Row():
                     upload_button = gr.Button("Click to process the files")
