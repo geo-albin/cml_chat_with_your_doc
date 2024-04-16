@@ -59,9 +59,6 @@ def read_list_from_file_button(filename="questions.txt"):
     return lists[0], lists[1], lists[2], lists[3], lists[4]
 
 
-# questions = llm.read_list_from_file()
-
-
 def upload_document_and_ingest_new(files, questions, progress=gr.Progress()):
     if len(files) == 0:
         return "Please add some files..."
@@ -91,7 +88,7 @@ def reconfigure_llm(
     collection_name="cml_rag_collection",
     memory_token_limit=3900,
     sentense_embedding_percentile_cutoff=0.8,
-    similarity_top_k=5,
+    similarity_top_k=2,
     progress=gr.Progress(),
 ):
     global llm
@@ -209,9 +206,9 @@ def demo():
                             interactive=True,
                         )
                         similarity_top_k = gr.Slider(
-                            minimum=2,
+                            minimum=1,
                             maximum=20,
-                            value=5,
+                            value=2,
                             step=1,
                             label="similarity_top_k",
                             info="similarity_top_k",
@@ -371,7 +368,7 @@ def demo():
             #                 )
             #                 source3_page = gr.Number(label="Page", scale=1)
 
-        with gr.Tab("Step 3 - Conversation with chatbot"):
+        with gr.Tab("Some questions about the topic"):
             questions_tab = gr.Blocks(css="assets/custom_label.css")
             with questions_tab:
                 list0, list1, list2, list3, list4 = read_list_from_file_button()
@@ -388,17 +385,6 @@ def demo():
                             inputs=None,
                             outputs=[list0, list1, list2, list3, list4],
                         )
-
-    # demo = gr.TabbedInterface(
-    #     interface_list=[admin, upload, infer, questions],
-    #     tab_names=[
-    #         "Step 1 - Setup the LLM and Vector DB",
-    #         "Step 2 - Document pre-processing",
-    #         "Step 3 - Conversation with chatbot",
-    #         "Some questions about the topic",
-    #     ],
-    #     title="CML Chat application - v2",
-    # )
 
     demo.queue()
 

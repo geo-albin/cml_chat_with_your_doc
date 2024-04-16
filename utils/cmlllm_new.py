@@ -75,7 +75,7 @@ def get_supported_models():
     return llmList
 
 
-active_collection_available = {}
+active_collection_available = {"cml_rag_collection": False}
 
 
 def get_active_collections():
@@ -104,7 +104,7 @@ class CMLLLM:
         collection_name="cml_rag_collection",
         memory_token_limit=3900,
         sentense_embedding_percentile_cutoff=0.8,
-        similarity_top_k=5,
+        similarity_top_k=2,
         progress=gr.Progress(),
     ):
         if len(model_name) == 0:
@@ -194,8 +194,8 @@ class CMLLLM:
         for token in streaming_response.response_gen:
             print(f"Albin, chat response = {token}")
             history[-1][1] += token
-            yield history
-
+            # yield history
+        return history
         # history[-1][1] = generated_text
 
     def ingest(self, files, questions, progress=gr.Progress()):
