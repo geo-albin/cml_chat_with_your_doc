@@ -298,15 +298,15 @@ def demo():
                         allow_custom_value=True,
                         value=collection_list_items[0],
                     )
-                    # collection_list.change(
-                    #     llm.set_collection_name,
-                    #     inputs=[collection_list],
-                    #     outputs=[db_progress],
-                    # ).then(
-                    #     update_active_collections,
-                    #     inputs=[],
-                    #     outputs=[collection_list],
-                    # )
+                    collection_list.change(
+                        llm.set_collection_name,
+                        inputs=[collection_list],
+                        outputs=[db_progress],
+                    ).then(
+                        update_active_collections,
+                        inputs=[],
+                        outputs=[collection_list],
+                    )
                 with gr.Row():
                     upload_button = gr.Button("Click to process the files")
                     upload_button.click(
