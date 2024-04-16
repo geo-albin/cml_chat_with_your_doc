@@ -294,6 +294,10 @@ def demo():
                         llm.set_collection_name,
                         inputs=[collection_list],
                         outputs=[db_progress],
+                    ).then(
+                        get_active_collections,
+                        inputs=[],
+                        outputs=collection_list.choices,
                     )
                 with gr.Row():
                     upload_button = gr.Button("Click to process the files")

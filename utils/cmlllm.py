@@ -226,14 +226,11 @@ class CMLLLM:
             ],
             memory=ChatMemoryBuffer.from_defaults(token_limit=self.memory_token_limit),
             system_prompt=(
-                "You are an expert Q&A system that is trusted around the world.\n"
-                "Always answer the query using the provided context information and not prior knowledge."
-                "Some rules to follow:\n"
-                "1. Never directly reference the given context in your answer.\n"
-                "2. Avoid statements like 'Based on the context' or 'The context information'"
-                " or 'This information is not directly stated in the context provided' or anything along those lines.\n"
+                "You are an expert Q&A assistant that is trusted around the world.\n"
+                "Always answer the query using the Context provided and not prior knowledge or General knowledge."
+                "Avoid statements like 'Based on the context' or 'The context information'.\n"
                 "If the provided context dont have the information, answer 'I dont know'.\n"
-                "Please cite file name and page number along with your answers."
+                "Please cite the source filename along with your answers."
             ),
             similarity_top_k=self.similarity_top_k,
         )
