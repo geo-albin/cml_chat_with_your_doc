@@ -38,8 +38,7 @@ import utils.vectordb as vectordb
 from llama_index.core.memory import ChatMemoryBuffer
 
 
-index_created = False
-ingest_in_progress = False
+QUESTIONS_FOLDER = "questions"
 
 
 def exit_handler():
@@ -82,6 +81,9 @@ def get_active_collections():
     return list(active_collection_available)
 
 
+print("resetting the questions")
+print(subprocess.run([f"rm -rf {QUESTIONS_FOLDER}"], shell=True))
+
 milvus_start = vectordb.reset_vector_db()
 print(f"milvus_start = {milvus_start}")
 
@@ -90,7 +92,7 @@ class CMLLLM:
     MODELS_PATH = "./models"
     EMBED_PATH = "./embed_models"
 
-    questions_folder = "questions"
+    questions_folder = QUESTIONS_FOLDER
 
     def __init__(
         self,
@@ -189,13 +191,13 @@ class CMLLLM:
 
         history[-1][1] = ""
 
-        streaming_response = self.chat_engine.stream_chat(query_text)
+        streaming_response = self.chat_engine.chat(query_text)
         # generated_text = ""
-        for token in streaming_response.response_gen:
+        for token in streaming_response.response:
             print(f"Albin, chat response = {token}")
             history[-1][1] += token
-            # yield history
-        return history
+            yield history
+        # return history
         # history[-1][1] = generated_text
 
     def ingest(self, files, questions, progress=gr.Progress()):
