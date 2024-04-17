@@ -8,6 +8,5 @@ else
     pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu122
 fi
 
-#pip install llama_index llama_index.core llama_index.embeddings.huggingface llama_index.llms.huggingface transformers==4.37.2 llama_index.vector_stores.milvus huggingface_hub llama_index.llms.llama_cpp gradio torch milvus unstructured spacy llama_index.readers.nougat_ocr "unstructured[pdf]"
 pip install -r 0_session-install-dependencies/requirements.txt
 python -c "import nltk; nltk.download('averaged_perceptron_tagger')"

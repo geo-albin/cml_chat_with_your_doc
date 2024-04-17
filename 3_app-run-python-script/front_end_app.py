@@ -133,7 +133,7 @@ def demo():
     with gr.Blocks(title="CML chat application") as demo:
         gr.Markdown(
             """<center><h2>CML Chat application - v2</center></h2>
-        <h3>Chat with your documents (pdf and html)</h3>"""
+        <h3>Chat with your documents (pdf, text and html)</h3>"""
         )
         with gr.Tab("Step 1 - Review the LLM and Vector DB configuration[Optional]"):
             admin = gr.Blocks()

@@ -200,8 +200,8 @@ class CMLLLM:
         if self.collection_name == collection_name:
             return
 
-        print("adding new collection name")
         self.collection_name = collection_name
+        print(f"adding new collection name {self.collection_name}")
 
         if not self.collection_name in active_collection_available:
             active_collection_available[self.collection_name] = False
@@ -379,8 +379,10 @@ class CMLLLM:
                 )
                 print(subprocess.run([f"rm -f {file}"], shell=True))
 
-            progress(0.9, desc="done processing the documents...")
-            print("done processing the documents...")
+            progress(
+                0.9, desc=f"done processing the documents {self.collection_name}..."
+            )
+            print(f"done processing the documents {self.collection_name}...")
             active_collection_available[self.collection_name] = True
 
         except Exception as e:
