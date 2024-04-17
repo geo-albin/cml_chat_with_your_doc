@@ -149,7 +149,6 @@ class CMLLLM:
 
         self.vector_store = MilvusVectorStore(
             dim=self.dim,
-            overwrite=True,
             collection_name=self.collection_name,
         )
 
@@ -218,7 +217,6 @@ class CMLLLM:
 
         self.vector_store = MilvusVectorStore(
             dim=self.dim,
-            overwrite=True,
             collection_name=self.collection_name,
         )
 
