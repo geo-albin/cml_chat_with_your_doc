@@ -67,7 +67,7 @@ def get_supported_embed_models():
 
 supported_llm_models = {
     "TheBloke/Mistral-7B-Instruct-v0.2-GGUF": "mistral-7b-instruct-v0.2.Q5_K_M.gguf",
-    "google/gemma-7b-it": "gemma-7b-it.gguf",
+    # "google/gemma-7b-it": "gemma-7b-it.gguf",
 }
 
 
