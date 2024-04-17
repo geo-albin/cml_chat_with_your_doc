@@ -211,7 +211,7 @@ class CMLLLM:
             desc=f"creating or getting the vector db collection {self.collection_name}",
         )
 
-        vectordb.create_or_get_vector_db_collection(self.collection_name, self.dim)
+        # vectordb.create_or_get_vector_db_collection(self.collection_name, self.dim)
 
         progress((2, 4), desc="setting the vector db")
 
