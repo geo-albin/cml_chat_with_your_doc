@@ -211,8 +211,6 @@ class CMLLLM:
             desc=f"creating or getting the vector db collection {self.collection_name}",
         )
 
-        # vectordb.create_or_get_vector_db_collection(self.collection_name, self.dim)
-
         progress((2, 4), desc="setting the vector db")
 
         self.vector_store = MilvusVectorStore(
@@ -263,11 +261,16 @@ class CMLLLM:
             yield "No documents are processed yet. Please process some documents.."
             return
 
-        streaming_response = self.chat_engine.stream_chat(query_text)
-        generated_text = ""
-        for token in streaming_response.response_gen:
-            generated_text = generated_text + token
-            yield generated_text
+        try:
+            streaming_response = self.chat_engine.stream_chat(query_text)
+            generated_text = ""
+            for token in streaming_response.response_gen:
+                generated_text = generated_text + token
+                yield generated_text
+        except Exception as e:
+            op = f"failed with exception {e}"
+            print(op)
+            yield op
 
     def ingest(self, files, questions, progress=gr.Progress()):
         if not (self.collection_name in active_collection_available):
@@ -437,7 +440,6 @@ class CMLLLM:
         Settings.embed_model = HuggingFaceEmbedding(
             model_name=embed_model_path,
             cache_folder=self.EMBED_PATH,
-            # encode_kwargs={"normalize_embeddings": True},
         )
 
         Settings.callback_manager = callback_manager
