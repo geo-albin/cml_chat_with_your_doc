@@ -207,7 +207,14 @@ class CMLLLM:
         if not self.collection_name in active_collection_available:
             active_collection_available[self.collection_name] = False
 
-        progress((1, 3), desc="setting the vector db")
+        progress(
+            (1, 4),
+            desc=f"creating or getting the vector db collection {self.collection_name}",
+        )
+
+        vectordb.create_or_get_vector_db_collection(self.collection_name, self.dim)
+
+        progress((2, 4), desc="setting the vector db")
 
         self.vector_store = MilvusVectorStore(
             dim=self.dim,
@@ -217,7 +224,7 @@ class CMLLLM:
 
         self.index = VectorStoreIndex.from_vector_store(vector_store=self.vector_store)
 
-        progress((2, 3), desc="setting the chat engine")
+        progress((3, 4), desc="setting the chat engine")
 
         self.chat_engine = self.index.as_chat_engine(
             chat_mode=ChatMode.CONTEXT,
@@ -239,7 +246,7 @@ class CMLLLM:
             similarity_top_k=self.similarity_top_k,
         )
         progress(
-            (3, 3),
+            (4, 4),
             desc=f"successfully updated the chat engine for the collection name {self.collection_name}",
         )
 

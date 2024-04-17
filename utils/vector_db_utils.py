@@ -62,7 +62,10 @@ def check_socket(host, port) -> bool:
 
 def create_milvus_collection(collection_name, dim):
     if utility.has_collection(collection_name):
-        utility.drop_collection(collection_name)
+        print(f"collection {collection_name} already exists")
+        return Collection(collection_name)
+
+        # utility.drop_collection(collection_name)
 
     fields = [
         FieldSchema(
