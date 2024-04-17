@@ -34,7 +34,11 @@ import gradio as gr
 import atexit
 import utils.vectordb as vectordb
 from llama_index.core.memory import ChatMemoryBuffer
+from dotenv import load_dotenv
 
+load_dotenv()
+
+hf_token = os.getenv("HF_TOKEN")
 
 QUESTIONS_FOLDER = "questions"
 
@@ -442,6 +446,7 @@ class CMLLLM:
             resume_download=True,
             cache_dir=self.MODELS_PATH,
             local_files_only=False,
+            token=hf_token,
         )
         return model_path
 
@@ -451,6 +456,7 @@ class CMLLLM:
             resume_download=True,
             cache_dir=self.EMBEDS_PATH,
             local_files_only=False,
+            token=hf_token,
         )
         return embed_model_path
 
