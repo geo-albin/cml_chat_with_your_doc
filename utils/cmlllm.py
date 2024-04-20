@@ -166,43 +166,43 @@ class CMLLLM:
         self.sentense_embedding_percentile_cutoff = sentense_embedding_percentile_cutoff
         self.memory_token_limit = memory_token_limit
 
-        if not collection_name in active_collection_available:
-            active_collection_available[collection_name] = False
+        # if not collection_name in active_collection_available:
+        #     active_collection_available[collection_name] = False
 
-        progress((2, 4), desc="setting the vector db")
+        # progress((2, 4), desc="setting the vector db")
 
-        vector_store = MilvusVectorStore(
-            dim=self.dim,
-            collection_name=collection_name,
-        )
+        # vector_store = MilvusVectorStore(
+        #     dim=self.dim,
+        #     collection_name=collection_name,
+        # )
 
-        index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+        # index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
-        progress((3, 4), desc="setting the chat engine")
+        # progress((3, 4), desc="setting the chat engine")
 
-        chat_engine = index.as_chat_engine(
-            chat_mode=ChatMode.CONTEXT,
-            verbose=True,
-            postprocessor=[
-                SentenceEmbeddingOptimizer(
-                    percentile_cutoff=self.sentense_embedding_percentile_cutoff
-                ),
-                DuplicateRemoverNodePostprocessor(),
-            ],
-            memory=ChatMemoryBuffer.from_defaults(token_limit=self.memory_token_limit),
-            system_prompt=(
-                "You are an expert Q&A assistant that is trusted around the world.\n"
-                "Always answer the query using the Context provided and not prior knowledge or General knowledge."
-                "Avoid statements like 'Based on the context' or 'The context information'.\n"
-                "If the provided context dont have the information, answer 'I dont know'.\n"
-                "Please cite the source along with your answers."
-            ),
-            similarity_top_k=self.similarity_top_k,
-        )
-        progress(
-            (4, 4),
-            desc=f"successfully set the chat engine for the collection name {collection_name}",
-        )
+        # chat_engine = index.as_chat_engine(
+        #     chat_mode=ChatMode.CONTEXT,
+        #     verbose=True,
+        #     postprocessor=[
+        #         SentenceEmbeddingOptimizer(
+        #             percentile_cutoff=self.sentense_embedding_percentile_cutoff
+        #         ),
+        #         DuplicateRemoverNodePostprocessor(),
+        #     ],
+        #     memory=ChatMemoryBuffer.from_defaults(token_limit=self.memory_token_limit),
+        #     system_prompt=(
+        #         "You are an expert Q&A assistant that is trusted around the world.\n"
+        #         "Always answer the query using the Context provided and not prior knowledge or General knowledge."
+        #         "Avoid statements like 'Based on the context' or 'The context information'.\n"
+        #         "If the provided context dont have the information, answer 'I dont know'.\n"
+        #         "Please cite the source along with your answers."
+        #     ),
+        #     similarity_top_k=self.similarity_top_k,
+        # )
+        # progress(
+        #     (4, 4),
+        #     desc=f"successfully set the chat engine for the collection name {collection_name}",
+        # )
 
         # "You are an expert Q&A system that is trusted around the world.\n"
         #         "Always answer the query using the provided context information and not prior knowledge."

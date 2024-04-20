@@ -42,6 +42,7 @@ def update_active_collections():
 
 
 llm = CMLLLM()
+global_chat_engine = llm.set_collection_name(collection_name=collection_list_items[0])
 
 
 def upload_document_and_ingest_new(
@@ -103,7 +104,7 @@ def open_chat_accordion():
 
 def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
-        chat_engine = gr.State()
+        chat_engine = gr.State(value=global_chat_engine)
         collection_name = gr.State(value="cml_rag_collection")
         nr_of_questions = gr.State(value=2)
 
@@ -209,7 +210,6 @@ def demo():
                             info="gpu_layers",
                             interactive=True,
                         )
-                with gr.Accordion("LLM reconfiguration", open=False):
                     with gr.Row():
                         configure_button = gr.Button("Click to configure LLM")
                         configure_button.click(
