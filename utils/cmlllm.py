@@ -243,6 +243,7 @@ class CMLLLM:
 
         chat_engine = index.as_chat_engine(
             chat_mode=ChatMode.CONTEXT,
+            llm=Settings.llm,
             verbose=True,
             postprocessor=[
                 SentenceEmbeddingOptimizer(
