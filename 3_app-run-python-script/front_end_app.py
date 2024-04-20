@@ -6,6 +6,7 @@ from utils.cmlllm import (
     get_active_collections,
     get_supported_embed_models,
     get_supported_models,
+    set_global_settings_common,
 )
 
 MAX_QUESTIONS = 5
@@ -84,24 +85,19 @@ def reconfigure_llm(
     max_new_tokens=256,
     context_window=3900,
     gpu_layers=20,
-    dim=1024,
-    memory_token_limit=3900,
-    sentense_embedding_percentile_cutoff=0.8,
-    similarity_top_k=2,
     progress=gr.Progress(),
 ):
-    global llm
-    llm = CMLLLM(
+    llm.set_global_settings_common(
         model_name=model_name,
         embed_model_name=embed_model_name,
         temperature=temperature,
         max_new_tokens=max_new_tokens,
         context_window=context_window,
         gpu_layers=gpu_layers,
-        dim=dim,
-        memory_token_limit=memory_token_limit,
-        sentense_embedding_percentile_cutoff=sentense_embedding_percentile_cutoff,
-        similarity_top_k=similarity_top_k,
+        dim=1024,
+        memory_token_limit=3900,
+        sentense_embedding_percentile_cutoff=0.8,
+        similarity_top_k=2,
         progress=progress,
     )
     return "Done configuring llm!!!"
@@ -129,16 +125,108 @@ def validate_collection_name(collectionname):
     return ret
 
 
+def open_chat_accordion():
+    return gr.Accordion("Chat with your documents", open=True)
+
+
 def demo():
-    with gr.Blocks(title="CML chat application") as demo:
+    with gr.Blocks(title="AI Chat with your documents") as demo:
+        chat_engine = gr.State()
+        collection_name = gr.State()
+
+        collection_list = gr.Dropdown(
+            choices=collection_list_items,
+            label="Configure an existing collection or create a new one",
+            allow_custom_value=True,
+            value=collection_list_items[0],
+        )
+
         gr.Markdown(
-            """<center><h2>CML Chat application - v2</center></h2>
+            """<center><h2>AI Chat with your documents</h2></center>
         <h3>Chat with your documents (pdf, text and html)</h3>"""
         )
-        with gr.Tab("Step 1 - Review the LLM and Vector DB configuration[Optional]"):
+        with gr.Tab("Chat with your document"):
+            upload = gr.Blocks()
+            with upload:
+                doc_accordion = gr.Accordion("Process your documents", open=True)
+                chat_accordion = gr.Accordion("Chat with your documents", open=False)
+                with doc_accordion:
+                    with gr.Row():
+                        documents = gr.Files(
+                            height=100,
+                            file_count="multiple",
+                            file_types=file_types,
+                            interactive=True,
+                            label="Upload your pdf, html or text documents (single or multiple)",
+                        )
+                    with gr.Row():
+                        db_progress = gr.Textbox(
+                            label="Document processing status",
+                            value="None",
+                            interactive=False,
+                            max_lines=10,
+                        )
+                    with gr.Row():
+                        with gr.Accordion(
+                            "Advanced options - automatic question generation",
+                            open=False,
+                        ):
+                            with gr.Row():
+                                questions_slider = gr.Slider(
+                                    minimum=0,
+                                    maximum=10,
+                                    value=1,
+                                    step=1,
+                                    label="Number of questions to be generated per document",
+                                    info="Number of questions",
+                                    interactive=True,
+                                )
+                    with gr.Row():
+                        upload_button = gr.Button("Click to process the files")
+                        upload_button.click(
+                            validate_collection_name,
+                            inputs=collection_list,
+                            outputs=None,
+                        ).success(
+                            llm.set_collection_name,
+                            inputs=[collection_list],
+                            outputs=[chat_engine, db_progress],
+                        ).then(
+                            lambda collection_name: [collection_name],
+                            inputs=[collection_list],
+                            outputs=[collection_name],
+                        ).then(
+                            upload_document_and_ingest_new,
+                            inputs=[documents, questions_slider],
+                            outputs=[db_progress],
+                        ).then(
+                            update_active_collections,
+                            inputs=[],
+                            outputs=[collection_list],
+                        ).then(
+                            open_chat_accordion, inputs=[], outputs=chat_accordion
+                        )
+            with chat_accordion:
+                gr.ChatInterface(
+                    fn=llm.infer,
+                    title="CML chat Bot - v2",
+                    chatbot=chat_bot,
+                    clear_btn=clear_btn,
+                    submit_btn=submit_btn,
+                )
+                clear_btn.click(llm.clear_chat_engine())
+
+        with gr.Tab("Admin configurations[Optional]"):
             admin = gr.Blocks()
             with admin:
-                with gr.Accordion("LLM Configuration", open=True):
+                with gr.Row():
+                    llm_progress = gr.Textbox(
+                        label="LLM processing status",
+                        value="None",
+                        interactive=False,
+                        max_lines=10,
+                    )
+                with gr.Accordion("LLM Configuration", open=False):
                     llm_model = gr.Dropdown(
                         choices=llm_choice,
                         value=llm_choice[0],
@@ -186,52 +274,6 @@ def demo():
                             info="gpu_layers",
                             interactive=True,
                         )
-                        memory_token_limit = gr.Slider(
-                            minimum=1000,
-                            maximum=5000,
-                            value=3900,
-                            step=1,
-                            label="memory_token_limit",
-                            info="memory_token_limit",
-                            interactive=True,
-                        )
-                        sentense_embedding_percentile_cutoff = gr.Slider(
-                            minimum=0,
-                            maximum=1,
-                            value=0.8,
-                            step=0.1,
-                            label="sentense_embedding_percentile_cutoff",
-                            info="sentense_embedding_percentile_cutoff",
-                            interactive=True,
-                        )
-                        similarity_top_k = gr.Slider(
-                            minimum=1,
-                            maximum=20,
-                            value=2,
-                            step=1,
-                            label="similarity_top_k",
-                            info="similarity_top_k",
-                            interactive=True,
-                        )
-
-                with gr.Row():
-                    with gr.Accordion("Configure vector DB parameters", open=False):
-                        dim = gr.Slider(
-                            minimum=100,
-                            maximum=2000,
-                            value=1024,
-                            step=1,
-                            label="dim",
-                            info="dim",
-                            interactive=True,
-                        )
-                with gr.Row():
-                    llm_progress = gr.Textbox(
-                        label="LLM processing status",
-                        value="None",
-                        interactive=False,
-                        max_lines=10,
-                    )
                 with gr.Accordion("LLM reconfiguration", open=False):
                     with gr.Row():
                         configure_button = gr.Button("Click to configure LLM")
@@ -251,106 +293,23 @@ def demo():
                                 max_new_tokens,
                                 context_window,
                                 gpu_layers,
-                                dim,
-                                memory_token_limit,
-                                sentense_embedding_percentile_cutoff,
-                                similarity_top_k,
                             ],
                             outputs=[llm_progress],
                         )
-
-        with gr.Tab("Step 2 - Document pre-processing"):
-            upload = gr.Blocks()
-            with upload:
-                with gr.Row():
-                    documents = gr.Files(
-                        height=100,
-                        file_count="multiple",
-                        file_types=file_types,
-                        interactive=True,
-                        label="Upload your pdf, html or text documents (single or multiple)",
-                    )
-                with gr.Row():
-                    db_progress = gr.Textbox(
-                        label="Document processing status",
-                        value="None",
-                        interactive=False,
-                        max_lines=10,
-                    )
-                with gr.Row():
-                    with gr.Accordion(
-                        "Advanced options - automatic question generation", open=False
-                    ):
-                        with gr.Row():
-                            questions_slider = gr.Slider(
-                                minimum=0,
-                                maximum=10,
-                                value=1,
-                                step=1,
-                                label="Number of questions to be generated per document",
-                                info="Number of questions",
-                                interactive=True,
-                            )
-                with gr.Row():
-                    collection_list = gr.Dropdown(
-                        choices=collection_list_items,
-                        label="Collection to use",
-                        allow_custom_value=True,
-                        value=collection_list_items[0],
-                    )
-                    collection_list.change(
-                        llm.set_collection_name,
-                        inputs=[collection_list],
-                        outputs=[db_progress],
-                    ).then(
-                        update_active_collections,
-                        inputs=[],
-                        outputs=[collection_list],
-                    )
-                with gr.Row():
-                    upload_button = gr.Button("Click to process the files")
-                    upload_button.click(
-                        validate_collection_name, inputs=collection_list, outputs=None
-                    ).success(
-                        llm.set_collection_name,
-                        inputs=[collection_list],
-                        outputs=[db_progress],
-                    ).then(
-                        upload_document_and_ingest_new,
-                        inputs=[documents, questions_slider],
-                        outputs=[db_progress],
-                    ).then(
-                        update_active_collections,
-                        inputs=[],
-                        outputs=[collection_list],
-                    )
-
-        with gr.Tab("Step 3 - Conversation with chatbot"):
-            gr.ChatInterface(
-                fn=llm.infer,
-                title="CML chat Bot - v2",
-                chatbot=chat_bot,
-                clear_btn=clear_btn,
-                submit_btn=submit_btn,
-            )
-            clear_btn.click(llm.clear_chat_engine())
-
-        with gr.Tab("Some questions about the topic"):
-            questions_tab = gr.Blocks(css="assets/custom_label.css")
-            with questions_tab:
-                list0, list1, list2, list3, list4 = read_list_from_file_button()
-                with gr.Row():
-                    list0
-                    list1
-                    list2
-                    list3
-                    list4
+                with gr.Accordion("collection configuration", open=False):
                     with gr.Row():
-                        question_reload_btn = gr.Button("Update the topic")
-                        question_reload_btn.click(
-                            read_list_from_file_button,
-                            inputs=None,
-                            outputs=[list0, list1, list2, list3, list4],
+                        collection_list.change(
+                            llm.set_collection_name,
+                            inputs=[collection_list],
+                            outputs=[llm_progress],
+                        ).then(
+                            lambda collection_name: [collection_name],
+                            inputs=[collection_list],
+                            outputs=[collection_name],
+                        ).then(
+                            update_active_collections,
+                            inputs=[],
+                            outputs=[collection_list],
                         )
 
     demo.queue()

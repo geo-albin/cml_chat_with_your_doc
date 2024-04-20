@@ -90,6 +90,33 @@ milvus_start = vectordb.reset_vector_db()
 print(f"milvus_start = {milvus_start}")
 
 
+def infer(msg, history, collection_name, chat_engine):
+    query_text = msg
+    print(f"query = {query_text}")
+
+    if len(query_text) == 0:
+        yield "Please ask some questions"
+        return
+
+    if (
+        collection_name in active_collection_available
+        and active_collection_available[collection_name] != True
+    ):
+        yield "No documents are processed yet. Please process some documents.."
+        return
+
+    try:
+        streaming_response = chat_engine.stream_chat(query_text)
+        generated_text = ""
+        for token in streaming_response.response_gen:
+            generated_text = generated_text + token
+            yield generated_text
+    except Exception as e:
+        op = f"failed with exception {e}"
+        print(op)
+        yield op
+
+
 class CMLLLM:
     MODELS_PATH = "./models"
     EMBED_PATH = "./embed_models"
@@ -120,13 +147,12 @@ class CMLLLM:
             print("It is a GPU node, setup GPU.")
             n_gpu_layers = gpu_layers
 
-        model_path = self.get_model_path(model_name)
         self.node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=128)
 
         progress((1, 4), desc="setting the global parameters")
 
         self.set_global_settings(
-            model_path=model_path,
+            model_name=model_name,
             embed_model_path=embed_model_name,
             temperature=temperature,
             max_new_tokens=max_new_tokens,
@@ -140,23 +166,21 @@ class CMLLLM:
         self.sentense_embedding_percentile_cutoff = sentense_embedding_percentile_cutoff
         self.memory_token_limit = memory_token_limit
 
-        self.collection_name = collection_name
-
-        if not self.collection_name in active_collection_available:
-            active_collection_available[self.collection_name] = False
+        if not collection_name in active_collection_available:
+            active_collection_available[collection_name] = False
 
         progress((2, 4), desc="setting the vector db")
 
-        self.vector_store = MilvusVectorStore(
+        vector_store = MilvusVectorStore(
             dim=self.dim,
             collection_name=self.collection_name,
         )
 
-        self.index = VectorStoreIndex.from_vector_store(vector_store=self.vector_store)
+        index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
         progress((3, 4), desc="setting the chat engine")
 
-        self.chat_engine = self.index.as_chat_engine(
+        chat_engine = index.as_chat_engine(
             chat_mode=ChatMode.CONTEXT,
             verbose=True,
             postprocessor=[
@@ -197,32 +221,29 @@ class CMLLLM:
         if collection_name is None or len(collection_name) == 0:
             return
 
-        if self.collection_name == collection_name:
-            return
-
-        self.collection_name = collection_name
+        collection_name = collection_name
         print(f"adding new collection name {self.collection_name}")
 
-        if not self.collection_name in active_collection_available:
-            active_collection_available[self.collection_name] = False
+        if not collection_name in active_collection_available:
+            active_collection_available[collection_name] = False
 
         progress(
             (1, 4),
-            desc=f"creating or getting the vector db collection {self.collection_name}",
+            desc=f"creating or getting the vector db collection {collection_name}",
         )
 
         progress((2, 4), desc="setting the vector db")
 
-        self.vector_store = MilvusVectorStore(
+        vector_store = MilvusVectorStore(
             dim=self.dim,
-            collection_name=self.collection_name,
+            collection_name=collection_name,
         )
 
-        self.index = VectorStoreIndex.from_vector_store(vector_store=self.vector_store)
+        index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
         progress((3, 4), desc="setting the chat engine")
 
-        self.chat_engine = self.index.as_chat_engine(
+        chat_engine = index.as_chat_engine(
             chat_mode=ChatMode.CONTEXT,
             verbose=True,
             postprocessor=[
@@ -245,6 +266,7 @@ class CMLLLM:
             (4, 4),
             desc=f"successfully updated the chat engine for the collection name {self.collection_name}",
         )
+        return chat_engine
 
     def infer(self, msg, history):
         query_text = msg
@@ -272,8 +294,8 @@ class CMLLLM:
             print(op)
             yield op
 
-    def ingest(self, files, questions, progress=gr.Progress()):
-        if not (self.collection_name in active_collection_available):
+    def ingest(self, files, questions, collection_name, progress=gr.Progress()):
+        if not (collection_name in active_collection_available):
             return "Some issues with the llm and colection setup. please try setting up the llm and the vector db again."
 
         file_extractor = {
@@ -291,6 +313,8 @@ class CMLLLM:
 
         filename_fn = lambda filename: {"file_name": os.path.basename(filename)}
 
+        active_collection_available[collection_name] = False
+
         try:
             start_time = time.time()
             op = ""
@@ -306,8 +330,13 @@ class CMLLLM:
 
                 progress(0.4, desc=f"done loading document {os.path.basename(file)}")
 
+                vector_store = MilvusVectorStore(
+                    dim=self.dim,
+                    collection_name=collection_name,
+                )
+
                 storage_context = StorageContext.from_defaults(
-                    vector_store=self.vector_store
+                    vector_store=vector_store
                 )
 
                 progress(
@@ -379,11 +408,9 @@ class CMLLLM:
                 )
                 print(subprocess.run([f"rm -f {file}"], shell=True))
 
-            progress(
-                0.9, desc=f"done processing the documents {self.collection_name}..."
-            )
-            print(f"done processing the documents {self.collection_name}...")
-            active_collection_available[self.collection_name] = True
+            progress(0.9, desc=f"done processing the documents {collection_name}...")
+            print(f"done processing the documents {collection_name}...")
+            active_collection_available[collection_name] = True
 
         except Exception as e:
             print(e)
@@ -413,7 +440,7 @@ class CMLLLM:
 
     def set_global_settings(
         self,
-        model_path,
+        model_name,
         embed_model_path,
         temperature,
         max_new_tokens,
@@ -421,6 +448,28 @@ class CMLLLM:
         n_gpu_layers,
         node_parser,
     ):
+        self.set_global_settings_common(
+            model_name=model_name,
+            embed_model_path=embed_model_path,
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            context_window=context_window,
+            n_gpu_layers=n_gpu_layers,
+        )
+
+        Settings.callback_manager = callback_manager
+        Settings.node_parser = node_parser
+
+    def set_global_settings_common(
+        self,
+        model_name,
+        embed_model_name,
+        temperature,
+        max_new_tokens,
+        context_window,
+        n_gpu_layers,
+    ):
+        model_path = self.get_model_path(model_name)
         Settings.llm = LlamaCPP(
             model_path=model_path,
             temperature=temperature,
@@ -440,12 +489,9 @@ class CMLLLM:
         )
 
         Settings.embed_model = HuggingFaceEmbedding(
-            model_name=embed_model_path,
+            model_name=embed_model_name,
             cache_folder=self.EMBED_PATH,
         )
-
-        Settings.callback_manager = callback_manager
-        Settings.node_parser = node_parser
 
     def get_model_path(self, model_name):
         filename = supported_llm_models[model_name]
