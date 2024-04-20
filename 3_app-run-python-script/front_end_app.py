@@ -102,7 +102,7 @@ def open_chat_accordion():
 def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
         chat_engine = gr.State()
-        collection_name = gr.State()
+        collection_name = gr.State(value="cml_rag_collection")
 
         gr.Markdown(
             """<center><h2>AI Chat with your documents</h2></center>
@@ -129,10 +129,16 @@ def demo():
                             interactive=False,
                             max_lines=10,
                         )
+                    upload_button = gr.Button("Click to process the files")
+                    upload_button.click(
+                        upload_document_and_ingest_new,
+                        inputs=[documents, questions_slider],
+                        outputs=[db_progress],
+                    ).then(open_chat_accordion, inputs=[], outputs=chat_accordion)
             with chat_accordion:
                 gr.ChatInterface(
                     fn=infer2,
-                    title="CML chat Bot - v2",
+                    title=f"AI Chat with your document - Currently using the collection {collection_name}",
                     chatbot=chat_bot,
                     clear_btn=clear_btn,
                     submit_btn=submit_btn,
@@ -245,30 +251,6 @@ def demo():
                                 label="Configure an existing collection or create a new one",
                                 allow_custom_value=True,
                                 value=collection_list_items[0],
-                            )
-                            upload_button = gr.Button("Click to process the files")
-                            upload_button.click(
-                                validate_collection_name,
-                                inputs=collection_list,
-                                outputs=None,
-                            ).success(
-                                llm.set_collection_name,
-                                inputs=[collection_list],
-                                outputs=[chat_engine, db_progress],
-                            ).then(
-                                lambda collection_name: [collection_name],
-                                inputs=[collection_list],
-                                outputs=[collection_name],
-                            ).then(
-                                upload_document_and_ingest_new,
-                                inputs=[documents, questions_slider],
-                                outputs=[db_progress],
-                            ).then(
-                                update_active_collections,
-                                inputs=[],
-                                outputs=[collection_list],
-                            ).then(
-                                open_chat_accordion, inputs=[], outputs=chat_accordion
                             )
                             collection_list.change(
                                 llm.set_collection_name,
