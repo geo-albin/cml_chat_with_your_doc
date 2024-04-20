@@ -44,10 +44,12 @@ def update_active_collections():
 llm = CMLLLM()
 
 
-def upload_document_and_ingest_new(files, questions, progress=gr.Progress()):
+def upload_document_and_ingest_new(
+    files, questions, collection_name, progress=gr.Progress()
+):
     if files is None or len(files) == 0:
         gr.Error("Please add some files...")
-    return llm.ingest(files, questions, progress)
+    return llm.ingest(files, questions, collection_name, progress)
 
 
 def update_chatbot(user_message, history):
@@ -103,15 +105,8 @@ def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
         chat_engine = gr.State()
         collection_name = gr.State(value="cml_rag_collection")
-        questions_slider = gr.Slider(
-            minimum=0,
-            maximum=10,
-            value=1,
-            step=1,
-            label="Number of questions to be generated per document",
-            info="Number of questions",
-            interactive=True,
-        )
+        nr_of_questions = gr.State(value=2)
+
         gr.Markdown(
             """<center><h2>AI Chat with your documents</h2></center>
         <h3>Chat with your documents (pdf, text and html)</h3>"""
@@ -140,7 +135,7 @@ def demo():
                     upload_button = gr.Button("Click to process the files")
                     upload_button.click(
                         upload_document_and_ingest_new,
-                        inputs=[documents, questions_slider],
+                        inputs=[documents, nr_of_questions, collection_name],
                         outputs=[db_progress],
                     ).then(open_chat_accordion, inputs=[], outputs=chat_accordion)
             with chat_accordion:
@@ -242,7 +237,20 @@ def demo():
                         open=False,
                     ):
                         with gr.Row():
-                            questions_slider
+                            questions_slider = gr.Slider(
+                                minimum=0,
+                                maximum=10,
+                                value=1,
+                                step=1,
+                                label="Number of questions to be generated per document",
+                                info="Number of questions",
+                                interactive=True,
+                            )
+                            questions_slider.change(
+                                lambda questions: [questions],
+                                inputs=[questions_slider],
+                                outputs=[nr_of_questions],
+                            )
                 with gr.Row():
                     with gr.Accordion("collection configuration", open=False):
                         with gr.Row():
