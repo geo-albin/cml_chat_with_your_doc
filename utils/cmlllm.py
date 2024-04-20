@@ -173,7 +173,7 @@ class CMLLLM:
 
         vector_store = MilvusVectorStore(
             dim=self.dim,
-            collection_name=self.collection_name,
+            collection_name=collection_name,
         )
 
         index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
@@ -201,7 +201,7 @@ class CMLLLM:
         )
         progress(
             (4, 4),
-            desc=f"successfully set the chat engine for the collection name {self.collection_name}",
+            desc=f"successfully set the chat engine for the collection name {collection_name}",
         )
 
         # "You are an expert Q&A system that is trusted around the world.\n"
@@ -222,7 +222,7 @@ class CMLLLM:
             return
 
         collection_name = collection_name
-        print(f"adding new collection name {self.collection_name}")
+        print(f"adding new collection name {collection_name}")
 
         if not collection_name in active_collection_available:
             active_collection_available[collection_name] = False
@@ -264,35 +264,35 @@ class CMLLLM:
         )
         progress(
             (4, 4),
-            desc=f"successfully updated the chat engine for the collection name {self.collection_name}",
+            desc=f"successfully updated the chat engine for the collection name {collection_name}",
         )
         return chat_engine
 
-    def infer(self, msg, history):
-        query_text = msg
-        print(f"query = {query_text}")
+    # def infer(self, msg, history):
+    #     query_text = msg
+    #     print(f"query = {query_text}")
 
-        if len(query_text) == 0:
-            yield "Please ask some questions"
-            return
+    #     if len(query_text) == 0:
+    #         yield "Please ask some questions"
+    #         return
 
-        if (
-            self.collection_name in active_collection_available
-            and active_collection_available[self.collection_name] != True
-        ):
-            yield "No documents are processed yet. Please process some documents.."
-            return
+    #     if (
+    #         self.collection_name in active_collection_available
+    #         and active_collection_available[self.collection_name] != True
+    #     ):
+    #         yield "No documents are processed yet. Please process some documents.."
+    #         return
 
-        try:
-            streaming_response = self.chat_engine.stream_chat(query_text)
-            generated_text = ""
-            for token in streaming_response.response_gen:
-                generated_text = generated_text + token
-                yield generated_text
-        except Exception as e:
-            op = f"failed with exception {e}"
-            print(op)
-            yield op
+    #     try:
+    #         streaming_response = self.chat_engine.stream_chat(query_text)
+    #         generated_text = ""
+    #         for token in streaming_response.response_gen:
+    #             generated_text = generated_text + token
+    #             yield generated_text
+    #     except Exception as e:
+    #         op = f"failed with exception {e}"
+    #         print(op)
+    #         yield op
 
     def ingest(self, files, questions, collection_name, progress=gr.Progress()):
         if not (collection_name in active_collection_available):
@@ -395,10 +395,6 @@ class CMLLLM:
                     op += "\nQuestion " + str(i) + " - " + str(q)
                     i += 1
 
-                self.write_list_to_file(
-                    eval_questions,
-                    self.questions_folder + self.collection_name + "questions.txt",
-                )
                 print(
                     f"done generating questions from the document {os.path.basename(file)}"
                 )
@@ -417,21 +413,6 @@ class CMLLLM:
             op = f"ingestion failed with exception {e}"
             progress(0.9, desc=op)
         return op
-
-    def write_list_to_file(self, lst, filename):
-        with open(filename, "a") as f:
-            for item in lst:
-                f.write(str(item) + "\n")
-
-    def read_list_from_file(self, filename="questions.txt"):
-        lst = []
-        if os.path.exists(self.questions_folder + self.collection_name + filename):
-            with open(
-                self.questions_folder + self.collection_name + filename, "r"
-            ) as f:
-                for line in f:
-                    lst.append(line.strip())  # Remove newline characters
-        return lst
 
     def upload_document_and_ingest(self, files, questions, progress=gr.Progress()):
         if len(files) == 0:

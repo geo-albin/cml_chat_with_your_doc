@@ -44,30 +44,6 @@ def update_active_collections():
 llm = CMLLLM()
 
 
-def read_list_from_file_button(filename="questions.txt"):
-    lst = llm.read_list_from_file(filename=filename)
-    lists = []
-    for i in range(MAX_QUESTIONS):
-        if (len(lst) > i) and (len(lst[i]) != 0):
-            lists.append(
-                gr.Label(
-                    visible=True,
-                    value=lst[i],
-                    container=True,
-                )
-            )
-        else:
-            lists.append(
-                gr.Label(
-                    visible=False,
-                    value="",
-                    container=True,
-                )
-            )
-
-    return lists[0], lists[1], lists[2], lists[3], lists[4]
-
-
 def upload_document_and_ingest_new(files, questions, progress=gr.Progress()):
     if files is None or len(files) == 0:
         gr.Error("Please add some files...")
