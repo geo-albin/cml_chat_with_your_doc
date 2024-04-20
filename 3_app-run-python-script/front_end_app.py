@@ -186,7 +186,7 @@ def demo():
                     additional_inputs=[collection_name, chat_engine],
                 )
                 clear_btn.click(
-                    llm.clear_chat_engine(), inputs=[chat_engine], outputs=None
+                    llm.clear_chat_engine, inputs=[chat_engine], outputs=None
                 )
 
         with gr.Tab("Admin configurations[Optional]"):
