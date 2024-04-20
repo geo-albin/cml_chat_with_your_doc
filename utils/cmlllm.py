@@ -354,7 +354,7 @@ class CMLLLM:
                     0.4, desc=f"done indexing the document {os.path.basename(file)}"
                 )
 
-                ops += (
+                ops = (
                     "Completed data ingestion. took "
                     + str(time.time() - start_time)
                     + " seconds."

@@ -102,6 +102,10 @@ def open_chat_accordion():
     return gr.Accordion("Chat with your documents", open=True)
 
 
+def close_doc_process_accordion():
+    return gr.Accordion("Process your documents", open=False)
+
+
 def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
         chat_engine = gr.State(value=global_chat_engine)
@@ -138,7 +142,9 @@ def demo():
                         upload_document_and_ingest_new,
                         inputs=[documents, nr_of_questions, collection_name],
                         outputs=[db_progress],
-                    ).then(open_chat_accordion, inputs=[], outputs=chat_accordion)
+                    ).then(open_chat_accordion, inputs=[], outputs=chat_accordion).then(
+                        close_doc_process_accordion, inputs=[], outputs=doc_accordion
+                    )
             with chat_accordion:
                 gr.ChatInterface(
                     fn=infer2,
