@@ -20,12 +20,6 @@ from llama_index.core.chat_engine.types import ChatMode
 from llama_index.core.postprocessor import SentenceEmbeddingOptimizer
 from utils.duplicate_preprocessing import DuplicateRemoverNodePostprocessor
 from llama_index.vector_stores.milvus import MilvusVectorStore
-from llama_index.llms.llama_cpp import LlamaCPP
-from llama_index.llms.llama_cpp.llama_utils import (
-    messages_to_prompt,
-    completion_to_prompt,
-)
-from utils.upload import Upload_files
 import torch
 import logging
 import sys
@@ -107,16 +101,16 @@ def infer2(msg, history, collection_name, chat_engine):
         yield "No documents are processed yet. Please process some documents.."
         return
 
-    try:
-        streaming_response = chat_engine.stream_chat(query_text)
-        generated_text = ""
-        for token in streaming_response.response_gen:
-            generated_text = generated_text + token
-            yield generated_text
-    except Exception as e:
-        op = f"failed with exception {e}"
-        print(op)
-        yield op
+        # try:
+    streaming_response = chat_engine.stream_chat(query_text)
+    generated_text = ""
+    for token in streaming_response.response_gen:
+        generated_text = generated_text + token
+        yield generated_text
+    # except Exception as e:
+    #     op = f"failed with exception {e}"
+    #     print(op)
+    #     yield op
 
 
 class CMLLLM:
