@@ -463,7 +463,7 @@ class CMLLLM:
     def set_global_settings_common(
         self,
         model_name,
-        embed_model_name,
+        embed_model_path,
         temperature,
         max_new_tokens,
         context_window,
@@ -489,7 +489,7 @@ class CMLLLM:
         )
 
         Settings.embed_model = HuggingFaceEmbedding(
-            model_name=embed_model_name,
+            model_name=embed_model_path,
             cache_folder=self.EMBED_PATH,
         )
 
