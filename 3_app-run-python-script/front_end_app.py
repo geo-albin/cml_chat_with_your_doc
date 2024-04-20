@@ -6,7 +6,6 @@ from utils.cmlllm import (
     get_active_collections,
     get_supported_embed_models,
     get_supported_models,
-    set_global_settings_common,
     infer2,
 )
 
@@ -95,7 +94,7 @@ def reconfigure_llm(
         context_window=context_window,
         gpu_layers=gpu_layers,
     )
-    return "Done configuring llm!!!"
+    return "Done reconfiguring llm!!!"
 
 
 def validate_llm(model_name, embed_model_name):
