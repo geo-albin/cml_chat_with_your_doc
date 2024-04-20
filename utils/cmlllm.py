@@ -64,6 +64,7 @@ supported_llm_models = {
     "TheBloke/Mistral-7B-Instruct-v0.2-GGUF": "mistral-7b-instruct-v0.2.Q5_K_M.gguf",
     # "google/gemma-7b-it": "gemma-7b-it.gguf",
 }
+chat_engine_map = {}
 
 
 def get_supported_models():
@@ -85,11 +86,9 @@ milvus_start = vectordb.reset_vector_db()
 print(f"milvus_start = {milvus_start}")
 
 
-def infer2(msg, history, collection_name, chat_engine):
+def infer2(msg, history, collection_name):
     query_text = msg
-    print(
-        f"query = {query_text}, collection name = {collection_name}, chat_engine = {chat_engine}"
-    )
+    print(f"query = {query_text}, collection name = {collection_name}")
 
     if len(query_text) == 0:
         yield "Please ask some questions"
@@ -102,16 +101,22 @@ def infer2(msg, history, collection_name, chat_engine):
         yield "No documents are processed yet. Please process some documents.."
         return
 
-        # try:
-    streaming_response = chat_engine.stream_chat(query_text)
-    generated_text = ""
-    for token in streaming_response.response_gen:
-        generated_text = generated_text + token
-        yield generated_text
-    # except Exception as e:
-    #     op = f"failed with exception {e}"
-    #     print(op)
-    #     yield op
+    if collection_name not in chat_engine_map:
+        yield f"Chat engine not created for collection {collection_name}.."
+        return
+
+    chat_engine = chat_engine_map[collection_name]
+
+    try:
+        streaming_response = chat_engine.stream_chat(query_text)
+        generated_text = ""
+        for token in streaming_response.response_gen:
+            generated_text = generated_text + token
+            yield generated_text
+    except Exception as e:
+        op = f"failed with exception {e}"
+        print(op)
+        yield op
 
 
 class CMLLLM:
@@ -266,7 +271,8 @@ class CMLLLM:
             (4, 4),
             desc=f"successfully updated the chat engine for the collection name {collection_name}",
         )
-        return chat_engine
+
+        chat_engine_map[collection_name] = chat_engine
 
     # def infer(self, msg, history):
     #     query_text = msg
@@ -499,45 +505,47 @@ class CMLLLM:
         )
         return embed_model_path
 
-    def clear_chat_engine(self, chat_engine):
-        chat_engine.reset()
+    def clear_chat_engine(self, collection_name):
+        if collection_name in chat_engine_map:
+            chat_engine = chat_engine_map[collection_name]
+            chat_engine.reset()
 
-    def infer2(self, msg, history, collection_name, chat_engine):
-        query_text = msg
-        print(
-            f"query = {query_text}, collection name = {collection_name}, chat_engine = {chat_engine}"
-        )
+    # def infer2(self, msg, history, collection_name, chat_engine):
+    #     query_text = msg
+    #     print(
+    #         f"query = {query_text}, collection name = {collection_name}, chat_engine = {chat_engine}"
+    #     )
 
-        if len(query_text) == 0:
-            yield "Please ask some questions"
-            return
+    #     if len(query_text) == 0:
+    #         yield "Please ask some questions"
+    #         return
 
-        if (
-            collection_name in active_collection_available
-            and active_collection_available[collection_name] != True
-        ):
-            yield "No documents are processed yet. Please process some documents.."
-            return
+    #     if (
+    #         collection_name in active_collection_available
+    #         and active_collection_available[collection_name] != True
+    #     ):
+    #         yield "No documents are processed yet. Please process some documents.."
+    #         return
 
-        chat_engine2 = typecast_any_to_derived_class(chat_engine)
+    #     chat_engine2 = typecast_any_to_derived_class(chat_engine)
 
-        # chat_engine2 = self.set_collection_name(collection_name=collection_name)
+    #     # chat_engine2 = self.set_collection_name(collection_name=collection_name)
 
-        # try:
-        streaming_response = chat_engine2.stream_chat(query_text)
-        generated_text = ""
-        for token in streaming_response.response_gen:
-            generated_text = generated_text + token
-            yield generated_text
-        # except Exception as e:
-        #     op = f"failed with exception {e}"
-        #     print(op)
-        #     yield op
+    #     # try:
+    #     streaming_response = chat_engine2.stream_chat(query_text)
+    #     generated_text = ""
+    #     for token in streaming_response.response_gen:
+    #         generated_text = generated_text + token
+    #         yield generated_text
+    #     # except Exception as e:
+    #     #     op = f"failed with exception {e}"
+    #     #     print(op)
+    #     #     yield op
 
 
-def typecast_any_to_derived_class(obj) -> ContextChatEngine:
-    if isinstance(obj, ContextChatEngine):
-        print("Albin chat_engine is of type ContextChatEngine")
-        return obj
-    else:
-        raise TypeError("obj is not of type ContextChatEngine")
+# def typecast_any_to_derived_class(obj) -> ContextChatEngine:
+#     if isinstance(obj, ContextChatEngine):
+#         print("Albin chat_engine is of type ContextChatEngine")
+#         return obj
+#     else:
+#         raise TypeError("obj is not of type ContextChatEngine")

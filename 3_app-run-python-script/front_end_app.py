@@ -42,7 +42,7 @@ def update_active_collections():
 
 
 llm = CMLLLM()
-global_chat_engine = llm.set_collection_name(collection_name=collection_list_items[0])
+llm.set_collection_name(collection_name=collection_list_items[0])
 
 
 def upload_document_and_ingest_new(
@@ -108,7 +108,7 @@ def close_doc_process_accordion():
 
 def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
-        chat_engine = gr.State(value=global_chat_engine)
+        # chat_engine = gr.State(value=global_chat_engine)
         collection_name = gr.State(value="cml_rag_collection")
         nr_of_questions = gr.State(value=1)
 
@@ -147,15 +147,15 @@ def demo():
                     )
             with chat_accordion:
                 gr.ChatInterface(
-                    fn=llm.infer2,
+                    fn=infer2,
                     title=f"AI Chat with your document - Currently using the collection {collection_name}",
                     chatbot=chat_bot,
                     clear_btn=clear_btn,
                     submit_btn=submit_btn,
-                    additional_inputs=[collection_name, chat_engine],
+                    additional_inputs=[collection_name],
                 )
                 clear_btn.click(
-                    llm.clear_chat_engine, inputs=[chat_engine], outputs=None
+                    llm.clear_chat_engine, inputs=[collection_name], outputs=None
                 )
 
         with gr.Tab("Admin configurations[Optional]"):
@@ -269,7 +269,7 @@ def demo():
                             collection_list.change(
                                 llm.set_collection_name,
                                 inputs=[collection_list],
-                                outputs=[chat_engine, llm_progress],
+                                outputs=[llm_progress],
                             ).then(
                                 lambda collection_name: collection_name,
                                 inputs=[collection_list],
