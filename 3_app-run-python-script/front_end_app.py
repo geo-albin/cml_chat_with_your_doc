@@ -142,9 +142,10 @@ def demo():
                         upload_document_and_ingest_new,
                         inputs=[documents, nr_of_questions, collection_name],
                         outputs=[db_progress],
-                    ).then(open_chat_accordion, inputs=[], outputs=chat_accordion).then(
-                        close_doc_process_accordion, inputs=[], outputs=doc_accordion
                     )
+                    # .then(open_chat_accordion, inputs=[], outputs=chat_accordion).then(
+                    #     close_doc_process_accordion, inputs=[], outputs=doc_accordion
+                    # )
             with chat_accordion:
                 gr.ChatInterface(
                     fn=infer2,
