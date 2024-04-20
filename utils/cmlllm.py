@@ -519,9 +519,9 @@ class CMLLLM:
             yield "No documents are processed yet. Please process some documents.."
             return
 
-        ce = typecast_any_to_derived_class(chat_engine)
+        chat_engine2 = typecast_any_to_derived_class(chat_engine)
 
-        chat_engine2 = self.set_collection_name(collection_name=collection_name)
+        # chat_engine2 = self.set_collection_name(collection_name=collection_name)
 
         # try:
         streaming_response = chat_engine2.stream_chat(query_text)
