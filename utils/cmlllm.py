@@ -535,8 +535,9 @@ class CMLLLM:
         #     yield op
 
 
-def typecast_any_to_derived_class(obj: Any) -> ContextChatEngine:
+def typecast_any_to_derived_class(obj) -> ContextChatEngine:
     if isinstance(obj, ContextChatEngine):
+        print("Albin chat_engine is of type ContextChatEngine")
         return obj
     else:
         raise TypeError("obj is not of type ContextChatEngine")
