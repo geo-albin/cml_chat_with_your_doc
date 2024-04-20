@@ -104,13 +104,6 @@ def demo():
         chat_engine = gr.State()
         collection_name = gr.State()
 
-        collection_list = gr.Dropdown(
-            choices=collection_list_items,
-            label="Configure an existing collection or create a new one",
-            allow_custom_value=True,
-            value=collection_list_items[0],
-        )
-
         gr.Markdown(
             """<center><h2>AI Chat with your documents</h2></center>
         <h3>Chat with your documents (pdf, text and html)</h3>"""
@@ -135,46 +128,6 @@ def demo():
                             value="None",
                             interactive=False,
                             max_lines=10,
-                        )
-                    with gr.Row():
-                        with gr.Accordion(
-                            "Advanced options - automatic question generation",
-                            open=False,
-                        ):
-                            with gr.Row():
-                                questions_slider = gr.Slider(
-                                    minimum=0,
-                                    maximum=10,
-                                    value=1,
-                                    step=1,
-                                    label="Number of questions to be generated per document",
-                                    info="Number of questions",
-                                    interactive=True,
-                                )
-                    with gr.Row():
-                        upload_button = gr.Button("Click to process the files")
-                        upload_button.click(
-                            validate_collection_name,
-                            inputs=collection_list,
-                            outputs=None,
-                        ).success(
-                            llm.set_collection_name,
-                            inputs=[collection_list],
-                            outputs=[chat_engine, db_progress],
-                        ).then(
-                            lambda collection_name: [collection_name],
-                            inputs=[collection_list],
-                            outputs=[collection_name],
-                        ).then(
-                            upload_document_and_ingest_new,
-                            inputs=[documents, questions_slider],
-                            outputs=[db_progress],
-                        ).then(
-                            update_active_collections,
-                            inputs=[],
-                            outputs=[collection_list],
-                        ).then(
-                            open_chat_accordion, inputs=[], outputs=chat_accordion
                         )
             with chat_accordion:
                 gr.ChatInterface(
@@ -269,21 +222,67 @@ def demo():
                             ],
                             outputs=[],
                         )
-                with gr.Accordion("collection configuration", open=False):
-                    with gr.Row():
-                        collection_list.change(
-                            llm.set_collection_name,
-                            inputs=[collection_list],
-                            outputs=[llm_progress],
-                        ).then(
-                            lambda collection_name: [collection_name],
-                            inputs=[collection_list],
-                            outputs=[collection_name],
-                        ).then(
-                            update_active_collections,
-                            inputs=[],
-                            outputs=[collection_list],
-                        )
+                with gr.Row():
+                    with gr.Accordion(
+                        "Advanced options - automatic question generation",
+                        open=False,
+                    ):
+                        with gr.Row():
+                            questions_slider = gr.Slider(
+                                minimum=0,
+                                maximum=10,
+                                value=1,
+                                step=1,
+                                label="Number of questions to be generated per document",
+                                info="Number of questions",
+                                interactive=True,
+                            )
+                with gr.Row():
+                    with gr.Accordion("collection configuration", open=False):
+                        with gr.Row():
+                            collection_list = gr.Dropdown(
+                                choices=collection_list_items,
+                                label="Configure an existing collection or create a new one",
+                                allow_custom_value=True,
+                                value=collection_list_items[0],
+                            )
+                            upload_button = gr.Button("Click to process the files")
+                            upload_button.click(
+                                validate_collection_name,
+                                inputs=collection_list,
+                                outputs=None,
+                            ).success(
+                                llm.set_collection_name,
+                                inputs=[collection_list],
+                                outputs=[chat_engine, db_progress],
+                            ).then(
+                                lambda collection_name: [collection_name],
+                                inputs=[collection_list],
+                                outputs=[collection_name],
+                            ).then(
+                                upload_document_and_ingest_new,
+                                inputs=[documents, questions_slider],
+                                outputs=[db_progress],
+                            ).then(
+                                update_active_collections,
+                                inputs=[],
+                                outputs=[collection_list],
+                            ).then(
+                                open_chat_accordion, inputs=[], outputs=chat_accordion
+                            )
+                            collection_list.change(
+                                llm.set_collection_name,
+                                inputs=[collection_list],
+                                outputs=[llm_progress],
+                            ).then(
+                                lambda collection_name: [collection_name],
+                                inputs=[collection_list],
+                                outputs=[collection_name],
+                            ).then(
+                                update_active_collections,
+                                inputs=[],
+                                outputs=[collection_list],
+                            )
 
     demo.queue()
 
