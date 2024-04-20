@@ -30,10 +30,10 @@ if (
     or os.getenv("USE_ONLY_CPU") == "true"
 ):
     application_request = cmlapi.CreateApplicationRequest(
-        name="CML LLM Chatbot - v2",
-        description="CML LLM Chatbot - v2",
+        name="AI Chat with your documents",
+        description="AI Chat with your documents",
         project_id=project.id,
-        subdomain="cmlllmv2",
+        subdomain="ai-chat-with-doc",
         script="3_app-run-python-script/front_end_app.py",
         cpu=6,
         memory=24,
@@ -44,10 +44,10 @@ if (
 
 else:
     application_request = cmlapi.CreateApplicationRequest(
-        name="CML LLM Chatbot - v2",
-        description="CML LLM Chatbot - v2",
+        name="AI Chat with your documents",
+        description="AI Chat with your documents",
         project_id=project.id,
-        subdomain="cmlllmv2",
+        subdomain="ai-chat-with-doc",
         script="3_app-run-python-script/front_end_app.py",
         cpu=2,
         memory=16,
