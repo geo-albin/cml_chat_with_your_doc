@@ -496,5 +496,5 @@ class CMLLLM:
         )
         return embed_model_path
 
-    def clear_chat_engine(self):
-        self.chat_engine.reset()
+    def clear_chat_engine(self, chat_engine):
+        chat_engine.reset()
