@@ -92,7 +92,9 @@ print(f"milvus_start = {milvus_start}")
 
 def infer2(msg, history, collection_name, chat_engine):
     query_text = msg
-    print(f"query = {query_text}")
+    print(
+        f"query = {query_text}, collection name = {collection_name}, chat_engine = {chat_engine}"
+    )
 
     if len(query_text) == 0:
         yield "Please ask some questions"
@@ -317,7 +319,7 @@ class CMLLLM:
 
         try:
             start_time = time.time()
-            op = ""
+            op = "Questions\n"
             i = 1
             for file in files:
                 progress(0.4, desc=f"loading document {os.path.basename(file)}")
@@ -352,13 +354,13 @@ class CMLLLM:
                     0.4, desc=f"done indexing the document {os.path.basename(file)}"
                 )
 
-                op += (
+                ops += (
                     "Completed data ingestion. took "
                     + str(time.time() - start_time)
                     + " seconds."
                 )
 
-                print(f"{op}")
+                print(f"{ops}")
                 progress(0.4, desc=op)
 
                 start_time = time.time()
@@ -377,7 +379,6 @@ class CMLLLM:
                     + str(time.time() - start_time)
                     + " seconds."
                 )
-                op += "\n" + dataset_op
                 print(f"{dataset_op}")
                 progress(0.4, desc=dataset_op)
                 print(
@@ -385,14 +386,14 @@ class CMLLLM:
                 )
                 progress(
                     0.4,
-                    desc=f"start generating questions from the document {os.path.basename(file)}",
+                    desc=f"generating questions from the document {os.path.basename(file)}",
                 )
                 eval_questions = data_generator.generate_questions_from_nodes(
                     num=questions
                 )
 
                 for q in eval_questions:
-                    op += "\nQuestion " + str(i) + " - " + str(q)
+                    op += str(q)
                     i += 1
 
                 print(
@@ -410,8 +411,8 @@ class CMLLLM:
 
         except Exception as e:
             print(e)
-            op = f"ingestion failed with exception {e}"
-            progress(0.9, desc=op)
+            ops = f"ingestion failed with exception {e}"
+            progress(0.9, desc=ops)
         return op
 
     def upload_document_and_ingest(self, files, questions, progress=gr.Progress()):
@@ -450,6 +451,9 @@ class CMLLLM:
         context_window,
         n_gpu_layers,
     ):
+        print(
+            f"Enter set_global_settings_common. model_name = {model_name}, embed_model_path = {embed_model_path}"
+        )
         model_path = self.get_model_path(model_name)
         Settings.llm = LlamaCPP(
             model_path=model_path,

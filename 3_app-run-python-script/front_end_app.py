@@ -106,7 +106,7 @@ def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
         chat_engine = gr.State(value=global_chat_engine)
         collection_name = gr.State(value="cml_rag_collection")
-        nr_of_questions = gr.State(value=2)
+        nr_of_questions = gr.State(value=1)
 
         gr.Markdown(
             """<center><h2>AI Chat with your documents</h2></center>
