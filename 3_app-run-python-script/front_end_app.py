@@ -103,7 +103,15 @@ def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
         chat_engine = gr.State()
         collection_name = gr.State(value="cml_rag_collection")
-
+        questions_slider = gr.Slider(
+            minimum=0,
+            maximum=10,
+            value=1,
+            step=1,
+            label="Number of questions to be generated per document",
+            info="Number of questions",
+            interactive=True,
+        )
         gr.Markdown(
             """<center><h2>AI Chat with your documents</h2></center>
         <h3>Chat with your documents (pdf, text and html)</h3>"""
@@ -234,15 +242,7 @@ def demo():
                         open=False,
                     ):
                         with gr.Row():
-                            questions_slider = gr.Slider(
-                                minimum=0,
-                                maximum=10,
-                                value=1,
-                                step=1,
-                                label="Number of questions to be generated per document",
-                                info="Number of questions",
-                                interactive=True,
-                            )
+                            questions_slider
                 with gr.Row():
                     with gr.Accordion("collection configuration", open=False):
                         with gr.Row():
