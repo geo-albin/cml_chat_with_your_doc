@@ -7,6 +7,7 @@ from utils.cmlllm import (
     get_supported_embed_models,
     get_supported_models,
     set_global_settings_common,
+    infer2,
 )
 
 MAX_QUESTIONS = 5
@@ -85,7 +86,6 @@ def reconfigure_llm(
     max_new_tokens=256,
     context_window=3900,
     gpu_layers=20,
-    progress=gr.Progress(),
 ):
     llm.set_global_settings_common(
         model_name=model_name,
@@ -94,11 +94,6 @@ def reconfigure_llm(
         max_new_tokens=max_new_tokens,
         context_window=context_window,
         gpu_layers=gpu_layers,
-        dim=1024,
-        memory_token_limit=3900,
-        sentense_embedding_percentile_cutoff=0.8,
-        similarity_top_k=2,
-        progress=progress,
     )
     return "Done configuring llm!!!"
 
@@ -208,11 +203,12 @@ def demo():
                         )
             with chat_accordion:
                 gr.ChatInterface(
-                    fn=llm.infer,
+                    fn=infer2,
                     title="CML chat Bot - v2",
                     chatbot=chat_bot,
                     clear_btn=clear_btn,
                     submit_btn=submit_btn,
+                    additional_inputs=[collection_name, chat_engine],
                 )
                 clear_btn.click(llm.clear_chat_engine())
 
@@ -294,7 +290,7 @@ def demo():
                                 context_window,
                                 gpu_layers,
                             ],
-                            outputs=[llm_progress],
+                            outputs=[],
                         )
                 with gr.Accordion("collection configuration", open=False):
                     with gr.Row():

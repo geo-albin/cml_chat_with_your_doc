@@ -90,7 +90,7 @@ milvus_start = vectordb.reset_vector_db()
 print(f"milvus_start = {milvus_start}")
 
 
-def infer(msg, history, collection_name, chat_engine):
+def infer2(msg, history, collection_name, chat_engine):
     query_text = msg
     print(f"query = {query_text}")
 
