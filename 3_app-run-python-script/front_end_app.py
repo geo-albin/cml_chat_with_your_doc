@@ -253,7 +253,7 @@ def demo():
                                 interactive=True,
                             )
                             questions_slider.change(
-                                lambda questions: [questions],
+                                lambda questions: questions,
                                 inputs=[questions_slider],
                                 outputs=[nr_of_questions],
                             )
@@ -271,7 +271,7 @@ def demo():
                                 inputs=[collection_list],
                                 outputs=[llm_progress],
                             ).then(
-                                lambda collection_name: [collection_name],
+                                lambda collection_name: collection_name,
                                 inputs=[collection_list],
                                 outputs=[collection_name],
                             ).then(

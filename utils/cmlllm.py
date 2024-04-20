@@ -214,6 +214,8 @@ class CMLLLM:
         collection_name,
         progress=gr.Progress(),
     ):
+        print(f"set_collection_name : collection = {collection_name}")
+
         if collection_name is None or len(collection_name) == 0:
             return
 
@@ -303,7 +305,7 @@ class CMLLLM:
         if torch.cuda.is_available():
             file_extractor[".pdf"] = PDFNougatOCR()
 
-        print(f"questions = {questions}")
+        print(f"collection = {collection_name}, questions = {questions}")
 
         progress(0.3, desc="loading the documents")
 
