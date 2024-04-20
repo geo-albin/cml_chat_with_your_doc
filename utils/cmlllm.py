@@ -29,6 +29,7 @@ import atexit
 import utils.vectordb as vectordb
 from llama_index.core.memory import ChatMemoryBuffer
 from dotenv import load_dotenv
+from llama_index.core.chat_engine import ContextChatEngine
 
 load_dotenv()
 
@@ -518,8 +519,12 @@ class CMLLLM:
             yield "No documents are processed yet. Please process some documents.."
             return
 
-            # try:
-        streaming_response = chat_engine.stream_chat(query_text)
+        ce = typecast_any_to_derived_class(chat_engine)
+
+        chat_engine2 = self.set_collection_name(collection_name=collection_name)
+
+        # try:
+        streaming_response = chat_engine2.stream_chat(query_text)
         generated_text = ""
         for token in streaming_response.response_gen:
             generated_text = generated_text + token
@@ -528,3 +533,10 @@ class CMLLLM:
         #     op = f"failed with exception {e}"
         #     print(op)
         #     yield op
+
+
+def typecast_any_to_derived_class(obj: Any) -> ContextChatEngine:
+    if isinstance(obj, ContextChatEngine):
+        return obj
+    else:
+        raise TypeError("obj is not of type ContextChatEngine")
