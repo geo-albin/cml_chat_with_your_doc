@@ -217,7 +217,7 @@ class CMLLLM:
         print(f"set_collection_name : collection = {collection_name}")
 
         if collection_name is None or len(collection_name) == 0:
-            return
+            return None
 
         collection_name = collection_name
         print(f"adding new collection name {collection_name}")
@@ -243,7 +243,7 @@ class CMLLLM:
 
         chat_engine = index.as_chat_engine(
             chat_mode=ChatMode.CONTEXT,
-            llm=Settings.llm,
+            # llm=Settings.llm,
             verbose=True,
             postprocessor=[
                 SentenceEmbeddingOptimizer(
@@ -452,6 +452,7 @@ class CMLLLM:
             f"Enter set_global_settings_common. model_name = {model_name}, embed_model_path = {embed_model_path}"
         )
         model_path = self.get_model_path(model_name)
+        print(f"Albin model_path = {model_path}")
         Settings.llm = LlamaCPP(
             model_path=model_path,
             temperature=temperature,
@@ -499,3 +500,31 @@ class CMLLLM:
 
     def clear_chat_engine(self, chat_engine):
         chat_engine.reset()
+
+    def infer2(self, msg, history, collection_name, chat_engine):
+        query_text = msg
+        print(
+            f"query = {query_text}, collection name = {collection_name}, chat_engine = {chat_engine}"
+        )
+
+        if len(query_text) == 0:
+            yield "Please ask some questions"
+            return
+
+        if (
+            collection_name in active_collection_available
+            and active_collection_available[collection_name] != True
+        ):
+            yield "No documents are processed yet. Please process some documents.."
+            return
+
+            # try:
+        streaming_response = chat_engine.stream_chat(query_text)
+        generated_text = ""
+        for token in streaming_response.response_gen:
+            generated_text = generated_text + token
+            yield generated_text
+        # except Exception as e:
+        #     op = f"failed with exception {e}"
+        #     print(op)
+        #     yield op

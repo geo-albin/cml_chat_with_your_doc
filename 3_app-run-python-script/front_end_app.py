@@ -147,7 +147,7 @@ def demo():
                     )
             with chat_accordion:
                 gr.ChatInterface(
-                    fn=infer2,
+                    fn=llm.infer2,
                     title=f"AI Chat with your document - Currently using the collection {collection_name}",
                     chatbot=chat_bot,
                     clear_btn=clear_btn,
@@ -269,7 +269,7 @@ def demo():
                             collection_list.change(
                                 llm.set_collection_name,
                                 inputs=[collection_list],
-                                outputs=[llm_progress],
+                                outputs=[chat_engine, llm_progress],
                             ).then(
                                 lambda collection_name: collection_name,
                                 inputs=[collection_list],
