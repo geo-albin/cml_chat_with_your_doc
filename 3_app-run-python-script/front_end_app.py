@@ -38,7 +38,20 @@ def update_active_collections():
     global collection_list_items
     collection_list_items = get_active_collections()
     print(f"new collection {collection_list_items}")
-    return gr.Dropdown(choices=collection_list_items)
+    collection = ""
+    if len(collection_list_items) != 0:
+        collection = collection_list_items[0]
+
+    return gr.Dropdown(choices=collection_list_items, value=collection)
+
+
+def get_latest_default_collection():
+    collection_list_items = get_active_collections()
+    collection = ""
+    if len(collection_list_items) != 0:
+        collection = collection_list_items[0]
+
+    return collection
 
 
 llm = CMLLLM()
@@ -102,6 +115,17 @@ def open_chat_accordion():
     return gr.Accordion("Chat with your documents", open=True)
 
 
+def update_header(collection_name):
+    string = f"Now using the collection {collection_name}"
+    if collection_name is None or len(collection_name) == 0:
+        string = f"Please set the collection name in the Admin panel and process the documents"
+
+    return gr.Label(
+        value=f"AI Chat with your document. {string}",
+        show_label=False,
+    )
+
+
 def close_doc_process_accordion():
     return gr.Accordion("Process your documents", open=False)
 
@@ -132,7 +156,7 @@ def demo():
                     with gr.Row():
                         db_progress = gr.Textbox(
                             label="Document processing status",
-                            value="None",
+                            # value="None",
                             interactive=False,
                             max_lines=10,
                         )
@@ -141,16 +165,16 @@ def demo():
                         upload_document_and_ingest_new,
                         inputs=[documents, nr_of_questions, collection_name],
                         outputs=[db_progress],
-                    )
+                    ).then(open_chat_accordion, inputs=[], outputs=[chat_accordion])
             with chat_accordion:
-                # gr.Label(
-                #     value=f"AI Chat with your document. Now using the collection {str(collection_name)}"
-                #     show_label=False
-                #     every=
-                # )
+                header = gr.Label(
+                    value=f"AI Chat with your document. Now using the collection {str(collection_name)}",
+                    show_label=False,
+                )
+
                 gr.ChatInterface(
                     fn=infer2,
-                    title=f"AI Chat with your document - Now using the collection {str(collection_name)}",
+                    title=f"AI Chat with your document",
                     chatbot=chat_bot,
                     clear_btn=clear_btn,
                     submit_btn=submit_btn,
@@ -160,16 +184,16 @@ def demo():
                     llm.clear_chat_engine, inputs=[collection_name], outputs=None
                 )
 
-        with gr.Tab("Admin configurations[Optional]"):
+        with gr.Tab("Admin panel[Optional configuration]"):
             admin = gr.Blocks()
             with admin:
                 with gr.Row():
-                    llm_progress = gr.Label(
+                    llm_progress = gr.TextArea(
                         label="LLM processing status",
                         show_label=False,
-                        value="",
-                        # interactive=False,
-                        # max_lines=10,
+                        # value="",
+                        interactive=False,
+                        max_lines=10,
                         visible=False,
                     )
                 with gr.Accordion("LLM Configuration", open=False):
@@ -268,40 +292,73 @@ def demo():
                                 choices=collection_list_items,
                                 label="Configure an existing collection or create a new one below",
                                 allow_custom_value=True,
-                                value=collection_list_items[0],
+                                value=get_latest_default_collection,
+                                every=60.0,
                             )
                             collection_list.change(
                                 llm.set_collection_name,
                                 inputs=[collection_list],
                                 outputs=[llm_progress],
                             ).then(
+                                update_active_collections,
+                                inputs=[],
+                                outputs=[collection_list],
+                            ).then(
                                 lambda collection_name: collection_name,
                                 inputs=[collection_list],
                                 outputs=[collection_name],
                             ).then(
-                                update_active_collections,
-                                inputs=[],
-                                outputs=[collection_list],
+                                update_header,
+                                inputs=[collection_name],
+                                outputs=[header],
                             )
+                            with gr.Accordion(
+                                "delete collection",
+                                open=False,
+                                label="Select a collection above, and click the button to delete it",
+                            ):
+                                with gr.Row():
+                                    # refresh_btn = gr.Button(
+                                    #     "Refresh the collection"
+                                    # )
+                                    # refresh_btn.click(
+                                    #     llm.delete_collection_name,
+                                    #     inputs=[
+                                    #         collection_list,
+                                    #     ],
+                                    #     outputs=[llm_progress],
+                                    # ).then(
+                                    #     update_active_collections,
+                                    #     inputs=[],
+                                    #     outputs=[collection_list],
+                                    # ).then(
+                                    #     lambda collection_name: collection_name,
+                                    #     inputs=[collection_list],
+                                    #     outputs=[collection_name],
+                                    # )
 
-                            collection_delete_btn = gr.Button(
-                                "Click to delete the collection"
-                            )
-                            collection_delete_btn.click(
-                                llm.delete_collection_name,
-                                inputs=[
-                                    collection_list,
-                                ],
-                                outputs=[llm_progress],
-                            ).then(
-                                update_active_collections,
-                                inputs=[],
-                                outputs=[collection_list],
-                            ).then(
-                                lambda collection_name: collection_name,
-                                inputs=[collection_list],
-                                outputs=[collection_name],
-                            )
+                                    collection_delete_btn = gr.Button(
+                                        "Click to delete the collection"
+                                    )
+                                    collection_delete_btn.click(
+                                        llm.delete_collection_name,
+                                        inputs=[
+                                            collection_list,
+                                        ],
+                                        outputs=[llm_progress],
+                                    ).then(
+                                        update_active_collections,
+                                        inputs=[],
+                                        outputs=[collection_list],
+                                    ).then(
+                                        lambda collection_name: collection_name,
+                                        inputs=[collection_list],
+                                        outputs=[collection_name],
+                                    ).then(
+                                        update_header,
+                                        inputs=[collection_name],
+                                        outputs=[header],
+                                    )
 
     demo.queue()
 
