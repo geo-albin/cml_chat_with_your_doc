@@ -35,12 +35,14 @@ collection_list_items = get_active_collections()
 embed_models = get_supported_embed_models()
 
 
-def update_active_collections():
+def update_active_collections(collection_name):
     global collection_list_items
     collection_list_items = get_active_collections()
     print(f"new collection {collection_list_items}")
     collection = ""
-    if len(collection_list_items) != 0:
+    if collection_name is not None:
+        collection = collection_name
+    elif len(collection_list_items) != 0:
         collection = collection_list_items[0]
 
     return gr.Dropdown(choices=collection_list_items, value=collection)
@@ -315,60 +317,60 @@ def demo():
                                 outputs=[collection_name],
                             ).then(
                                 update_active_collections,
-                                inputs=[],
+                                inputs=[collection_name],
                                 outputs=[collection_list],
                             ).then(
                                 update_header,
                                 inputs=[collection_name],
                                 outputs=[header],
                             )
-                            with gr.Row():
-                                with gr.Accordion(
-                                    "delete collection",
-                                    open=False,
-                                    label="Select a collection above, and click the button to delete it",
-                                ):
-                                    # refresh_btn = gr.Button(
-                                    #     "Refresh the collection"
-                                    # )
-                                    # refresh_btn.click(
-                                    #     llm.delete_collection_name,
-                                    #     inputs=[
-                                    #         collection_list,
-                                    #     ],
-                                    #     outputs=[llm_progress],
-                                    # ).then(
-                                    #     update_active_collections,
-                                    #     inputs=[],
-                                    #     outputs=[collection_list],
-                                    # ).then(
-                                    #     lambda collection_name: collection_name,
-                                    #     inputs=[collection_list],
-                                    #     outputs=[collection_name],
-                                    # )
+                        with gr.Row():
+                            with gr.Accordion(
+                                "delete collection",
+                                open=False,
+                                label="Select a collection above, and click the button to delete it",
+                            ):
+                                # refresh_btn = gr.Button(
+                                #     "Refresh the collection"
+                                # )
+                                # refresh_btn.click(
+                                #     llm.delete_collection_name,
+                                #     inputs=[
+                                #         collection_list,
+                                #     ],
+                                #     outputs=[llm_progress],
+                                # ).then(
+                                #     update_active_collections,
+                                #     inputs=[],
+                                #     outputs=[collection_list],
+                                # ).then(
+                                #     lambda collection_name: collection_name,
+                                #     inputs=[collection_list],
+                                #     outputs=[collection_name],
+                                # )
 
-                                    collection_delete_btn = gr.Button(
-                                        "Click to delete the collection"
-                                    )
-                                    collection_delete_btn.click(
-                                        llm.delete_collection_name,
-                                        inputs=[
-                                            collection_list,
-                                        ],
-                                        outputs=[llm_progress],
-                                    ).then(
-                                        update_active_collections,
-                                        inputs=[],
-                                        outputs=[collection_list],
-                                    ).then(
-                                        lambda collection_name: collection_name,
-                                        inputs=[collection_list],
-                                        outputs=[collection_name],
-                                    ).then(
-                                        update_header,
-                                        inputs=[collection_name],
-                                        outputs=[header],
-                                    )
+                                collection_delete_btn = gr.Button(
+                                    "Click to delete the collection"
+                                )
+                                collection_delete_btn.click(
+                                    llm.delete_collection_name,
+                                    inputs=[
+                                        collection_list,
+                                    ],
+                                    outputs=[llm_progress],
+                                ).then(
+                                    update_active_collections,
+                                    inputs=[],
+                                    outputs=[collection_list],
+                                ).then(
+                                    lambda collection_name: collection_name,
+                                    inputs=[collection_list],
+                                    outputs=[collection_name],
+                                ).then(
+                                    update_header,
+                                    inputs=[collection_name],
+                                    outputs=[header],
+                                )
 
     demo.queue()
 

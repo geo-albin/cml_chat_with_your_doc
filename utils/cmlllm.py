@@ -345,7 +345,7 @@ class CMLLLM:
                 )
 
                 for q in eval_questions:
-                    op += str(q)
+                    op += str(q) + "\n"
                     i += 1
 
                 print(
