@@ -176,13 +176,13 @@ def demo():
                     ).then(open_chat_accordion, inputs=[], outputs=[chat_accordion])
             with chat_accordion:
                 header = gr.Label(
-                    value=f"AI Chat with your document. Now using the collection {str(collection_name)}",
+                    value=f"Now using the collection {get_latest_default_collection()}",
                     show_label=False,
                 )
 
                 gr.ChatInterface(
                     fn=infer2,
-                    title=f"AI Chat with your document",
+                    # title=f"AI Chat with your document",
                     chatbot=chat_bot,
                     clear_btn=clear_btn,
                     submit_btn=submit_btn,
@@ -310,24 +310,24 @@ def demo():
                                 inputs=[collection_list],
                                 outputs=[llm_progress],
                             ).then(
-                                update_active_collections,
-                                inputs=[],
-                                outputs=[collection_list],
-                            ).then(
                                 lambda collection_name: collection_name,
                                 inputs=[collection_list],
                                 outputs=[collection_name],
+                            ).then(
+                                update_active_collections,
+                                inputs=[],
+                                outputs=[collection_list],
                             ).then(
                                 update_header,
                                 inputs=[collection_name],
                                 outputs=[header],
                             )
-                            with gr.Accordion(
-                                "delete collection",
-                                open=False,
-                                label="Select a collection above, and click the button to delete it",
-                            ):
-                                with gr.Row():
+                            with gr.Row():
+                                with gr.Accordion(
+                                    "delete collection",
+                                    open=False,
+                                    label="Select a collection above, and click the button to delete it",
+                                ):
                                     # refresh_btn = gr.Button(
                                     #     "Refresh the collection"
                                     # )
