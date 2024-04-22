@@ -1,5 +1,5 @@
 import subprocess
-from utils.check_gpu import check_gpu_enabled
+from utils.check_dependency import check_gpu_enabled
 
 print(subprocess.run(["sh 0_session-install-dependencies/setup.sh"], shell=True))
 

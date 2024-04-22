@@ -8,7 +8,7 @@ from utils.cmlllm import (
     get_supported_models,
     infer2,
 )
-from utils.check_gpu import check_gpu_enabled
+from utils.check_dependency import check_gpu_enabled
 
 MAX_QUESTIONS = 5
 

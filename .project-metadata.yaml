@@ -7,18 +7,19 @@ specification_version: 1.0
 prototype_version: 1.0
 date: "2024-04-22"
 
-environment_variables:
-  USE_ONLY_CPU:
-    default: True
-    description: >-
-      Whether to use GPU or only CPU for the llm serving.
-
 runtimes:
   - editor: PBJ Workbench
     kernel: Python 3.10
     edition: Nvidia GPU
 
 tasks:
+  - type: run_session
+    name: Check Dependencies
+    script: 0_session-install-dependencies/check-dependencies.py
+    short_summary: Check Dependencies
+    kernel: python3
+    cpu: 2
+    memory: 8
   - type: run_session
     name: Install Dependencies
     script: 0_session-install-dependencies/install-dependencies.py

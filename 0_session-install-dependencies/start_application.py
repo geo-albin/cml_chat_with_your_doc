@@ -1,7 +1,7 @@
 import os
 import cmlapi
 import json
-from utils.check_gpu import check_gpu_enabled
+from utils.check_dependency import check_gpu_enabled
 
 client = cmlapi.default_client(
     url=os.getenv("CDSW_API_URL").replace("/api/v1", ""),
