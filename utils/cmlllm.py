@@ -75,7 +75,7 @@ def get_supported_models():
     return llmList
 
 
-active_collection_available = {"cml_rag_collection": False}
+active_collection_available = {"default_collection": False}
 
 
 def get_active_collections():
@@ -137,7 +137,7 @@ class CMLLLM:
         context_window=3900,
         gpu_layers=20,
         dim=1024,
-        collection_name="cml_rag_collection",
+        collection_name="default_collection",
         memory_token_limit=3900,
         sentense_embedding_percentile_cutoff=0.8,
         similarity_top_k=2,

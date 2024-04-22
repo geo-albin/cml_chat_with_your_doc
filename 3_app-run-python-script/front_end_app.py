@@ -121,11 +121,12 @@ def open_chat_accordion():
 def update_header(collection_name):
     string = f"Now using the collection {collection_name}"
     if collection_name is None or len(collection_name) == 0:
-        string = f"Please set the collection name in the Admin panel and process the documents"
+        string = f"Please set the collection name in the 'Advanced Options' and process the documents"
 
-    return gr.Label(
+    return gr.TextArea(
         value=f"AI Chat with your document. \n{string}",
         show_label=False,
+        interactive=False,
     )
 
 
@@ -142,7 +143,7 @@ def get_runtime_information():
 
 def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
-        collection_name = gr.State(value="cml_rag_collection")
+        collection_name = gr.State(value="default_collection")
         nr_of_questions = gr.State(value=1)
 
         gr.Markdown(
@@ -177,9 +178,10 @@ def demo():
                         outputs=[db_progress],
                     ).then(open_chat_accordion, inputs=[], outputs=[chat_accordion])
             with chat_accordion:
-                header = gr.Label(
+                header = gr.TextArea(
                     value=f"Now using the collection {get_latest_default_collection()}",
                     show_label=False,
+                    interactive=False,
                 )
 
                 gr.ChatInterface(
@@ -193,20 +195,24 @@ def demo():
                     llm.clear_chat_engine, inputs=[collection_name], outputs=None
                 )
 
-        with gr.Tab("Admin panel[Optional configuration]"):
+        with gr.Tab("Advanced Options"):
             admin = gr.Blocks()
             with admin:
                 with gr.Row():
-                    llm_progress = gr.TextArea(
+                    llm_progress = gr.Textbox(
                         label="LLM processing status",
                         show_label=False,
                         # value="",
                         interactive=False,
                         max_lines=10,
-                        visible=False,
+                        visible=True,
                     )
                 with gr.Accordion("Runtime informations", open=True):
-                    gr.Label(show_label=False, value=get_runtime_information)
+                    gr.TextArea(
+                        show_label=False,
+                        value=get_runtime_information,
+                        interactive=False,
+                    )
                 with gr.Accordion("LLM Configuration", open=False):
                     llm_model = gr.Dropdown(
                         choices=llm_choice,
@@ -278,7 +284,7 @@ def demo():
                         )
                 with gr.Row():
                     with gr.Accordion(
-                        "Advanced options - automatic question generation",
+                        "Number of automatic questions generated per the uploaded docs",
                         open=False,
                     ):
                         with gr.Row():
@@ -329,7 +335,7 @@ def demo():
                                 label="Select a collection, and click the button to delete it",
                             ):
                                 collection_delete_btn = gr.Button(
-                                    "Click to delete the collection"
+                                    "Click to delete the collection and the associated document embeddings"
                                 )
                                 collection_delete_btn.click(
                                     llm.delete_collection_name,
@@ -351,7 +357,7 @@ def demo():
                                     outputs=[header],
                                 )
 
-                                refresh_btn = gr.Button("Refresh the collection")
+                                refresh_btn = gr.Button("Refresh the collection list")
                                 refresh_btn.click(
                                     update_active_collections,
                                     inputs=[
