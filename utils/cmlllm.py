@@ -250,7 +250,7 @@ class CMLLLM:
 
     def ingest(self, files, questions, collection_name, progress=gr.Progress()):
         if not (collection_name in active_collection_available):
-            return f"Some issues with the llm and colection {collection_name} setup or questions {questions}. please try setting up the llm and the vector db again."
+            return f"Some issues with the llm and colection {collection_name} setup. please try setting up the llm and the vector db again."
 
         file_extractor = {
             ".html": UnstructuredReader(),
