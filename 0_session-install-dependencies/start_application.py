@@ -1,6 +1,7 @@
 import os
 import cmlapi
 import json
+from utils.check_gpu import check_gpu_enabled
 
 client = cmlapi.default_client(
     url=os.getenv("CDSW_API_URL").replace("/api/v1", ""),
@@ -24,11 +25,7 @@ os.environ["APP_IMAGE_ML_RUNTIME"] = APP_IMAGE_ML_RUNTIME
 project = client.get_project(project_id=os.getenv("CDSW_PROJECT_ID"))
 
 
-if (
-    os.getenv("USE_ONLY_CPU") == "True"
-    or os.getenv("USE_ONLY_CPU") == True
-    or os.getenv("USE_ONLY_CPU") == "true"
-):
+if check_gpu_enabled():
     application_request = cmlapi.CreateApplicationRequest(
         name="AI Chat with your documents",
         description="AI Chat with your documents",

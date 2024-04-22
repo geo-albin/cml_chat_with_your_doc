@@ -108,7 +108,6 @@ def close_doc_process_accordion():
 
 def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
-        # chat_engine = gr.State(value=global_chat_engine)
         collection_name = gr.State(value="cml_rag_collection")
         nr_of_questions = gr.State(value=1)
 
@@ -143,13 +142,15 @@ def demo():
                         inputs=[documents, nr_of_questions, collection_name],
                         outputs=[db_progress],
                     )
-                    # .then(open_chat_accordion, inputs=[], outputs=chat_accordion).then(
-                    #     close_doc_process_accordion, inputs=[], outputs=doc_accordion
-                    # )
             with chat_accordion:
+                # gr.Label(
+                #     value=f"AI Chat with your document. Now using the collection {str(collection_name)}"
+                #     show_label=False
+                #     every=
+                # )
                 gr.ChatInterface(
                     fn=infer2,
-                    title=f"AI Chat with your document - Currently using the collection {collection_name}",
+                    title=f"AI Chat with your document - Now using the collection {str(collection_name)}",
                     chatbot=chat_bot,
                     clear_btn=clear_btn,
                     submit_btn=submit_btn,
@@ -163,11 +164,13 @@ def demo():
             admin = gr.Blocks()
             with admin:
                 with gr.Row():
-                    llm_progress = gr.Textbox(
+                    llm_progress = gr.Label(
                         label="LLM processing status",
-                        value="None",
-                        interactive=False,
-                        max_lines=10,
+                        show_label=False,
+                        value="",
+                        # interactive=False,
+                        # max_lines=10,
+                        visible=False,
                     )
                 with gr.Accordion("LLM Configuration", open=False):
                     llm_model = gr.Dropdown(
@@ -263,7 +266,7 @@ def demo():
                         with gr.Row():
                             collection_list = gr.Dropdown(
                                 choices=collection_list_items,
-                                label="Configure an existing collection or create a new one",
+                                label="Configure an existing collection or create a new one below",
                                 allow_custom_value=True,
                                 value=collection_list_items[0],
                             )
@@ -279,6 +282,25 @@ def demo():
                                 update_active_collections,
                                 inputs=[],
                                 outputs=[collection_list],
+                            )
+
+                            collection_delete_btn = gr.Button(
+                                "Click to delete the collection"
+                            )
+                            collection_delete_btn.click(
+                                llm.delete_collection_name,
+                                inputs=[
+                                    collection_list,
+                                ],
+                                outputs=[llm_progress],
+                            ).then(
+                                update_active_collections,
+                                inputs=[],
+                                outputs=[collection_list],
+                            ).then(
+                                lambda collection_name: collection_name,
+                                inputs=[collection_list],
+                                outputs=[collection_name],
                             )
 
     demo.queue()

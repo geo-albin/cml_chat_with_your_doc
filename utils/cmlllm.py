@@ -1,7 +1,11 @@
 import os
-from llama_index.core import SimpleDirectoryReader, Settings
 from llama_index.core.node_parser import SimpleNodeParser
-from llama_index.core import VectorStoreIndex, StorageContext
+from llama_index.core import (
+    VectorStoreIndex,
+    StorageContext,
+    SimpleDirectoryReader,
+    Settings,
+)
 from llama_index.readers.file import UnstructuredReader, PDFReader
 from llama_index.readers.nougat_ocr import PDFNougatOCR
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
@@ -19,7 +23,6 @@ from llama_index.core.callbacks import LlamaDebugHandler, CallbackManager
 from llama_index.core.chat_engine.types import ChatMode
 from llama_index.core.postprocessor import SentenceEmbeddingOptimizer
 from utils.duplicate_preprocessing import DuplicateRemoverNodePostprocessor
-from llama_index.vector_stores.milvus import MilvusVectorStore
 import torch
 import logging
 import sys
@@ -168,52 +171,15 @@ class CMLLLM:
         self.sentense_embedding_percentile_cutoff = sentense_embedding_percentile_cutoff
         self.memory_token_limit = memory_token_limit
 
-        # if not collection_name in active_collection_available:
-        #     active_collection_available[collection_name] = False
+    def delete_collection_name(self, collection_name, progress=gr.Progress()):
+        print(f"delete_collection_name : collection = {collection_name}")
 
-        # progress((2, 4), desc="setting the vector db")
+        if collection_name is None or len(collection_name) == 0:
+            return None
 
-        # vector_store = MilvusVectorStore(
-        #     dim=self.dim,
-        #     collection_name=collection_name,
-        # )
-
-        # index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
-
-        # progress((3, 4), desc="setting the chat engine")
-
-        # chat_engine = index.as_chat_engine(
-        #     chat_mode=ChatMode.CONTEXT,
-        #     verbose=True,
-        #     postprocessor=[
-        #         SentenceEmbeddingOptimizer(
-        #             percentile_cutoff=self.sentense_embedding_percentile_cutoff
-        #         ),
-        #         DuplicateRemoverNodePostprocessor(),
-        #     ],
-        #     memory=ChatMemoryBuffer.from_defaults(token_limit=self.memory_token_limit),
-        #     system_prompt=(
-        #         "You are an expert Q&A assistant that is trusted around the world.\n"
-        #         "Always answer the query using the Context provided and not prior knowledge or General knowledge."
-        #         "Avoid statements like 'Based on the context' or 'The context information'.\n"
-        #         "If the provided context dont have the information, answer 'I dont know'.\n"
-        #         "Please cite the source along with your answers."
-        #     ),
-        #     similarity_top_k=self.similarity_top_k,
-        # )
-        # progress(
-        #     (4, 4),
-        #     desc=f"successfully set the chat engine for the collection name {collection_name}",
-        # )
-
-        # "You are an expert Q&A system that is trusted around the world.\n"
-        #         "Always answer the query using the provided context information and not prior knowledge."
-        #         "Some rules to follow:\n"
-        #         "1. Never directly reference the given context in your answer.\n"
-        #         "2. Avoid statements like 'Based on the context' or 'The context information'"
-        #         " or 'This information is not directly stated in the context provided' or anything along those lines.\n"
-        #         "If the provided context dont have the information, answer 'I dont know'.\n"
-        #         "Please cite the source along with your answers."
+        active_collection_available.pop(collection_name, None)
+        chat_engine_map.pop(collection_name, None)
+        progress((1, 1), desc=f"Successfully deleted the collection {collection_name}")
 
     def set_collection_name(
         self,
@@ -225,11 +191,20 @@ class CMLLLM:
         if collection_name is None or len(collection_name) == 0:
             return None
 
-        collection_name = collection_name
         print(f"adding new collection name {collection_name}")
 
         if not collection_name in active_collection_available:
             active_collection_available[collection_name] = False
+
+        if collection_name in chat_engine_map:
+            print(
+                f"collection {collection_name} is already configured and chat_engine is set"
+            )
+            progress(
+                (1, 1),
+                desc=f"collection {collection_name} is already configured and chat_engine is set.",
+            )
+            return
 
         progress(
             (1, 4),
@@ -249,7 +224,6 @@ class CMLLLM:
 
         chat_engine = index.as_chat_engine(
             chat_mode=ChatMode.CONTEXT,
-            # llm=Settings.llm,
             verbose=True,
             postprocessor=[
                 SentenceEmbeddingOptimizer(
@@ -273,32 +247,6 @@ class CMLLLM:
         )
 
         chat_engine_map[collection_name] = chat_engine
-
-    # def infer(self, msg, history):
-    #     query_text = msg
-    #     print(f"query = {query_text}")
-
-    #     if len(query_text) == 0:
-    #         yield "Please ask some questions"
-    #         return
-
-    #     if (
-    #         self.collection_name in active_collection_available
-    #         and active_collection_available[self.collection_name] != True
-    #     ):
-    #         yield "No documents are processed yet. Please process some documents.."
-    #         return
-
-    #     try:
-    #         streaming_response = self.chat_engine.stream_chat(query_text)
-    #         generated_text = ""
-    #         for token in streaming_response.response_gen:
-    #             generated_text = generated_text + token
-    #             yield generated_text
-    #     except Exception as e:
-    #         op = f"failed with exception {e}"
-    #         print(op)
-    #         yield op
 
     def ingest(self, files, questions, collection_name, progress=gr.Progress()):
         if not (collection_name in active_collection_available):
@@ -509,43 +457,3 @@ class CMLLLM:
         if collection_name in chat_engine_map:
             chat_engine = chat_engine_map[collection_name]
             chat_engine.reset()
-
-    # def infer2(self, msg, history, collection_name, chat_engine):
-    #     query_text = msg
-    #     print(
-    #         f"query = {query_text}, collection name = {collection_name}, chat_engine = {chat_engine}"
-    #     )
-
-    #     if len(query_text) == 0:
-    #         yield "Please ask some questions"
-    #         return
-
-    #     if (
-    #         collection_name in active_collection_available
-    #         and active_collection_available[collection_name] != True
-    #     ):
-    #         yield "No documents are processed yet. Please process some documents.."
-    #         return
-
-    #     chat_engine2 = typecast_any_to_derived_class(chat_engine)
-
-    #     # chat_engine2 = self.set_collection_name(collection_name=collection_name)
-
-    #     # try:
-    #     streaming_response = chat_engine2.stream_chat(query_text)
-    #     generated_text = ""
-    #     for token in streaming_response.response_gen:
-    #         generated_text = generated_text + token
-    #         yield generated_text
-    #     # except Exception as e:
-    #     #     op = f"failed with exception {e}"
-    #     #     print(op)
-    #     #     yield op
-
-
-# def typecast_any_to_derived_class(obj) -> ContextChatEngine:
-#     if isinstance(obj, ContextChatEngine):
-#         print("Albin chat_engine is of type ContextChatEngine")
-#         return obj
-#     else:
-#         raise TypeError("obj is not of type ContextChatEngine")
