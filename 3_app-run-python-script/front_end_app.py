@@ -8,6 +8,7 @@ from utils.cmlllm import (
     get_supported_models,
     infer2,
 )
+from utils.check_gpu import check_gpu_enabled
 
 MAX_QUESTIONS = 5
 
@@ -130,6 +131,13 @@ def close_doc_process_accordion():
     return gr.Accordion("Process your documents", open=False)
 
 
+def get_runtime_information():
+    string = f"AI chatbot is running using CPU"
+    if check_gpu_enabled():
+        string = f"AI chatbot is running using GPU"
+    return string
+
+
 def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
         collection_name = gr.State(value="cml_rag_collection")
@@ -196,6 +204,8 @@ def demo():
                         max_lines=10,
                         visible=False,
                     )
+                with gr.Accordion("Runtime informations", open=True):
+                    gr.Label(show_label=False, value=get_runtime_information)
                 with gr.Accordion("LLM Configuration", open=False):
                     llm_model = gr.Dropdown(
                         choices=llm_choice,
