@@ -305,7 +305,6 @@ def demo():
                                 label="Configure an existing collection or create a new one below",
                                 allow_custom_value=True,
                                 value=get_latest_default_collection,
-                                every=60.0,
                             )
                             collection_list.change(
                                 llm.set_collection_name,
