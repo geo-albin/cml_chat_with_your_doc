@@ -124,7 +124,7 @@ def update_header(collection_name):
         string = f"Please set the collection name in the Admin panel and process the documents"
 
     return gr.Label(
-        value=f"AI Chat with your document. {string}",
+        value=f"AI Chat with your document. \n{string}",
         show_label=False,
     )
 
@@ -134,10 +134,10 @@ def close_doc_process_accordion():
 
 
 def get_runtime_information():
-    string = f"AI chatbot is running using CPU"
     if check_gpu_enabled():
-        string = f"AI chatbot is running using GPU"
-    return string
+        return "AI chatbot is running using GPU"
+    else:
+        return "AI chatbot is running using CPU"
 
 
 def demo():
@@ -184,7 +184,6 @@ def demo():
 
                 gr.ChatInterface(
                     fn=infer2,
-                    # title=f"AI Chat with your document",
                     chatbot=chat_bot,
                     clear_btn=clear_btn,
                     submit_btn=submit_btn,
@@ -325,29 +324,10 @@ def demo():
                             )
                         with gr.Row():
                             with gr.Accordion(
-                                "delete collection",
+                                "collection operations",
                                 open=False,
-                                label="Select a collection above, and click the button to delete it",
+                                label="Select a collection, and click the button to delete it",
                             ):
-                                # refresh_btn = gr.Button(
-                                #     "Refresh the collection"
-                                # )
-                                # refresh_btn.click(
-                                #     llm.delete_collection_name,
-                                #     inputs=[
-                                #         collection_list,
-                                #     ],
-                                #     outputs=[llm_progress],
-                                # ).then(
-                                #     update_active_collections,
-                                #     inputs=[],
-                                #     outputs=[collection_list],
-                                # ).then(
-                                #     lambda collection_name: collection_name,
-                                #     inputs=[collection_list],
-                                #     outputs=[collection_name],
-                                # )
-
                                 collection_delete_btn = gr.Button(
                                     "Click to delete the collection"
                                 )
@@ -369,6 +349,19 @@ def demo():
                                     update_header,
                                     inputs=[collection_name],
                                     outputs=[header],
+                                )
+
+                                refresh_btn = gr.Button("Refresh the collection")
+                                refresh_btn.click(
+                                    update_active_collections,
+                                    inputs=[
+                                        None,
+                                    ],
+                                    outputs=[collection_list],
+                                ).then(
+                                    lambda collection_name: collection_name,
+                                    inputs=[collection_list],
+                                    outputs=[collection_name],
                                 )
 
     demo.queue()
