@@ -1,5 +1,4 @@
 import os
-import cdsw
 import requests
 
 
@@ -24,41 +23,41 @@ def check_gpu_enabled():
     return True
 
 
-# Check that there are available GPUs or autoscalable GPUs available
-def check_gpu_launch():
-    # Launch a worker that uses GPU to see if any gpu is available or autoscaling is possible
-    worker = cdsw.launch_workers(
-        n=1, cpu=2, memory=4, nvidia_gpu=1, code="print('GPU Available')"
-    )
+# # Check that there are available GPUs or autoscalable GPUs available
+# def check_gpu_launch():
+#     # Launch a worker that uses GPU to see if any gpu is available or autoscaling is possible
+#     worker = cdsw.launch_workers(
+#         n=1, cpu=2, memory=4, nvidia_gpu=1, code="print('GPU Available')"
+#     )
 
-    # Wait for 10 minutes to see if worker pod reaches success state
-    worker_schedule_status = cdsw.await_workers(
-        worker, wait_for_completion=True, timeout_seconds=600
-    )
-    if len(worker_schedule_status["failures"]) == 1:
-        cdsw.stop_workers(worker_schedule_status["failures"][0]["id"])
-        # Failure at this point is due to not enough GPU resources at the time of launch.
-        # Ask your admin about quota and autoscaling rules for GPU
-        print("Unable to allocate GPU resource within 10 minutes")
-        return False
+#     # Wait for 10 minutes to see if worker pod reaches success state
+#     worker_schedule_status = cdsw.await_workers(
+#         worker, wait_for_completion=True, timeout_seconds=600
+#     )
+#     if len(worker_schedule_status["failures"]) == 1:
+#         cdsw.stop_workers(worker_schedule_status["failures"][0]["id"])
+#         # Failure at this point is due to not enough GPU resources at the time of launch.
+#         # Ask your admin about quota and autoscaling rules for GPU
+#         print("Unable to allocate GPU resource within 10 minutes")
+#         return False
 
-    print("Launched workers successfully. Shutting down the worker...")
-    cdsw.stop_workers()
-    # Wait for 10 minutes to see if worker pod reaches success state
-    worker_schedule_status = cdsw.await_workers(
-        worker, wait_for_completion=True, timeout_seconds=600
-    )
-    if len(worker_schedule_status["failures"]) == 1:
-        cdsw.stop_workers(worker_schedule_status["failures"][0]["id"])
-        # Failure at this point is due to not enough GPU resources at the time of launch.
-        # Ask your admin about quota and autoscaling rules for GPU
-        print("Unable to shutdown workers within 10 minutes")
-        return False
+#     print("Launched workers successfully. Shutting down the worker...")
+#     cdsw.stop_workers()
+#     # Wait for 10 minutes to see if worker pod reaches success state
+#     worker_schedule_status = cdsw.await_workers(
+#         worker, wait_for_completion=True, timeout_seconds=600
+#     )
+#     if len(worker_schedule_status["failures"]) == 1:
+#         cdsw.stop_workers(worker_schedule_status["failures"][0]["id"])
+#         # Failure at this point is due to not enough GPU resources at the time of launch.
+#         # Ask your admin about quota and autoscaling rules for GPU
+#         print("Unable to shutdown workers within 10 minutes")
+#         return False
 
-    return True
+#     return True
 
 
 if __name__ == "__main__":
     print("Checking the enablement and availibility of GPU in the workspace")
     check_gpu_enabled()
-    check_gpu_launch()
+    # check_gpu_launch()
