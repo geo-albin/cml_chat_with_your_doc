@@ -23,6 +23,24 @@ def check_gpu_enabled():
     return True
 
 
+def check_unauthenticated_access_to_app_enabled():
+    APIv1 = os.getenv("CDSW_API_URL")
+    PATH = "site/config/"
+    API_KEY = os.getenv("CDSW_API_KEY")
+
+    url = "/".join([APIv1, PATH])
+    res = requests.get(
+        url,
+        headers={"Content-Type": "application/json"},
+        auth=(API_KEY, ""),
+    )
+    allow_unauthenticated_access_to_app = res.json().get(
+        "allow_unauthenticated_access_to_app"
+    )
+
+    return allow_unauthenticated_access_to_app
+
+
 # # Check that there are available GPUs or autoscalable GPUs available
 # def check_gpu_launch():
 #     # Launch a worker that uses GPU to see if any gpu is available or autoscaling is possible
