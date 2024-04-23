@@ -40,7 +40,7 @@ def update_active_collections(collection_name):
     collection_list_items = get_active_collections()
     print(f"new collection {collection_list_items}")
     collection = ""
-    if collection_name is not None:
+    if collection_name is not None and len(collection_name) != 0:
         collection = collection_name
     elif len(collection_list_items) != 0:
         collection = collection_list_items[0]
@@ -360,9 +360,7 @@ def demo():
                                 refresh_btn = gr.Button("Refresh the collection list")
                                 refresh_btn.click(
                                     update_active_collections,
-                                    inputs=[
-                                        None,
-                                    ],
+                                    inputs=[],
                                     outputs=[collection_list],
                                 ).then(
                                     lambda collection_name: collection_name,
