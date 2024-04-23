@@ -25,7 +25,7 @@ os.environ["APP_IMAGE_ML_RUNTIME"] = APP_IMAGE_ML_RUNTIME
 project = client.get_project(project_id=os.getenv("CDSW_PROJECT_ID"))
 
 
-if check_gpu_enabled():
+if check_gpu_enabled() == False:
     application_request = cmlapi.CreateApplicationRequest(
         name="AI Chat with your documents",
         description="AI Chat with your documents",

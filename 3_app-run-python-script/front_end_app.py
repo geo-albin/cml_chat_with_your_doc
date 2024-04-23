@@ -158,6 +158,13 @@ def demo():
                 doc_accordion = gr.Accordion("Process your documents", open=True)
                 chat_accordion = gr.Accordion("Chat with your documents", open=False)
                 with doc_accordion:
+                    header = gr.TextArea(
+                        value=f"Now using the collection {get_latest_default_collection()}",
+                        show_label=False,
+                        interactive=False,
+                        max_lines=1,
+                        lines=1,
+                    )
                     with gr.Row():
                         documents = gr.Files(
                             height=100,
@@ -181,14 +188,6 @@ def demo():
                         outputs=[db_progress],
                     ).then(open_chat_accordion, inputs=[], outputs=[chat_accordion])
             with chat_accordion:
-                header = gr.TextArea(
-                    value=f"Now using the collection {get_latest_default_collection()}",
-                    show_label=False,
-                    interactive=False,
-                    max_lines=1,
-                    lines=1,
-                )
-
                 gr.ChatInterface(
                     fn=infer2,
                     chatbot=chat_bot,
@@ -303,6 +302,7 @@ def demo():
                                 label="Number of questions to be generated per document",
                                 info="Number of questions",
                                 interactive=True,
+                                show_label=False,
                             )
                             questions_slider.change(
                                 lambda questions: questions,
@@ -342,7 +342,7 @@ def demo():
                                 label="Select a collection, and click the button to delete it",
                             ):
                                 collection_delete_btn = gr.Button(
-                                    "Click to delete the collection and the associated document embeddings"
+                                    "Delete the collection and the associated document embeddings"
                                 )
                                 collection_delete_btn.click(
                                     llm.delete_collection_name,
