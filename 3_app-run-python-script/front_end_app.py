@@ -127,6 +127,8 @@ def update_header(collection_name):
         value=f"AI Chat with your document. \n{string}",
         show_label=False,
         interactive=False,
+        max_lines=1,
+        lines=1,
     )
 
 
@@ -169,7 +171,8 @@ def demo():
                             label="Document processing status",
                             # value="None",
                             interactive=False,
-                            max_lines=10,
+                            max_lines=3,
+                            lines=3,
                         )
                     upload_button = gr.Button("Click to process the files")
                     upload_button.click(
@@ -182,6 +185,8 @@ def demo():
                     value=f"Now using the collection {get_latest_default_collection()}",
                     show_label=False,
                     interactive=False,
+                    max_lines=1,
+                    lines=1,
                 )
 
                 gr.ChatInterface(
@@ -212,6 +217,8 @@ def demo():
                         show_label=False,
                         value=get_runtime_information,
                         interactive=False,
+                        max_lines=1,
+                        lines=1,
                     )
                 with gr.Accordion("LLM Configuration", open=False):
                     llm_model = gr.Dropdown(
