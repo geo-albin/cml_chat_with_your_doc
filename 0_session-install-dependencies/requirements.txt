@@ -19,4 +19,4 @@ milvus==2.3.5
 unstructured==0.13.2
 spacy==3.7.4
 python-dotenv
-requests==2.27.1
+requests
