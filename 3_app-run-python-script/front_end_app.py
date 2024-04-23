@@ -83,11 +83,11 @@ def reconfigure_llm(
 ):
     llm.set_global_settings_common(
         model_name=model_name,
-        embed_model_name=embed_model_name,
+        embed_model_path=embed_model_name,
         temperature=temperature,
         max_new_tokens=max_new_tokens,
         context_window=context_window,
-        gpu_layers=gpu_layers,
+        n_gpu_layers=gpu_layers,
     )
     return "Done reconfiguring llm!!!"
 
