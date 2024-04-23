@@ -59,7 +59,6 @@ def get_latest_default_collection():
 
 llm = CMLLLM()
 llm.set_collection_name(collection_name=collection_list_items[0])
-selected_model_name = "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
 
 
 def upload_document_and_ingest_new(
@@ -226,12 +225,12 @@ def demo():
                 with gr.Accordion("LLM Configuration", open=False):
                     llm_model = gr.Dropdown(
                         choices=llm_choice,
-                        value=selected_model_name,
+                        value=llm.get_active_model_name(),
                         label="LLM Model",
                     )
                     embed_model = gr.Dropdown(
                         choices=embed_models,
-                        value=embed_models[0],
+                        value=llm.get_active_embed_model_name(),
                         label="Embed Model",
                     )
                     with gr.Accordion("Configure model parameters", open=False):

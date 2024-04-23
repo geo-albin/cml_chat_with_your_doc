@@ -147,6 +147,8 @@ class CMLLLM:
             model_name = "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
         if len(embed_model_name) == 0:
             embed_model_name = "thenlper/gte-large"
+        self.active_model_name = model_name
+        self.active_embed_model_name = embed_model_name
         n_gpu_layers = 0
         if torch.cuda.is_available():
             print("It is a GPU node, setup GPU.")
@@ -171,6 +173,12 @@ class CMLLLM:
         self.similarity_top_k = similarity_top_k
         self.sentense_embedding_percentile_cutoff = sentense_embedding_percentile_cutoff
         self.memory_token_limit = memory_token_limit
+
+    def get_active_model_name(self):
+        return self.active_model_name
+
+    def get_active_embed_model_name(self):
+        return self.active_embed_model_name
 
     def delete_collection_name(self, collection_name, progress=gr.Progress()):
         print(f"delete_collection_name : collection = {collection_name}")
