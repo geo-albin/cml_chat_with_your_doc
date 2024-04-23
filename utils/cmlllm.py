@@ -164,8 +164,9 @@ class CMLLLM:
             context_window=context_window,
             n_gpu_layers=n_gpu_layers,
             node_parser=self.node_parser,
+            progress=progress,
         )
-
+        progress((1.5, 4), desc="done, setting the global parameters")
         self.dim = dim
         self.similarity_top_k = similarity_top_k
         self.sentense_embedding_percentile_cutoff = sentense_embedding_percentile_cutoff
@@ -381,6 +382,7 @@ class CMLLLM:
         context_window,
         n_gpu_layers,
         node_parser,
+        progress=gr.Progress(),
     ):
         self.set_global_settings_common(
             model_name=model_name,
@@ -389,6 +391,7 @@ class CMLLLM:
             max_new_tokens=max_new_tokens,
             context_window=context_window,
             n_gpu_layers=n_gpu_layers,
+            progress=progress,
         )
 
         Settings.callback_manager = callback_manager
@@ -402,12 +405,15 @@ class CMLLLM:
         max_new_tokens,
         context_window,
         n_gpu_layers,
+        progress,
     ):
         print(
             f"Enter set_global_settings_common. model_name = {model_name}, embed_model_path = {embed_model_path}"
         )
         model_path = self.get_model_path(model_name)
-        print(f"Albin model_path = {model_path}")
+        print(f"model_path = {model_path}")
+        progress(0.1, f"Starting the model {model_path}")
+
         Settings.llm = LlamaCPP(
             model_path=model_path,
             temperature=temperature,
@@ -425,7 +431,7 @@ class CMLLLM:
             completion_to_prompt=completion_to_prompt,
             verbose=True,
         )
-
+        progress(0.3, f"Setting the embed model {embed_model_path}")
         Settings.embed_model = HuggingFaceEmbedding(
             model_name=embed_model_path,
             cache_folder=self.EMBED_PATH,

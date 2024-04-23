@@ -59,6 +59,7 @@ def get_latest_default_collection():
 
 llm = CMLLLM()
 llm.set_collection_name(collection_name=collection_list_items[0])
+selected_model_name = "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
 
 
 def upload_document_and_ingest_new(
@@ -80,6 +81,7 @@ def reconfigure_llm(
     max_new_tokens=256,
     context_window=3900,
     gpu_layers=20,
+    progress=gr.Progress(),
 ):
     llm.set_global_settings_common(
         model_name=model_name,
@@ -88,7 +90,9 @@ def reconfigure_llm(
         max_new_tokens=max_new_tokens,
         context_window=context_window,
         n_gpu_layers=gpu_layers,
+        progress=progress,
     )
+    selected_model_name = model_name
     return "Done reconfiguring llm!!!"
 
 
@@ -222,7 +226,7 @@ def demo():
                 with gr.Accordion("LLM Configuration", open=False):
                     llm_model = gr.Dropdown(
                         choices=llm_choice,
-                        value=llm_choice[0],
+                        value=selected_model_name,
                         label="LLM Model",
                     )
                     embed_model = gr.Dropdown(
@@ -286,7 +290,7 @@ def demo():
                                 context_window,
                                 gpu_layers,
                             ],
-                            outputs=[],
+                            outputs=[llm_progress],
                         )
                 with gr.Row():
                     with gr.Accordion(
