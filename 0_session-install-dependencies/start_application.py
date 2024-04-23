@@ -26,6 +26,7 @@ project = client.get_project(project_id=os.getenv("CDSW_PROJECT_ID"))
 
 
 if check_gpu_enabled() == False:
+    print("Start AI Chat with your documents without GPU")
     application_request = cmlapi.CreateApplicationRequest(
         name="AI Chat with your documents",
         description="AI Chat with your documents",
@@ -40,6 +41,7 @@ if check_gpu_enabled() == False:
     )
 
 else:
+    print("Start AI Chat with your documents with GPU")
     application_request = cmlapi.CreateApplicationRequest(
         name="AI Chat with your documents",
         description="AI Chat with your documents",
