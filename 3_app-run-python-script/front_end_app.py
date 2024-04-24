@@ -140,14 +140,24 @@ def close_doc_process_accordion():
 
 def get_runtime_information():
     if check_gpu_enabled():
-        st = "AI chatbot is running using GPU"
+        st = "AI chatbot is running using GPU."
     else:
-        st = "AI chatbot is running using CPU"
+        st = "AI chatbot is running using CPU."
 
     st += f"\n\n Using the model {llm.get_active_model_name()}."
     st += f"\n Using the embed model {llm.get_active_embed_model_name()}."
 
     return st
+
+
+def update_runtime_information():
+    return gr.TextArea(
+        show_label=False,
+        value=get_runtime_information,
+        interactive=False,
+        max_lines=3,
+        lines=3,
+    )
 
 
 def demo():
@@ -219,12 +229,12 @@ def demo():
                         visible=True,
                     )
                 with gr.Accordion("Runtime informations", open=True):
-                    gr.TextArea(
+                    runtime_info = gr.TextArea(
                         show_label=False,
                         value=get_runtime_information,
                         interactive=False,
-                        max_lines=1,
-                        lines=1,
+                        max_lines=3,
+                        lines=3,
                     )
                 with gr.Accordion("LLM Configuration", open=False):
                     llm_model = gr.Dropdown(
@@ -294,6 +304,10 @@ def demo():
                                 gpu_layers,
                             ],
                             outputs=[llm_progress],
+                        ).then(
+                            update_runtime_information,
+                            inputs=[],
+                            outputs=[runtime_info],
                         )
                 with gr.Row():
                     with gr.Accordion(
