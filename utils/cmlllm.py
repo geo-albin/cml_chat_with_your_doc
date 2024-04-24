@@ -175,9 +175,11 @@ class CMLLLM:
         self.memory_token_limit = memory_token_limit
 
     def get_active_model_name(self):
+        print(f"active model is {self.active_model_name}")
         return self.active_model_name
 
     def get_active_embed_model_name(self):
+        print(f"active embed model is {self.active_embed_model_name}")
         return self.active_embed_model_name
 
     def delete_collection_name(self, collection_name, progress=gr.Progress()):

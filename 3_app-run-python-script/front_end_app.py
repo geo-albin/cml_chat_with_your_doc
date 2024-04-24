@@ -140,9 +140,12 @@ def close_doc_process_accordion():
 
 def get_runtime_information():
     if check_gpu_enabled():
-        return "AI chatbot is running using GPU"
+        st = "AI chatbot is running using GPU"
     else:
-        return "AI chatbot is running using CPU"
+        st = "AI chatbot is running using CPU"
+
+    st += f"\n\n Using the model {llm.get_active_model_name()}."
+    st += f"\n Using the embed model {llm.get_active_embed_model_name()}."
 
 
 def demo():
