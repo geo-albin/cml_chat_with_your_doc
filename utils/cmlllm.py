@@ -418,6 +418,8 @@ class CMLLLM:
         print(
             f"Enter set_global_settings_common. model_name = {model_name}, embed_model_path = {embed_model_path}"
         )
+        self.active_model_name = model_name
+        self.active_embed_model_name = embed_model_path
         model_path = self.get_model_path(model_name)
         print(f"model_path = {model_path}")
         progress(0.1, f"Starting the model {model_path}")

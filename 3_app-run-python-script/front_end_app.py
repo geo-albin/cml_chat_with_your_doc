@@ -91,7 +91,6 @@ def reconfigure_llm(
         n_gpu_layers=gpu_layers,
         progress=progress,
     )
-    selected_model_name = model_name
     return "Done reconfiguring llm!!!"
 
 
