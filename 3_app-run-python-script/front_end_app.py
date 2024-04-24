@@ -147,6 +147,8 @@ def get_runtime_information():
     st += f"\n\n Using the model {llm.get_active_model_name()}."
     st += f"\n Using the embed model {llm.get_active_embed_model_name()}."
 
+    return st
+
 
 def demo():
     with gr.Blocks(title="AI Chat with your documents") as demo:
