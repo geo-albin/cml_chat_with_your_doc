@@ -144,7 +144,7 @@ def get_runtime_information():
     else:
         st = "AI chatbot is running using CPU."
 
-    st += f"\n\n Using the model {llm.get_active_model_name()}."
+    st += f"\n Using the model {llm.get_active_model_name()}."
     st += f"\n Using the embed model {llm.get_active_embed_model_name()}."
 
     return st
@@ -153,7 +153,7 @@ def get_runtime_information():
 def update_runtime_information():
     return gr.TextArea(
         show_label=False,
-        value=get_runtime_information,
+        value=get_runtime_information(),
         interactive=False,
         max_lines=3,
         lines=3,
@@ -231,7 +231,7 @@ def demo():
                 with gr.Accordion("Runtime informations", open=True):
                     runtime_info = gr.TextArea(
                         show_label=False,
-                        value=get_runtime_information,
+                        value=get_runtime_information(),
                         interactive=False,
                         max_lines=3,
                         lines=3,
