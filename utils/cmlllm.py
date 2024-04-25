@@ -32,7 +32,9 @@ import atexit
 import utils.vectordb as vectordb
 from llama_index.core.memory import ChatMemoryBuffer
 from dotenv import load_dotenv
-from llama_index.core.chat_engine import ContextChatEngine
+from utils.common import supported_llm_models, supported_embed_models
+
+# from llama_index.core.chat_engine import ContextChatEngine
 
 load_dotenv()
 
@@ -55,18 +57,12 @@ logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 llama_debug = LlamaDebugHandler(print_trace_on_end=True)
 callback_manager = CallbackManager(handlers=[llama_debug])
 
-supported_embed_models = ["thenlper/gte-large"]
-
 
 def get_supported_embed_models():
     embedList = list(supported_embed_models)
     return embedList
 
 
-supported_llm_models = {
-    "TheBloke/Mistral-7B-Instruct-v0.2-GGUF": "mistral-7b-instruct-v0.2.Q5_K_M.gguf",
-    "microsoft/Phi-3-mini-4k-instruct-gguf": "Phi-3-mini-4k-instruct-q4.gguf",
-}
 chat_engine_map = {}
 
 

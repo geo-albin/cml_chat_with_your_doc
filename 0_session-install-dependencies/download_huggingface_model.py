@@ -1,6 +1,6 @@
 from huggingface_hub import hf_hub_download
 from huggingface_hub import snapshot_download
-from utils.cmlllm import supported_llm_models, supported_embed_models
+from utils.common import supported_llm_models, supported_embed_models
 
 MODELS_PATH = "./models"
 EMBEDS_PATH = "./embed_models"
