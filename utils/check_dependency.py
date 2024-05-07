@@ -13,6 +13,7 @@ def check_gpu_enabled():
         url,
         headers={"Content-Type": "application/json"},
         auth=(API_KEY, ""),
+        verify=False,
     )
     max_gpu_per_engine = res.json().get("max_gpu_per_engine")
 
@@ -33,6 +34,7 @@ def check_unauthenticated_access_to_app_enabled():
         url,
         headers={"Content-Type": "application/json"},
         auth=(API_KEY, ""),
+        verify=False,
     )
     allow_unauthenticated_access_to_app = res.json().get(
         "allow_unauthenticated_access_to_app"
