@@ -228,87 +228,87 @@ def demo():
                         max_lines=10,
                         visible=True,
                     )
-                with gr.Accordion("Runtime informations", open=True):
-                    runtime_info = gr.TextArea(
-                        show_label=False,
-                        value=get_runtime_information(),
-                        interactive=False,
-                        max_lines=3,
-                        lines=3,
-                    )
-                with gr.Accordion("LLM Configuration", open=False):
-                    llm_model = gr.Dropdown(
-                        choices=llm_choice,
-                        value=llm.get_active_model_name(),
-                        label="LLM Model",
-                    )
-                    embed_model = gr.Dropdown(
-                        choices=embed_models,
-                        value=llm.get_active_embed_model_name(),
-                        label="Embed Model",
-                    )
-                    with gr.Accordion("Configure model parameters", open=False):
-                        temperature = gr.Slider(
-                            minimum=0,
-                            maximum=100,
-                            value=0.0,
-                            step=0.1,
-                            label="Temperature configuration",
-                            info="Temperature configuration",
-                            interactive=True,
-                        )
-                        max_new_tokens = gr.Slider(
-                            minimum=100,
-                            maximum=512,
-                            value=256,
-                            step=1,
-                            label="max_new_tokens",
-                            info="max_new_tokens",
-                            interactive=True,
-                        )
-                        context_window = gr.Slider(
-                            minimum=1000,
-                            maximum=5000,
-                            value=3900,
-                            step=1,
-                            label="context_window",
-                            info="context_window",
-                            interactive=True,
-                        )
-                        gpu_layers = gr.Slider(
-                            minimum=0,
-                            maximum=50,
-                            value=20,
-                            step=1,
-                            label="gpu_layers",
-                            info="gpu_layers",
-                            interactive=True,
-                        )
-                    with gr.Row():
-                        configure_button = gr.Button("Click to configure LLM")
-                        configure_button.click(
-                            validate_llm,
-                            inputs=[
-                                llm_model,
-                                embed_model,
-                            ],
-                            outputs=[],
-                        ).success(
-                            reconfigure_llm,
-                            inputs=[
-                                llm_model,
-                                embed_model,
-                                temperature,
-                                max_new_tokens,
-                                context_window,
-                                gpu_layers,
-                            ],
-                            outputs=[llm_progress],
-                        ).then(
-                            update_runtime_information,
-                            inputs=[],
-                            outputs=[runtime_info],
-                        )
+                # with gr.Accordion("Runtime informations", open=True):
+                #     runtime_info = gr.TextArea(
+                #         show_label=False,
+                #         value=get_runtime_information(),
+                #         interactive=False,
+                #         max_lines=3,
+                #         lines=3,
+                #     )
+                # with gr.Accordion("LLM Configuration", open=False):
+                #     llm_model = gr.Dropdown(
+                #         choices=llm_choice,
+                #         value=llm.get_active_model_name(),
+                #         label="LLM Model",
+                #     )
+                #     embed_model = gr.Dropdown(
+                #         choices=embed_models,
+                #         value=llm.get_active_embed_model_name(),
+                #         label="Embed Model",
+                #     )
+                #     with gr.Accordion("Configure model parameters", open=False):
+                #         temperature = gr.Slider(
+                #             minimum=0,
+                #             maximum=100,
+                #             value=0.0,
+                #             step=0.1,
+                #             label="Temperature configuration",
+                #             info="Temperature configuration",
+                #             interactive=True,
+                #         )
+                #         max_new_tokens = gr.Slider(
+                #             minimum=100,
+                #             maximum=512,
+                #             value=256,
+                #             step=1,
+                #             label="max_new_tokens",
+                #             info="max_new_tokens",
+                #             interactive=True,
+                #         )
+                #         context_window = gr.Slider(
+                #             minimum=1000,
+                #             maximum=5000,
+                #             value=3900,
+                #             step=1,
+                #             label="context_window",
+                #             info="context_window",
+                #             interactive=True,
+                #         )
+                #         gpu_layers = gr.Slider(
+                #             minimum=0,
+                #             maximum=50,
+                #             value=20,
+                #             step=1,
+                #             label="gpu_layers",
+                #             info="gpu_layers",
+                #             interactive=True,
+                #         )
+                #     with gr.Row():
+                #         configure_button = gr.Button("Click to configure LLM")
+                #         configure_button.click(
+                #             validate_llm,
+                #             inputs=[
+                #                 llm_model,
+                #                 embed_model,
+                #             ],
+                #             outputs=[],
+                #         ).success(
+                #             reconfigure_llm,
+                #             inputs=[
+                #                 llm_model,
+                #                 embed_model,
+                #                 temperature,
+                #                 max_new_tokens,
+                #                 context_window,
+                #                 gpu_layers,
+                #             ],
+                #             outputs=[llm_progress],
+                #         ).then(
+                #             update_runtime_information,
+                #             inputs=[],
+                #             outputs=[runtime_info],
+                #         )
                 with gr.Row():
                     with gr.Accordion(
                         "Number of automatic questions generated per the uploaded docs",
