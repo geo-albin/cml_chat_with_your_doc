@@ -77,7 +77,7 @@ def reconfigure_llm(
     model_name="TheBloke/Mistral-7B-Instruct-v0.2-GGUF",
     embed_model_name="thenlper/gte-large",
     temperature=0.0,
-    max_new_tokens=256,
+    max_new_tokens=1024,
     context_window=3900,
     gpu_layers=20,
     progress=gr.Progress(),
