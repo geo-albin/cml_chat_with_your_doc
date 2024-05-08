@@ -228,14 +228,14 @@ def demo():
                         max_lines=10,
                         visible=True,
                     )
-                # with gr.Accordion("Runtime informations", open=True):
-                #     runtime_info = gr.TextArea(
-                #         show_label=False,
-                #         value=get_runtime_information(),
-                #         interactive=False,
-                #         max_lines=3,
-                #         lines=3,
-                #     )
+                with gr.Row():
+                    gr.TextArea(
+                        show_label=False,
+                        value=get_runtime_information(),
+                        interactive=False,
+                        max_lines=3,
+                        lines=3,
+                    )
                 # with gr.Accordion("LLM Configuration", open=False):
                 #     llm_model = gr.Dropdown(
                 #         choices=llm_choice,
