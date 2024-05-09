@@ -134,7 +134,7 @@ class CMLLLM:
         gpu_layers=20,
         dim=1024,
         collection_name="default_collection",
-        memory_token_limit=390000,
+        memory_token_limit=3900,
         sentense_embedding_percentile_cutoff=0.8,
         similarity_top_k=2,
         progress=gr.Progress(),
@@ -400,7 +400,7 @@ class CMLLLM:
             progress=progress,
         )
 
-        Settings.callback_manager = callback_manager
+        # Settings.callback_manager = callback_manager
         Settings.node_parser = node_parser
 
     def set_global_settings_common(
