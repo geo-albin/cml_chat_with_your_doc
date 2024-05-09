@@ -452,7 +452,7 @@ class CMLLLM:
             filename=filename,
             resume_download=True,
             cache_dir=self.MODELS_PATH,
-            local_files_only=False,
+            local_files_only=True,
             token=hf_token,
         )
         return model_path
@@ -462,7 +462,7 @@ class CMLLLM:
             repo_id=embed_model,
             resume_download=True,
             cache_dir=self.EMBEDS_PATH,
-            local_files_only=False,
+            local_files_only=True,
             token=hf_token,
         )
         return embed_model_path
