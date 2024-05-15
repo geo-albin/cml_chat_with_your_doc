@@ -16,11 +16,15 @@ def check_gpu_enabled():
         verify=False,
     )
     max_gpu_per_engine = res.json().get("max_gpu_per_engine")
+    default_accelerator_label_id = res.json().get("default_accelerator_label_id")
 
-    if max_gpu_per_engine < 1:
+    if max_gpu_per_engine < 1 and (
+        default_accelerator_label_id == 0 or default_accelerator_label_id is None
+    ):
         print("GPU's are not enabled for this workspace")
         return False
     print("GPUs are enabled in this workspace.")
+
     return True
 
 
