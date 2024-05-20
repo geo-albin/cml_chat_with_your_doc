@@ -1,0 +1,1 @@
+!chainlit run -h -d --host 127.0.0.1 --port $CDSW_APP_PORT 3_app-run-python-script/front_end_app.py

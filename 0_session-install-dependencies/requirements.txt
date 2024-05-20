@@ -13,7 +13,7 @@ llama-index-vector-stores-milvus==0.1.10
 llama-parse==0.4.1
 transformers==4.37.2
 huggingface-hub==0.20.3
-gradio==4.26.0
+chainlit
 torch==2.2.2
 milvus==2.3.5
 unstructured==0.13.2
