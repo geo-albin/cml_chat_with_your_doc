@@ -1,11 +1,9 @@
 import os
 import shutil
-import gradio as gr
 
 
-def Upload_files(files, progress=gr.Progress()):
+def Upload_files(files):
     op = ""
-    progress(0.1, desc="Uploading the files...")
     for file in files:
         print(f"uploading the file {file}")
         file_suffix = file.name.split(".")[-1]
@@ -25,7 +23,6 @@ def Upload_files(files, progress=gr.Progress()):
         copy_file(file.name, file_path)
     op = f"successfully copied {len(files)} files"
     print(op)
-    progress(0.2, desc=op)
 
 
 def copy_file(source_file, destination_file):

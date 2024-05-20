@@ -27,7 +27,6 @@ import torch
 import logging
 import sys
 import subprocess
-import gradio as gr
 import atexit
 import utils.vectordb as vectordb
 from llama_index.core.memory import ChatMemoryBuffer
@@ -137,7 +136,6 @@ class CMLLLM:
         memory_token_limit=3900,
         sentense_embedding_percentile_cutoff=0.8,
         similarity_top_k=2,
-        progress=gr.Progress(),
     ):
         if len(model_name) == 0:
             model_name = "TheBloke/Mistral-7B-Instruct-v0.2-GGUF"
@@ -152,8 +150,6 @@ class CMLLLM:
 
         self.node_parser = SimpleNodeParser(chunk_size=1024, chunk_overlap=128)
 
-        progress((1, 4), desc="setting the global parameters")
-
         self.set_global_settings(
             model_name=model_name,
             embed_model_path=embed_model_name,
@@ -162,9 +158,7 @@ class CMLLLM:
             context_window=context_window,
             n_gpu_layers=n_gpu_layers,
             node_parser=self.node_parser,
-            progress=progress,
         )
-        progress((1.5, 4), desc="done, setting the global parameters")
         self.dim = dim
         self.similarity_top_k = similarity_top_k
         self.sentense_embedding_percentile_cutoff = sentense_embedding_percentile_cutoff
@@ -178,7 +172,7 @@ class CMLLLM:
         print(f"active embed model is {self.active_embed_model_name}")
         return self.active_embed_model_name
 
-    def delete_collection_name(self, collection_name, progress=gr.Progress()):
+    def delete_collection_name(self, collection_name):
         print(f"delete_collection_name : collection = {collection_name}")
 
         if collection_name is None or len(collection_name) == 0:
@@ -186,12 +180,10 @@ class CMLLLM:
 
         active_collection_available.pop(collection_name, None)
         chat_engine_map.pop(collection_name, None)
-        progress((1, 1), desc=f"Successfully deleted the collection {collection_name}")
 
     def set_collection_name(
         self,
         collection_name,
-        progress=gr.Progress(),
     ):
         print(f"set_collection_name : collection = {collection_name}")
 
@@ -207,18 +199,7 @@ class CMLLLM:
             print(
                 f"collection {collection_name} is already configured and chat_engine is set"
             )
-            progress(
-                (1, 1),
-                desc=f"collection {collection_name} is already configured and chat_engine is set.",
-            )
             return
-
-        progress(
-            (1, 4),
-            desc=f"creating or getting the vector db collection {collection_name}",
-        )
-
-        progress((2, 4), desc="setting the vector db")
 
         vector_store = MilvusVectorStore(
             dim=self.dim,
@@ -226,8 +207,6 @@ class CMLLLM:
         )
 
         index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
-
-        progress((3, 4), desc="setting the chat engine")
 
         chat_engine = index.as_chat_engine(
             chat_mode=ChatMode.CONTEXT,
@@ -248,14 +227,10 @@ class CMLLLM:
             ),
             similarity_top_k=self.similarity_top_k,
         )
-        progress(
-            (4, 4),
-            desc=f"successfully updated the chat engine for the collection name {collection_name}",
-        )
 
         chat_engine_map[collection_name] = chat_engine
 
-    def ingest(self, files, questions, collection_name, progress=gr.Progress()):
+    def ingest(self, files, questions, collection_name):
         if not (collection_name in active_collection_available):
             return f"Some issues with the llm and colection {collection_name} setup. please try setting up the llm and the vector db again."
 
@@ -270,8 +245,6 @@ class CMLLLM:
 
         print(f"collection = {collection_name}, questions = {questions}")
 
-        progress(0.3, desc="loading the documents")
-
         filename_fn = lambda filename: {"file_name": os.path.basename(filename)}
 
         active_collection_available[collection_name] = False
@@ -281,15 +254,12 @@ class CMLLLM:
             op = "Questions\n"
             i = 1
             for file in files:
-                progress(0.4, desc=f"loading document {os.path.basename(file)}")
                 reader = SimpleDirectoryReader(
                     input_files=[file],
                     file_extractor=file_extractor,
                     file_metadata=filename_fn,
                 )
                 document = reader.load_data(num_workers=1, show_progress=True)
-
-                progress(0.4, desc=f"done loading document {os.path.basename(file)}")
 
                 vector_store = MilvusVectorStore(
                     dim=self.dim,
@@ -300,17 +270,10 @@ class CMLLLM:
                     vector_store=vector_store
                 )
 
-                progress(
-                    0.4, desc=f"start indexing the document {os.path.basename(file)}"
-                )
                 nodes = self.node_parser.get_nodes_from_documents(document)
 
                 index = VectorStoreIndex(
                     nodes, storage_context=storage_context, show_progress=True
-                )
-
-                progress(
-                    0.4, desc=f"done indexing the document {os.path.basename(file)}"
                 )
 
                 ops = (
@@ -320,15 +283,10 @@ class CMLLLM:
                 )
 
                 print(f"{ops}")
-                progress(0.4, desc=op)
 
                 start_time = time.time()
                 print(
                     f"start dataset generation from the document {os.path.basename(file)}."
-                )
-                progress(
-                    0.4,
-                    desc=f"start dataset generation from the document {os.path.basename(file)}.",
                 )
 
                 data_generator = DatasetGenerator.from_documents(documents=document)
@@ -339,13 +297,8 @@ class CMLLLM:
                     + " seconds."
                 )
                 print(f"{dataset_op}")
-                progress(0.4, desc=dataset_op)
                 print(
                     f"start generating questions from the document {os.path.basename(file)}"
-                )
-                progress(
-                    0.4,
-                    desc=f"generating questions from the document {os.path.basename(file)}",
                 )
                 eval_questions = data_generator.generate_questions_from_nodes(
                     num=questions
@@ -358,26 +311,20 @@ class CMLLLM:
                 print(
                     f"done generating questions from the document {os.path.basename(file)}"
                 )
-                progress(
-                    0.4,
-                    desc=f"done generating questions from the document {os.path.basename(file)}",
-                )
                 print(subprocess.run([f"rm -f {file}"], shell=True))
 
-            progress(0.9, desc=f"done processing the documents {collection_name}...")
             print(f"done processing the documents {collection_name}...")
             active_collection_available[collection_name] = True
 
         except Exception as e:
             print(e)
             ops = f"ingestion failed with exception {e}"
-            progress(0.9, desc=ops)
         return op
 
-    def upload_document_and_ingest(self, files, questions, progress=gr.Progress()):
+    def upload_document_and_ingest(self, files, questions):
         if len(files) == 0:
             return "Please add some files..."
-        return self.ingest(files, questions, progress)
+        return self.ingest(files, questions)
 
     def set_global_settings(
         self,
@@ -388,7 +335,6 @@ class CMLLLM:
         context_window,
         n_gpu_layers,
         node_parser,
-        progress=gr.Progress(),
     ):
         self.set_global_settings_common(
             model_name=model_name,
@@ -397,7 +343,6 @@ class CMLLLM:
             max_new_tokens=max_new_tokens,
             context_window=context_window,
             n_gpu_layers=n_gpu_layers,
-            progress=progress,
         )
 
         # Settings.callback_manager = callback_manager
@@ -411,7 +356,6 @@ class CMLLLM:
         max_new_tokens,
         context_window,
         n_gpu_layers,
-        progress,
     ):
         print(
             f"Enter set_global_settings_common. model_name = {model_name}, embed_model_path = {embed_model_path}"
@@ -420,7 +364,6 @@ class CMLLLM:
         self.active_embed_model_name = embed_model_path
         model_path = self.get_model_path(model_name)
         print(f"model_path = {model_path}")
-        progress(0.1, f"Starting the model {model_path}")
 
         Settings.llm = LlamaCPP(
             model_path=model_path,
@@ -439,7 +382,6 @@ class CMLLLM:
             completion_to_prompt=completion_to_prompt,
             verbose=True,
         )
-        progress(0.3, f"Setting the embed model {embed_model_path}")
         Settings.embed_model = HuggingFaceEmbedding(
             model_name=embed_model_path,
             cache_folder=self.EMBED_PATH,
